@@ -45,6 +45,15 @@ Please review our ENTITIES.md file for more information about the entities / mod
 - Search for `app`
 - Run all specs
 
+## End to end test on Windows
+- Install test dependencies with `bundle install --with=development,test`
+- Set environment to test with `set RAILS_ENV=test`
+- Create test database and run migrations with `rails db:create db:migrate`
+- Start rails in test mode with `rails s -e test`
+- Run cypress with `yarn e2e`
+- Search for `app`
+- Run all specs
+
 ## Deploy
 Trackear is using [capistrano](https://capistranorb.com/) to handle deployments.
 

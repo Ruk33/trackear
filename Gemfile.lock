@@ -128,7 +128,7 @@ GEM
       regexp_parser (~> 1.5)
       xpath (~> 3.2)
     childprocess (3.0.0)
-    chromedriver-helper (2.1.1)
+    chromedriver-helper (1.2.0)
       archive-zip (~> 0.10)
       nokogiri (~> 1.8)
     cocoon (1.2.14)
@@ -168,7 +168,6 @@ GEM
       multipart-post (>= 1.2, < 3)
     ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
-    flamegraph (0.9.5)
     fog-aws (3.6.6)
       fog-core (~> 2.1)
       fog-json (~> 1.1)
@@ -368,7 +367,6 @@ GEM
     sshkit (1.21.0)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
-    stackprof (0.2.15)
     thor (1.0.1)
     thread_safe (0.3.6)
     ttfunk (1.6.2.1)
@@ -423,7 +421,7 @@ DEPENDENCIES
   capistrano-rvm
   capistrano3-puma
   capybara (>= 2.15)
-  chromedriver-helper
+  chromedriver-helper (= 1.2.0)
   cocoon (~> 1.2.14)
   cypress-on-rails (~> 1.0)
   database_cleaner-active_record
@@ -431,7 +429,6 @@ DEPENDENCIES
   devise (~> 4.7.1)
   dotiw (~> 4.0.1)
   factory_bot_rails
-  flamegraph
   fog-aws (~> 3.6.2)
   friendly_id (~> 5.3.0)
   jbuilder (~> 2.7)
@@ -456,7 +453,6 @@ DEPENDENCIES
   sitemap_generator
   spring
   spring-watcher-listen (~> 2.0.0)
-  stackprof
   turbolinks (~> 5.2.0)
   tzinfo-data
   web-console (>= 3.3.0)

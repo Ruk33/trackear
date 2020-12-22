@@ -64,8 +64,8 @@ group :development do
   gem 'memory_profiler'
 
   # For call-stack profiling flamegraphs
-  gem 'flamegraph'
-  gem 'stackprof'
+  # gem 'flamegraph'
+  # gem 'stackprof'
 
   gem 'bullet'
 end
@@ -75,7 +75,7 @@ group :test do
   gem 'capybara', '>= 2.15'
   gem 'selenium-webdriver'
   # Easy installation and use of chromedriver to run system tests with Chrome
-  gem 'chromedriver-helper'
+  gem 'chromedriver-helper', '1.2.0'
   gem 'database_cleaner-active_record'
 end
 
