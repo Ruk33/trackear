@@ -31,7 +31,7 @@ Rails.application.configure do
   config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  config.action_controller.asset_host = "//#{Rails.application.credentials.fog_directory}"
+  config.action_controller.asset_host = "//www.trackear.app"
 
   config.assets.digest = true
   config.assets.enabled = true
