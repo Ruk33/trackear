@@ -37,6 +37,7 @@ class User < ApplicationRecord
   scope :online, -> { where("updated_at > ?", 25.minutes.ago) }
 
   before_create :add_30_days_trial
+  before_create :track_new_user
 
   def can_use_premium_features?
     is_admin? || on_trial_or_subscribed?
@@ -127,5 +128,9 @@ class User < ApplicationRecord
 
     def add_30_days_trial
       self.trial_ends_at = 30.days.from_now
+    end
+
+    def track_new_user
+      Analytic.new_user
     end
 end

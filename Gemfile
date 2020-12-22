@@ -127,5 +127,5 @@ gem 'sentry-raven'
 
 gem 'receipts'
 
-gem 'pay', git: 'https://github.com/nm/pay.git', branch: 'paddle'
+gem 'pay'
 gem 'paddle_pay', '~> 0.0.1'

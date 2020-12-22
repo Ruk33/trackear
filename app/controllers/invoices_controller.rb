@@ -25,6 +25,8 @@ class InvoicesController < ApplicationController
   authorize_resource
 
   def index
+    Analytic.page_view("auth/invoices")
+
     @filter = params.dig(:type)
     @invoices = InvoiceService.invoices_from(current_user, @project).includes([:invoice_entries, :invoice_status])
 
@@ -39,6 +41,8 @@ class InvoicesController < ApplicationController
   end
 
   def show
+    Analytic.page_view("auth/invoices/show")
+
     add_breadcrumb @project.name, @project
     add_breadcrumb t(:invoices), project_invoices_path(@project)
     add_breadcrumb @invoice.from.strftime('%B %Y')
@@ -56,6 +60,8 @@ class InvoicesController < ApplicationController
   end
 
   def new
+    Analytic.page_view("auth/invoices/new")
+
     @invoice = current_user.invoices.new(
       project: @project,
       discount_percentage: 0,
@@ -68,9 +74,12 @@ class InvoicesController < ApplicationController
   end
 
   def edit
+    Analytic.page_view("auth/invoices/edit")
   end
 
   def create
+    Analytic.page_view("auth/invoices/create")
+
     params_with_project_and_discount = invoice_params.merge(
       project: @project,
       discount_percentage: 0
@@ -91,6 +100,8 @@ class InvoicesController < ApplicationController
   end
 
   def update
+    Analytic.page_view("auth/invoices/update")
+
     respond_to do |format|
       if @invoice.update(update_invoice_params)
         format.html { redirect_to project_invoice_path(@project, @invoice), notice: t(:invoice_successfully_updated) }
@@ -103,6 +114,8 @@ class InvoicesController < ApplicationController
   end
 
   def destroy
+    Analytic.page_view("auth/invoices/destroy")
+
     @invoice.destroy
     respond_to do |format|
       format.html { redirect_to project_invoices_url(@project), notice: t(:invoice_successfully_destroyed) }
@@ -172,16 +185,22 @@ class InvoicesController < ApplicationController
   end
 
   def download_invoice
+    Analytic.page_view("auth/invoices/download_invoice")
+
     name = @invoice.project.name + ' - ' + @invoice.from.strftime('%B %Y')
     send_data @invoice.invoice.download.read, filename: name + '.pdf', type: 'application/pdf'
   end
 
   def download_payment
+    Analytic.page_view("auth/invoices/download_payment")
+
     name = @invoice.project.name + ' - Payment - ' + @invoice.from.strftime('%B %Y')
     send_data @invoice.payment.download.read, filename: name + '.pdf', type: 'application/pdf'
   end
 
   def review_entries
+    Analytic.page_view("auth/invoices/review_entries")
+
     add_breadcrumb @project.name, @project
     add_breadcrumb t(:invoices), project_invoices_path(@project)
     add_breadcrumb @invoice.from.strftime('%B %Y'), [@project, @invoice]
@@ -189,6 +208,8 @@ class InvoicesController < ApplicationController
   end
 
   def upload_invoice
+    Analytic.page_view("auth/invoices/upload_invoice")
+
     respond_to do |format|
       if @invoice.add_invoice(upload_invoice_params)
         format.html { redirect_to status_project_invoice_path(@project, @invoice), notice: t(:invoice_attached_successfully) }
@@ -201,6 +222,8 @@ class InvoicesController < ApplicationController
   end
 
   def upload_payment
+    Analytic.page_view("auth/invoices/upload_payment")
+
     respond_to do |format|
       if @invoice.add_payment(upload_payment_params)
         format.html { redirect_to status_project_invoice_url(@project, @invoice), notice: t(:invoice_payment_attached_successfully) }
@@ -213,6 +236,8 @@ class InvoicesController < ApplicationController
   end
 
   def status
+    Analytic.page_view("auth/invoices/status")
+
     @invoice_status = @invoice.invoice_status
     @invoice_status.update_last_checked
     add_breadcrumb @project.name, @project

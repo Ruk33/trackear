@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_12_045610) do
+ActiveRecord::Schema.define(version: 2020_12_21_174434) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,8 +40,17 @@ ActiveRecord::Schema.define(version: 2020_11_12_045610) do
     t.datetime "deleted_at"
     t.decimal "user_rate"
     t.decimal "project_rate"
+    t.integer "billable_cents", default: 0, null: false
+    t.string "billable_currency", default: "USD", null: false
     t.index ["deleted_at"], name: "index_activity_tracks_on_deleted_at"
     t.index ["project_contract_id"], name: "index_activity_tracks_on_project_contract_id"
+  end
+
+  create_table "analytics", force: :cascade do |t|
+    t.string "event"
+    t.string "value"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "feedback_options", force: :cascade do |t|

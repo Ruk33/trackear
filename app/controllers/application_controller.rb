@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   before_action :set_raven_context
   before_action :add_home_breadcrumb
 
-  after_action :update_user_activity
+  after_action :track_user_activity
 
   around_action :user_time_zone, if: :user_signed_in?
   around_action :switch_locale
@@ -26,8 +26,9 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def update_user_activity
-    current_user.try :touch
+  def track_user_activity
+    Analytic.user_activity current_user.id if user_signed_in?
+    Analytic.user_activity "guest" unless user_signed_in?
   end
 
   def add_home_breadcrumb

@@ -15,6 +15,8 @@ Rails.application.routes.draw do
     post :become, on: :member
   end
 
+  resources :analytics
+
   resources :projects do
     resources :invoice_statuses, only: [] do
       post :confirm_hours, on: :member

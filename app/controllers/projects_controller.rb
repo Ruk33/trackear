@@ -29,15 +29,21 @@ class ProjectsController < ApplicationController
   # GET /projects
   # GET /projects.json
   def index
+    Analytic.page_view("auth/projects")
+
     @projects = current_user.projects.uniq
   end
 
   def onboarding
+    Analytic.page_view("auth/projects/onboarding")
+
     add_breadcrumb @project.name, @project
     add_breadcrumb t :onboarding_initial_setup
   end
 
   def update_rate_from_onboarding
+    Analytic.page_view("auth/projects/update_rate_from_onboarding")
+
     contract = current_user.currently_active_contract_for(@project)
     hourly_rate = params.dig(:project_contract, :user_rate)
     contract.project_rate = hourly_rate
@@ -47,12 +53,16 @@ class ProjectsController < ApplicationController
   end
 
   def onboarding_invite_members
+    Analytic.page_view("auth/projects/onboarding_invite_members")
+
     @project_contract = ProjectContract.new
     add_breadcrumb @project.name, @project
     add_breadcrumb t(:onboarding_who_will_be_working_on_project, project: @project.name)
   end
 
   def invite_member_from_onboarding
+    Analytic.page_view("auth/projects/invite_member_from_onboarding")
+
     @project_contract = @project.project_contracts.from_invite(invite_member_params)
 
     add_breadcrumb @project.name, @project
@@ -68,6 +78,7 @@ class ProjectsController < ApplicationController
   end
 
   def onboarding_done
+    Analytic.page_view("auth/projects/onboarding_done")
     add_breadcrumb @project.name, @project
     add_breadcrumb t :onboarding_all_set
   end
@@ -75,6 +86,8 @@ class ProjectsController < ApplicationController
   # GET /projects/1
   # GET /projects/1.json
   def show
+    Analytic.page_view("auth/projects/show")
+
     @stopwatch = current_user.activity_stop_watches.active(@project).first
     @contracts = @project.project_contracts.currently_active.includes(:user)
     @contract = current_user.currently_active_contract_for(@project)
@@ -111,12 +124,15 @@ class ProjectsController < ApplicationController
 
   # GET /projects/new
   def new
+    Analytic.page_view("auth/projects/new")
     @project = Project.new
     add_breadcrumb t(:create_project)
   end
 
   # GET /projects/1/edit
   def edit
+    Analytic.page_view("auth/projects/edit")
+
     add_breadcrumb @project.name, @project
     add_breadcrumb "Edit"
   end
@@ -124,6 +140,8 @@ class ProjectsController < ApplicationController
   # POST /projects
   # POST /projects.json
   def create
+    Analytic.page_view("auth/projects/create")
+
     begin
       @project = current_user.create_project_and_ensure_owner_contract(project_params)
     rescue StandardError
@@ -145,6 +163,8 @@ class ProjectsController < ApplicationController
   # PATCH/PUT /projects/1
   # PATCH/PUT /projects/1.json
   def update
+    Analytic.page_view("auth/projects/update")
+
     respond_to do |format|
       if @project.update(project_params)
         format.html { redirect_to @project, notice: t(:project_successfully_updated) }
@@ -159,6 +179,8 @@ class ProjectsController < ApplicationController
   # DELETE /projects/1
   # DELETE /projects/1.json
   def destroy
+    Analytic.page_view("auth/projects/destroy")
+
     @project.destroy
     respond_to do |format|
       format.html { redirect_to home_url, notice: t(:project_successfully_destroyed) }

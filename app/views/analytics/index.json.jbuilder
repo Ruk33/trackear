@@ -1,0 +1,10 @@
+json.new_users @new_users
+json.invoice_feature @invoice_feature
+json.project_invitation_feature @project_invitation_feature
+json.projects_feature @projects_feature
+json.projects_created @projects_created
+json.invoices_created @invoices_created
+json.active_users @active_users
+json.active_guests @active_guests
+json.project_invitations @project_invitations
+json.retention_rate @retention_rate

@@ -13,6 +13,11 @@
       <%= link_to(new_project_path, class: "px-3 mx-1 flex items-center text-white") do %>
         <%= t :create_new_project %>
       <% end %>
+      <% if can? :manage, Analytic %>
+        <%= link_to(analytics_path, class: "px-3 mx-1") do %>
+          <%= t :analytics %>
+        <% end %>
+      <% end %>
       <% if can? :manage, User %>
         <%= link_to(users_path, class: "px-3 mx-1") do %>
           <%= t :users %>

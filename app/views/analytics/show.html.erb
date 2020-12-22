@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Event:</strong>
+  <%= @analytic.event %>
+</p>
+
+<p>
+  <strong>Value:</strong>
+  <%= @analytic.value %>
+</p>
+
+<%= link_to 'Edit', edit_analytic_path(@analytic) %> |
+<%= link_to 'Back', analytics_path %>

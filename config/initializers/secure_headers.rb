@@ -11,5 +11,5 @@ SecureHeaders::Configuration.default do |config|
     config.csp.form_action = %w('self')
     config.csp.block_all_mixed_content = true
     config.csp.upgrade_insecure_requests = true
-    config.csp.script_src = %w('self' 'unsafe-inline' cdn.paddle.com www.clarity.ms trackear-prod-2.s3.amazonaws.com *.cloudflare.com)
+    config.csp.script_src = %w('self' 'unsafe-inline' cdn.paddle.com trackear-prod-2.s3.amazonaws.com *.cloudflare.com)
 end
