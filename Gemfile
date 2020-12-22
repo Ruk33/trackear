@@ -129,3 +129,6 @@ gem 'receipts'
 
 gem 'pay'
 gem 'paddle_pay', '~> 0.0.1'
+
+gem 'browser'
+gem 'geocoder'

@@ -26,12 +26,30 @@ class Analytic < ApplicationRecord
     retention_rate
   end
 
-  def self.user_activity(user_id)
-    self.create(event: "user_activity", value: user_id)
+  def self.user_activity(user_id, browser, device, platform, ip, city, country)
+    self.create(
+      event: "user_activity",
+      value: user_id,
+      browser: browser,
+      device: device,
+      platform: platform,
+      ip: ip,
+      city: city,
+      country: country
+    )
   end
 
-  def self.page_view(page)
-    self.create(event: "page_view", value: page)
+  def self.page_view(page, browser, device, platform, ip, city, country)
+    self.create(
+      event: "page_view",
+      value: page,
+      browser: browser,
+      device: device,
+      platform: platform,
+      ip: ip,
+      city: city,
+      country: country
+    )
   end
 
   def self.new_user

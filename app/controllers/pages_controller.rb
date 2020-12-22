@@ -2,12 +2,12 @@
 
 class PagesController < ApplicationController
   def privacy_policy
-    Analytic.page_view("guest/privacy_policy")
+    track_page_view("guest/privacy_policy")
     respond_to :html
   end
 
   def terms_and_conditions
-    Analytic.page_view("guest/terms_and_conditions")
+    track_page_view("guest/terms_and_conditions")
     respond_to :html
   end
 

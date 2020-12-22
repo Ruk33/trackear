@@ -17,7 +17,7 @@ class ProjectInvitationsController < ApplicationController
   # def show; end
 
   def new
-    Analytic.page_view("auth/project_invitations/new")
+    track_page_view("auth/project_invitations/new")
 
     @invitation = @project.project_invitations.new(user: current_user)
   end
@@ -25,7 +25,7 @@ class ProjectInvitationsController < ApplicationController
   # def edit; end
 
   def create
-    Analytic.page_view("auth/project_invitations/create")
+    track_page_view("auth/project_invitations/create")
 
     params = project_invitation_params.merge(user: current_user)
     @invitation = @project.project_invitations.new(params)
@@ -43,14 +43,14 @@ class ProjectInvitationsController < ApplicationController
   end
 
   def accept
-    Analytic.page_view("auth/project_invitations/accept")
+    track_page_view("auth/project_invitations/accept")
 
     @invitation.accept
     redirect_to @project
   end
 
   def decline
-    Analytic.page_view("auth/project_invitations/decline")
+    track_page_view("auth/project_invitations/decline")
 
     @invitation.decline
     redirect_to home_path

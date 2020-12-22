@@ -20,19 +20,19 @@ class ProjectContractsController < ApplicationController
   # GET /project_contracts
   # GET /project_contracts.json
   def index
-    Analytic.page_view("auth/project_contracts/index")
+    track_page_view("auth/project_contracts/index")
     @project_contracts = ProjectContract.all
   end
 
   # GET /project_contracts/1
   # GET /project_contracts/1.json
   def show
-    Analytic.page_view("auth/project_contracts/show")
+    track_page_view("auth/project_contracts/show")
   end
 
   # GET /project_contracts/new
   def new
-    Analytic.page_view("auth/project_contracts/new")
+    track_page_view("auth/project_contracts/new")
 
     redirect_to new_project_project_invitation_path(@project)
     # @project_contract = @project.project_contracts.new
@@ -42,7 +42,7 @@ class ProjectContractsController < ApplicationController
 
   # GET /project_contracts/1/edit
   def edit
-    Analytic.page_view("auth/project_contracts/edit")
+    track_page_view("auth/project_contracts/edit")
 
     @members = User.all
     add_breadcrumb @project.name, @project
@@ -71,7 +71,7 @@ class ProjectContractsController < ApplicationController
   # PATCH/PUT /project_contracts/1
   # PATCH/PUT /project_contracts/1.json
   def update
-    Analytic.page_view("auth/project_contracts/update")
+    track_page_view("auth/project_contracts/update")
 
     add_breadcrumb @project.name, @project
     add_breadcrumb t :edit_contract
@@ -90,7 +90,7 @@ class ProjectContractsController < ApplicationController
   # DELETE /project_contracts/1
   # DELETE /project_contracts/1.json
   def destroy
-    Analytic.page_view("auth/project_contracts/destroy")
+    track_page_view("auth/project_contracts/destroy")
 
     @project_contract.destroy
     respond_to do |format|

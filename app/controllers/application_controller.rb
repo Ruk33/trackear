@@ -24,11 +24,31 @@ class ApplicationController < ActionController::Base
     redirect_to subscription_path unless owners.any? &:can_use_premium_features?
   end
 
+  def track_page_view(page)
+    Analytic.page_view(
+      page,
+      browser.name,
+      browser.device.name,
+      browser.platform.name,
+      request.ip,
+      request.location.city,
+      request.location.country
+    )
+  end
+
   private
 
   def track_user_activity
-    Analytic.user_activity current_user.id if user_signed_in?
-    Analytic.user_activity "guest" unless user_signed_in?
+    user_id = user_signed_in? ? current_user.id : "guest"
+    Analytic.user_activity(
+      user_id,
+      browser.name,
+      browser.device.name,
+      browser.platform.name,
+      request.ip,
+      request.location.city,
+      request.location.country
+    )
   end
 
   def add_home_breadcrumb
