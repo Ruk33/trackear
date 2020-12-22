@@ -30,9 +30,9 @@ class ApplicationController < ActionController::Base
       browser.name,
       browser.device.name,
       browser.platform.name,
-      request.ip,
-      request.location.city,
-      request.location.country
+      request.remote_ip,
+      request.safe_location.city,
+      request.safe_location.country
     )
   end
 
@@ -45,9 +45,9 @@ class ApplicationController < ActionController::Base
       browser.name,
       browser.device.name,
       browser.platform.name,
-      request.ip,
-      request.location.city,
-      request.location.country
+      request.remote_ip,
+      request.safe_location.city,
+      request.safe_location.country
     )
   end
 
