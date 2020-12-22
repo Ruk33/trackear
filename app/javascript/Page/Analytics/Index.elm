@@ -75,9 +75,11 @@ padding =
 dateFormat : Time.Posix -> String
 dateFormat =
     DateFormat.format
-        [ DateFormat.monthNameAbbreviated
+        [ DateFormat.dayOfMonthFixed
         , DateFormat.text " "
-        , DateFormat.yearNumber
+        , DateFormat.monthNameAbbreviated
+        , DateFormat.text " "
+        , DateFormat.yearNumberLastTwo
         ]
         Time.utc
 
@@ -145,8 +147,8 @@ column scale ( date, value ) =
 
 viewAnalytics : String -> Dict.Dict String Int -> Html Msg
 viewAnalytics title analytics =
-    div [class ["bg-white mb-3 p-3 rounded shadow"]]
-        [ Html.h2 [class ["text-lg"]] [ Html.text title ]
+    div [ class [ "bg-white mb-3 p-3 rounded shadow" ] ]
+        [ Html.h2 [ class [ "text-lg" ] ] [ Html.text title ]
         , svg [ viewBox 0 0 w h ]
             [ style [] [ TypedSvg.Core.text """
             .column rect { fill: rgba(118, 214, 78, 0.8); }
