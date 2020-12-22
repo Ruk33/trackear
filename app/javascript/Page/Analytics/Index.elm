@@ -110,7 +110,7 @@ xScale model =
 
 yScale : ContinuousScale Float
 yScale =
-    Scale.linear ( h - 2 * padding, 0 ) ( 0, 5 )
+    Scale.linear ( h - 2 * padding, 0 ) ( 0, 100 )
 
 
 xAxis : Dict.Dict String Int -> Svg msg
@@ -169,7 +169,7 @@ view model =
     case model.analytics of
         Just analytics ->
             div []
-                [ viewAnalytics "Retention rate in the last 6 months (1 == 100%)" analytics.retention_rate
+                [ viewAnalytics "Retention rate in the last 6 months" analytics.retention_rate
                 , viewAnalytics "Active users in the last 6 months" analytics.active_users
                 , viewAnalytics "Guests in the last 6 months" analytics.active_guests
                 , viewAnalytics "New users in the last 6 months" analytics.new_users
