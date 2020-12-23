@@ -39,7 +39,7 @@ class Analytic < ApplicationRecord
     )
   end
 
-  def self.page_view(page, browser, device, platform, ip, city, country)
+  def self.page_view(page, browser, device, platform, ip, city, country, utm_source, utm_medium, utm_campaign)
     self.create(
       event: "page_view",
       value: page,
@@ -48,7 +48,10 @@ class Analytic < ApplicationRecord
       platform: platform,
       ip: ip,
       city: city,
-      country: country
+      country: country,
+      utm_source: utm_source,
+      utm_medium: utm_medium,
+      utm_campaign: utm_campaign
     )
   end
 

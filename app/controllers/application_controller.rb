@@ -32,7 +32,10 @@ class ApplicationController < ActionController::Base
       browser.platform.name,
       request.remote_ip,
       request.safe_location.city,
-      request.safe_location.country
+      request.safe_location.country,
+      request.query_parameters[:utm_source],
+      request.query_parameters[:utm_medium],
+      request.query_parameters[:utm_campaign]
     )
   end
 
