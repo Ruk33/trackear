@@ -1,51 +1,117 @@
 <h1 class="font-bold text-lg">Analytics</h1>
 
-<%= render "shared/content/box" do %>
-  <h2 class="text-lg">New users in the last 6 months</h2>
-  <%= column_chart @new_users %>
-<% end %>
+<div class="grid grid-cols-2 gap-2 mb-2">
+  <div>
+    <%= render "shared/content/box" do %>
+      <h2 class="text-lg">Events by utm source</h2>
+      <%= pie_chart Analytic.group(:utm_source).count %>
+    <% end %>
+  </div>
+  <div>
+    <%= render "shared/content/box" do %>
+      <h2 class="text-lg">Events by utm campaign</h2>
+      <%= pie_chart Analytic.group(:utm_campaign).count %>
+    <% end %>
+  </div>
+</div>
 
-<%= render "shared/content/box" do %>
-  <h2 class="text-lg">Invoice feature usage in the last 6 months</h2>
-  <%= column_chart @invoice_feature %>
-<% end %>
+<div class="grid grid-cols-2 gap-2 mb-2">
+  <div>
+    <%= render "shared/content/box" do %>
+      <h2 class="text-lg">Browser usage</h2>
+      <%= pie_chart Analytic.group(:browser).count %>
+    <% end %>
+  </div>
+  <div>
+    <%= render "shared/content/box" do %>
+      <h2 class="text-lg">Device usage</h2>
+      <%= pie_chart Analytic.group(:device).count %>
+    <% end %>
+  </div>
+</div>
 
-<%= render "shared/content/box" do %>
-  <h2 class="text-lg">Project invitation feature usage in the last 6 months</h2>
-  <%= column_chart @project_invitation_feature %>
-<% end %>
+<div class="grid grid-cols-2 gap-2 mb-2">
+  <div>
+    <%= render "shared/content/box" do %>
+      <h2 class="text-lg">City</h2>
+      <%= bar_chart Analytic.group(:city).count %>
+    <% end %>
+  </div>
+  <div>
+    <%= render "shared/content/box" do %>
+      <h2 class="text-lg">Country</h2>
+      <%= bar_chart Analytic.group(:country).count %>
+    <% end %>
+  </div>
+</div>
 
-<%= render "shared/content/box" do %>
-  <h2 class="text-lg">Projects feature usage in the last 6 months</h2>
-  <%= column_chart @projects_feature %>
-<% end %>
+<div class="mb-2">
+  <%= render "shared/content/box" do %>
+    <h2 class="text-lg">New users in the last 6 months</h2>
+    <%= column_chart @new_users %>
+  <% end %>
+</div>
 
-<%= render "shared/content/box" do %>
-  <h2 class="text-lg">Projects created in the last 6 months</h2>
-  <%= column_chart @projects_created %>
-<% end %>
+<div class="mb-2">
+  <%= render "shared/content/box" do %>
+    <h2 class="text-lg">Invoice feature usage in the last 6 months</h2>
+    <%= column_chart @invoice_feature %>
+  <% end %>
+</div>
 
-<%= render "shared/content/box" do %>
-  <h2 class="text-lg">Invoices created in the last 6 months</h2>
-  <%= column_chart @invoices_created %>
-<% end %>
+<div class="mb-2">
+  <%= render "shared/content/box" do %>
+    <h2 class="text-lg">Project invitation feature usage in the last 6 months</h2>
+    <%= column_chart @project_invitation_feature %>
+  <% end %>
+</div>
 
-<%= render "shared/content/box" do %>
-  <h2 class="text-lg">Active users in the last 6 months</h2>
-  <%= column_chart @active_users %>
-<% end %>
+<div class="mb-2">
+  <%= render "shared/content/box" do %>
+    <h2 class="text-lg">Projects feature usage in the last 6 months</h2>
+    <%= column_chart @projects_feature %>
+  <% end %>
+</div>
 
-<%= render "shared/content/box" do %>
-  <h2 class="text-lg">Guests in the last 6 months</h2>
-  <%= column_chart @active_guests %>
-<% end %>
+<div class="mb-2">
+  <%= render "shared/content/box" do %>
+    <h2 class="text-lg">Projects created in the last 6 months</h2>
+    <%= column_chart @projects_created %>
+  <% end %>
+</div>
 
-<%= render "shared/content/box" do %>
-  <h2 class="text-lg">Project invitations in the last 6 months</h2>
-  <%= column_chart @project_invitations %>
-<% end %>
+<div class="mb-2">
+  <%= render "shared/content/box" do %>
+    <h2 class="text-lg">Invoices created in the last 6 months</h2>
+    <%= column_chart @invoices_created %>
+  <% end %>
+</div>
 
-<%= render "shared/content/box" do %>
-  <h2 class="text-lg">Retention rate in the last 6 months</h2>
-  <%= column_chart @retention_rate %>
-<% end %>
+<div class="mb-2">
+  <%= render "shared/content/box" do %>
+    <h2 class="text-lg">Active users in the last 6 months</h2>
+    <%= column_chart @active_users %>
+  <% end %>
+</div>
+
+<div class="mb-2">
+  <%= render "shared/content/box" do %>
+    <h2 class="text-lg">Guests in the last 6 months</h2>
+    <%= column_chart @active_guests %>
+  <% end %>
+</div>
+
+<div class="mb-2">
+  <%= render "shared/content/box" do %>
+    <h2 class="text-lg">Project invitations in the last 6 months</h2>
+    <%= column_chart @project_invitations %>
+  <% end %>
+</div>
+
+<div class="mb-2">
+  <%= render "shared/content/box" do %>
+    <h2 class="text-lg">Retention rate in the last 6 months</h2>
+    <%= column_chart @retention_rate %>
+  <% end %>
+</div>
+
