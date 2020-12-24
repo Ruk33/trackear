@@ -1,5 +1,6 @@
 # Trackear.app
-Trackear is a simple web application for freelancers to track work and generate invoices.
+Trackear is a simple web application for freelancers to track work and
+generate invoices.
 
 You can use it for free in https://www.trackear.app/.
 
@@ -12,7 +13,7 @@ You can use it for free in https://www.trackear.app/.
 - Run `docker-compose up`
 - Run `sh rails.sh db:create db:migrate`
 
-## Installation steps
+## Alternative installation steps
 - Install [RVM](https://rvm.io/)
 - Install [NVM](https://github.com/nvm-sh/nvm)
 - Install ruby with `rvm install 2.6.6`
@@ -35,7 +36,8 @@ You can use it for free in https://www.trackear.app/.
 - Cypress
 
 ## Entities
-Please review our ENTITIES.md file for more information about the entities / models (users, invoices, etc.) in the project.
+Please review our ENTITIES.md file for more information about the
+entities/models (users, invoices, etc.) in the project.
 
 ## End to end test
 - Install test dependencies with `bundle install --with=development,test`
@@ -54,22 +56,6 @@ Please review our ENTITIES.md file for more information about the entities / mod
 - Search for `app`
 - Run all specs
 
-## Deploy
-Trackear is using [capistrano](https://capistranorb.com/) to handle deployments.
-
-- Install [RVM](https://rvm.io/) on your server.
-- Install [NVM](https://github.com/nvm-sh/nvm) on your server
-- Install `nginx` in your server (ie `sudo apt install nginx`)
-- Install `ruby` in your server with `rvm install ruby-2.6.6`
-- Install `bundler` on your server with `gem install bundler`
-- Install `node` in your server with `nvm install node`
-- Install `yarn` in your server with `npm i -g yarn`
-- Create [SSL certificate](https://letsencrypt.org/) (ie `certbot -d *.example.com -d example.com --manual --preferred-challenges dns certonly`)
-- Store `fullchain.pem` & `privkey.pem` from your certificate under `cert/<environment>`, where `environment` is development, production or whatever your environment name is. DO NOT commit these files.
-- Update `deploy/<environment>.rb` with your server's credentials, ie: `server "YOUR-IP", user: "root", roles: %w{app db web}`
-- Deploy with `bundle exec cap <environment> deploy`
-- Restart nginx to pick the new configuration up (ie `sudo nginx -t && sudo systemctl reload nginx`)
-
 ## FAQ
 Please review our FAQ.md file.
 
@@ -85,10 +71,13 @@ There are many ways you can contribute:
 - Contribute with code changes
 - Donations
 
-Please before doing so, make sure to check our CONTRIBUTING.md file and be sure to create a new Github issue so we can be in sync and well organized.
+Please before doing so, make sure to check our CONTRIBUTING.md file and be sure
+to create a new Github issue so we can be in sync and well organized.
 
 ## Donations
-Trackear.app is an application / project intended to be fully free. If you would like to contribute with donations to help us, you can do so with the following links.
+Trackear.app is an application / project intended to be fully free. If you
+would like to contribute with donations to help us, you can do so with the
+following links.
 
 - [Donation 50 ARS](https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=114997172-e63f95ba-8a6f-45c8-9007-f67087588812)
 - [Donation 100 ARS](https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=114997172-425093a5-2c89-4253-9536-66cb7dc6a314)

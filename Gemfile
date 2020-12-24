@@ -11,10 +11,6 @@ gem 'rails', '~> 6.0.2'
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
 gem 'puma', '~> 4.1'
-# Use SCSS for stylesheets
-# gem 'sass-rails', '>= 6.0'
-# See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'mini_racer', platforms: :ruby
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.7'
@@ -22,12 +18,6 @@ gem 'jbuilder', '~> 2.7'
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
-
-# Use ActiveStorage variant
-# gem 'mini_magick', '~> 4.8'
-
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
@@ -48,12 +38,6 @@ group :development do
   gem 'letter_opener'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
-  gem 'capistrano', '~> 3.10', require: false
-  gem 'capistrano-rails', '~> 1.6', require: false
-  gem 'capistrano-rvm', require: false
-  gem 'capistrano-nvm', require: false
-  gem 'capistrano-bundler', '~> 2.0', require: false
-  gem 'capistrano3-puma', require: false
 
   gem 'better_errors'
   gem 'binding_of_caller'
@@ -62,10 +46,6 @@ group :development do
 
   # For memory profiling
   gem 'memory_profiler'
-
-  # For call-stack profiling flamegraphs
-  # gem 'flamegraph'
-  # gem 'stackprof'
 
   gem 'bullet'
 end
@@ -102,12 +82,9 @@ gem 'secure_headers', '~> 6.3.0'
 
 gem 'rack-attack', '~> 6.2.2'
 
-# gem 'asset_sync', '~> 2.11.0'
 gem 'fog-aws', '~> 3.6.2'
 
 gem 'aws-sdk-s3', '~> 1.14'
-
-# gem 'mini_racer', platform: :ruby
 
 gem 'will_paginate', '~> 3.1.0'
 
@@ -132,3 +109,6 @@ gem 'paddle_pay', '~> 0.0.1'
 
 gem 'browser'
 gem 'geocoder'
+
+gem 'chartkick'
+gem 'groupdate'

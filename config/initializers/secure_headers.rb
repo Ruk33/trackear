@@ -7,7 +7,7 @@ SecureHeaders::Configuration.default do |config|
     config.referrer_policy = %w(origin-when-cross-origin strict-origin-when-cross-origin)
     # config.csp.default_src = %w('none')
     config.csp.base_uri = %w('self')
-    config.csp.frame_ancestors = %w('none')
+    config.csp.frame_ancestors = %w('self')
     config.csp.form_action = %w('self')
     config.csp.block_all_mixed_content = true
     config.csp.upgrade_insecure_requests = true

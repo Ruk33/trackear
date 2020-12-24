@@ -3,6 +3,8 @@
     "@fullhuman/postcss-purgecss": "^3.0.0",
     "@rails/ujs": "^6.0.3-4",
     "@rails/webpacker": "5.1.1",
+    "chart.js": "^2.9.4",
+    "chartkick": "^3.2.1",
     "cocoon-js": "^0.0.5",
     "cypress-file-upload": "^4.1.1",
     "elm": "^0.19.1-3",
