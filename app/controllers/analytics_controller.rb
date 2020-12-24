@@ -6,15 +6,15 @@ class AnalyticsController < ApplicationController
   # GET /analytics
   # GET /analytics.json
   def index
-    @new_users = Analytic.new_users.from_months(6).group_by_day.count
-    @invoice_feature = Analytic.feature_popularity("auth/invoices").from_months(6).group_by_day.count
-    @project_invitation_feature = Analytic.feature_popularity("auth/project_invitations").from_months(6).group_by_day.count
-    @projects_feature = Analytic.feature_popularity("auth/projects").from_months(6).group_by_day.count
-    @projects_created = Analytic.feature_popularity("auth/projects/create").from_months(6).group_by_day.count
-    @invoices_created = Analytic.feature_popularity("auth/invoices/create").from_months(6).group_by_day.count
-    @active_users = Analytic.active_users.from_months(6).group_by_day.count
-    @active_guests = Analytic.active_guests.from_months(6).group_by_day.count
-    @project_invitations = Analytic.feature_popularity("auth/project_invitations/create").from_months(6).group_by_day.count
+    @new_users = Analytic.new_users.from_months(6).group_by_day(:created_at).count
+    @invoice_feature = Analytic.feature_popularity("auth/invoices").from_months(6).group_by_day(:created_at).count
+    @project_invitation_feature = Analytic.feature_popularity("auth/project_invitations").from_months(6).group_by_day(:created_at).count
+    @projects_feature = Analytic.feature_popularity("auth/projects").from_months(6).group_by_day(:created_at).count
+    @projects_created = Analytic.feature_popularity("auth/projects/create").from_months(6).group_by_day(:created_at).count
+    @invoices_created = Analytic.feature_popularity("auth/invoices/create").from_months(6).group_by_day(:created_at).count
+    @active_users = Analytic.active_users.from_months(6).group_by_day(:created_at).count
+    @active_guests = Analytic.active_guests.from_months(6).group_by_day(:created_at).count
+    @project_invitations = Analytic.feature_popularity("auth/project_invitations/create").from_months(6).group_by_day(:created_at).count
     @retention_rate = Analytic.retention_rate_by_months(6)
   end
 

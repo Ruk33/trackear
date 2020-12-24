@@ -1,3 +1,51 @@
 <h1 class="font-bold text-lg">Analytics</h1>
-<div id="analytics"></div>
-<%= javascript_pack_tag "analytics/index" %>
+
+<%= render "shared/content/box" do %>
+  <h2 class="text-lg">New users in the last 6 months</h2>
+  <%= column_chart @new_users %>
+<% end %>
+
+<%= render "shared/content/box" do %>
+  <h2 class="text-lg">Invoice feature usage in the last 6 months</h2>
+  <%= column_chart @invoice_feature %>
+<% end %>
+
+<%= render "shared/content/box" do %>
+  <h2 class="text-lg">Project invitation feature usage in the last 6 months</h2>
+  <%= column_chart @project_invitation_feature %>
+<% end %>
+
+<%= render "shared/content/box" do %>
+  <h2 class="text-lg">Projects feature usage in the last 6 months</h2>
+  <%= column_chart @projects_feature %>
+<% end %>
+
+<%= render "shared/content/box" do %>
+  <h2 class="text-lg">Projects created in the last 6 months</h2>
+  <%= column_chart @projects_created %>
+<% end %>
+
+<%= render "shared/content/box" do %>
+  <h2 class="text-lg">Invoices created in the last 6 months</h2>
+  <%= column_chart @invoices_created %>
+<% end %>
+
+<%= render "shared/content/box" do %>
+  <h2 class="text-lg">Active users in the last 6 months</h2>
+  <%= column_chart @active_users %>
+<% end %>
+
+<%= render "shared/content/box" do %>
+  <h2 class="text-lg">Guests in the last 6 months</h2>
+  <%= column_chart @active_guests %>
+<% end %>
+
+<%= render "shared/content/box" do %>
+  <h2 class="text-lg">Project invitations in the last 6 months</h2>
+  <%= column_chart @project_invitations %>
+<% end %>
+
+<%= render "shared/content/box" do %>
+  <h2 class="text-lg">Retention rate in the last 6 months</h2>
+  <%= column_chart @retention_rate %>
+<% end %>

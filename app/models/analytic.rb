@@ -8,8 +8,6 @@ class Analytic < ApplicationRecord
   scope :feature_popularity, ->(feature) { page_viewed.where("value ILIKE ?", "#{feature}%") }
   scope :active_users, -> { select("distinct(value)").where(event: "user_activity").where.not(value: "guest") }
   scope :active_guests, -> { where(event: "user_activity").where(value: "guest") }
-  scope :group_by_day, -> { group("DATE(created_at)") }
-  scope :group_by_months, -> { group("date_trunc('month', created_at)::date") }
 
   def self.retention_rate_by_months(how_many)
     month_start = (Date.current - (how_many - 1).months).beginning_of_month
