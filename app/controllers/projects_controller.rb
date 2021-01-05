@@ -88,38 +88,51 @@ class ProjectsController < ApplicationController
   def show
     track_page_view("auth/projects/show")
 
-    @stopwatch = current_user.activity_stop_watches.active(@project).first
-    @contracts = @project.project_contracts.currently_active.includes(:user)
-    @contract = current_user.currently_active_contract_for(@project)
     @logs_from = logs_from_param
     @logs_to = logs_to_param
-    @has_logged_today = ActivityTrackService.log_from_today?(@project, current_user)
-    @all_logs = ActivityTrackService.all_from_range(@project, current_user, @logs_from, @logs_to)
-                                    .includes([:project_contract])
-                                    .order(from: :desc)
+    @all_logs = ActivityTrackService.all_from_range(
+      @project,
+      current_user,
+      @logs_from,
+      @logs_to
+    ).includes([:project_contract]).order(from: :desc)
 
-    @invoice_status = current_user.invoice_status
-                                  .for_members
-                                  .for_project(@project)
-                                  .with_news
-                                  .first
+    respond_to do |format|
+      format.json {}
+      format.html {
+        @stopwatch = current_user.activity_stop_watches.active(@project).first
+        @contracts = @project.project_contracts.currently_active.includes(:user)
+        @contract = current_user.currently_active_contract_for(@project)
 
-    if @invoice_status.present?
-      @invoice_status_logs = ActivityTrackService.all_from_range(@project, current_user, @invoice_status.invoice_status.invoice.from, @invoice_status.invoice_status.invoice.to)
-                                                 .includes(:project_contract)
-                                                 .order(from: :desc)
+        @active_contract = @contract
+        @new_activity_track = @contract.activity_tracks.new
+        @new_activity_track.project_rate = @contract.project_rate
+        @new_activity_track.user_rate = @contract.user_rate
+
+        @has_logged_today = ActivityTrackService.log_from_today?(@project, current_user)
+        @invoice_status = current_user.invoice_status.for_members.for_project(@project).with_news.first
+
+        if @invoice_status.present?
+          @invoice_status_logs = ActivityTrackService.all_from_range(
+            @project,
+            current_user,
+            @invoice_status.invoice_status.invoice.from,
+            @invoice_status.invoice_status.invoice.to
+          ).includes(:project_contract).order(from: :desc)
+        end
+
+        if @project.is_client? current_user
+          @invoices = @project.invoices.for_client_visible.paginate(page: 1, per_page: 4)
+        else
+          @invoices = @project.invoices.where(user: current_user).paginate(page: 1, per_page: 4)
+        end
+
+        @invoices = @invoices.includes([:user, :invoice_entries])
+        @logs = @all_logs.paginate(page: params[:page], per_page: 6)
+
+        add_breadcrumb @project.name, @project
+      }
     end
-
-    if @project.is_client? current_user
-      @invoices = @project.invoices.for_client_visible.paginate(page: 1, per_page: 4)
-    else
-      @invoices = @project.invoices.where(user: current_user).paginate(page: 1, per_page: 4)
-    end
-
-    @invoices = @invoices.includes([:user, :invoice_entries])
-    @logs = @all_logs.paginate(page: params[:page], per_page: 6)
-
-    add_breadcrumb @project.name, @project
   end
 
   # GET /projects/new
@@ -207,12 +220,10 @@ class ProjectsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_project
     @project = current_user.projects.friendly.find(params[:id])
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
   def project_params
     begin
       params[:project][:icon].open

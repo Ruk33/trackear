@@ -1,13 +1,19 @@
 <% if @invoice_status.present? && @invoice_status.invoice.present? && @invoice_status.has_news? %>
-  <div class="bg-orange-200 text-orange-900 p-3 border">
+  <div class="bg-pink-500 text-white p-5 text-lg border">
     <div class="media">
       <div class="mr-3">
         <i class="fas fa-bullhorn"></i>
       </div>
       <div class="media-body">
-        <h6 class="alert-heading mb-0"><%= t :updates_for_your_invoice %></h6>
-        <%= t :updates_in_your_invoice, name: current_user.first_name %>
-        <%= link_to t(:check_invoice_status), status_project_invoice_path(@project, @invoice_status.invoice) %>.
+        <div class="flex justify-between">
+          <div>
+            <h6 class="alert-heading text-xl"><%= t :updates_for_your_invoice %></h6>
+            <%= t :updates_in_your_invoice, name: current_user.first_name %>
+          </div>
+          <div>
+            <%= link_to t(:check_invoice_status), status_project_invoice_path(@project, @invoice_status.invoice), class: "btn btn-primary" %>
+          </div>
+        </div>
       </div>
     </div>
   </div>

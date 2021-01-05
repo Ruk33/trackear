@@ -1,3 +1,2 @@
 # frozen_string_literal: true
-
-json.partial! 'projects/project', project: @project
+json.array! @all_logs.as_json(methods: [:start, :end, :title, :url, :calendar_billable])

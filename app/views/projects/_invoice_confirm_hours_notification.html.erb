@@ -1,13 +1,13 @@
 <% if @invoice_status.present? && @invoice_status.user_confirm_hours? %>
-  <div class="bg-blue-200 text-blue-800 border p-6 flex items-start mb-3">
+  <div class="text-lg bg-pink-500 text-white border p-6 flex items-start mb-3">
     <svg class="animate-bounce w-8 mr-4 mt-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
     </svg>
-    <div class="w-full">
-      <h6 class="font-bold text-lg"><%= t :time_to_create_invoice %></h6>
+    <div class="w-full ml-2">
+      <h6 class="font-bold text-xl"><%= t :time_to_create_invoice %></h6>
       <p class="my-2"><%= t :time_to_create_invoice_message, name: current_user.first_name %></p>
       <p class="my-2"><%= t :time_to_create_invoice_confirmation, period: @invoice_status.invoice_status.invoice.from.strftime('%B %Y'), hours: calculate_hours_from(@invoice_status_logs), amount: humanized_money_with_currency(calculate_invoice_amount_from(@invoice_status_logs), 'USD') %></p>
-      <%= link_to t(:time_to_create_invoice_yes_its_correct), confirm_hours_project_invoice_status_path(@project, @invoice_status), method: :post, class: "btn btn-primary" %>
+      <%= link_to t(:time_to_create_invoice_yes_its_correct), confirm_hours_project_invoice_status_path(@project, @invoice_status), method: :post, class: "bg-pink-400 border border-pink-300 text-white p-4 inline-block rounded shadow hover:text-white hover:border-pink-100" %>
     </div>
   </div>
 <% end %>

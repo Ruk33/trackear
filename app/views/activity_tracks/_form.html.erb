@@ -21,7 +21,7 @@
 
   <div class="form-group">
     <%= form.label :from, t(:date) %>
-    <%= form.date_field :from, value: Date.today, class: "form-control" %>
+    <%= form.date_field :from, class: "form-control" %>
   </div>
 
   <div class="form-group">
@@ -35,7 +35,7 @@
   </div>
 
   <div class="text-right">
-    <%= link_to t(:cancel), project, class: "btn btn-secondary" %>
+    <%= link_to t(:cancel), project, class: "btn btn-secondary", id: "cancel-invoice-form" %>
     <%= form.submit t(:log_activity), class: "btn btn-primary" unless activity_track.persisted? %>
     <%= form.submit t(:update_activity), class: "btn btn-primary" if activity_track.persisted? %>
   </div>

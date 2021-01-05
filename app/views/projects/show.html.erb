@@ -9,21 +9,29 @@
       </div>
     <% end %>
   </div>
-  <div class="pb-8">
-    <h4 class="text-sm font-bold text-gray-600 my-3 uppercase">
-      <%= t :filter_logs %>
-    </h4>
-    <%= render "activity_track_filter_box", project: @project, logs_from: @logs_from, logs_to: @logs_to %>
-  </div>
   <div class="pb-5">
-    <%= render "projects/members", project: @project, contracts: @contracts %>
+    <%= render "projects/invoices", invoices: @invoices %>
   </div>
   <div class="pt-5">
-    <%= render "projects/invoices", invoices: @invoices %>
+    <%= render "projects/members", project: @project, contracts: @contracts %>
   </div>
 <% end %>
 <% content_for :content do %>
-  <%= render "tracks_box", project: @project, user: current_user, logs: @logs, all_logs: @all_logs %>
+  <div id="calendar-container" class="relative">
+    <%= render "shared/content/box" do %>
+      <div
+        id="calendar"
+        style="height: 800px;"
+        data-events="<%= @logs.to_json %>"
+      ></div>
+      <div class="text-xl absolute bottom-0 mb-8">Monto a cobrar: <span id="summary">0</span></div>
+      <div id="newTrack" style="display: none;" class="bg-white p-5 border border-gray-400 rounded shadow-2xl">
+        <h2 class="font-bold">Crear nuevo registro</h2>
+        <%= render 'activity_tracks/form', activity_track: @new_activity_track, project: @project %>
+      </div>
+      <%= javascript_pack_tag "projects/calendar" %>
+    <% end %>
+  </div>
 <% end %>
 
 <%= render "layout" %>

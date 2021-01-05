@@ -13,7 +13,20 @@ class ActivityTrack < ApplicationRecord
 
   scope :logged_in_period, ->(from, to) { where(from: from.beginning_of_day..to.end_of_day) }
 
+  alias_attribute :start, :from
+  alias_attribute :end, :to
+  alias_attribute :title, :calendar_title
+  alias_attribute :calendar_billable, :calculate_user_amount
+
   after_create :set_rates_from_contract
+
+  def calendar_title
+    "#{hours}, $#{calculate_user_amount.round(2)} - #{description}"
+  end
+
+  def url
+    Rails.application.routes.url_helpers.edit_project_activity_track_path(project_contract.project, self)
+  end
 
   def set_rates_from_contract
     return unless project_contract.present?

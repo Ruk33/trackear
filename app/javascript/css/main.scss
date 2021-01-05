@@ -8,6 +8,35 @@ body {
   font-family: 'Nunito';
 }
 
+.logout-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: #edf2f7;
+}
+
+.fc-daygrid-day {
+  cursor: pointer !important;
+}
+
+.fc .fc-button-primary:not(:disabled):active:focus, .fc .fc-button-primary:not(:disabled).fc-button-active:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 128, 255, 0.301);
+}
+
+.fc .fc-button-primary, .fc .fc-button-primary:not(:disabled):active, .fc .fc-button-primary:not(:disabled).fc-button-active {
+  @apply bg-pink-500;
+  @apply border;
+  @apply border-pink-600;
+}
+
+.fc .fc-button-primary:disabled {
+  @apply bg-pink-400;
+  @apply border-pink-500;
+}
+
 .turbolinks-progress-bar {
   @apply h-1;
   @apply bg-blue-400;
@@ -46,7 +75,7 @@ body {
 }
 
 .btn.btn-link, a {
-  @apply text-blue-400;
+  color: #1ea7fd;
   @apply transition;
   @apply duration-300;
   @apply ease-in-out;
@@ -58,18 +87,12 @@ body {
 
 .menu {
   a {
-    @apply rounded;
-    @apply text-gray-200;
+    @apply text-white;
     @apply p-3;
     @apply px-4;
     @apply transition;
     @apply duration-300;
     @apply ease-in-out;
-
-    &:hover {
-      @apply text-white;
-      @apply bg-gray-800;
-    }
   }
 }
 
