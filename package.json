@@ -18,6 +18,7 @@
     "jquery": "^3.5.1",
     "moment": "^2.29.1",
     "tailwindcss": "^1.8.12",
+    "tippy.js": "^6.2.7",
     "turbolinks": "^5.2.0"
   },
   "devDependencies": {
