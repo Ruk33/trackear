@@ -64,11 +64,11 @@ Thank you for considering contributing to this project, we really appreciate it!
 
 There are many ways you can contribute:
 
-- Report bug or issues
-- Suggest new features
-- Contribute with translations
-- Contribute with art / style improvement
-- Contribute with code changes
+- [Report bug or issues](https://github.com/Ruk33/trackear/issues/new?assignees=&labels=&template=bug_report.md&title=)
+- [Suggest new features](https://github.com/Ruk33/trackear/issues/new?assignees=&labels=&template=feature_request.md&title=)
+- Contribute with translations. Open a new issue so we can know what translation you will be working on. This way, we preveng multiple people working on the same thing.
+- Contribute with art / style improvement. Open a new issue to share it with us!
+- Contribute with code changes. Fork the project, make your changes and create a pull request.
 - Donations
 
 Please before doing so, make sure to check our CONTRIBUTING.md file and be sure
