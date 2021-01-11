@@ -187,12 +187,22 @@ class InvoicesController < ApplicationController
   def download_invoice
     track_page_view("auth/invoices/download_invoice")
 
+    unless @invoice.invoice.present?
+      redirect_to project_invoices_path(@project), notice: "Todavía no se ha subido la factura de AFIP para descargarla"
+      return
+    end
+
     name = @invoice.project.name + ' - ' + @invoice.from.strftime('%B %Y')
     send_data @invoice.invoice.download.read, filename: name + '.pdf', type: 'application/pdf'
   end
 
   def download_payment
     track_page_view("auth/invoices/download_payment")
+
+    unless @invoice.payment.present?
+      redirect_to project_invoices_path(@project), notice: "Todavía no se ha subido el pago de la factura para descargarla"
+      return
+    end
 
     name = @invoice.project.name + ' - Payment - ' + @invoice.from.strftime('%B %Y')
     send_data @invoice.payment.download.read, filename: name + '.pdf', type: 'application/pdf'
