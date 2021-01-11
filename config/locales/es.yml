@@ -77,7 +77,7 @@ es:
   logout: "Cerrar sesion, %{email}"
   welcome: "Bienvenido %{name}, tenemos algo para contarte..."
   excellent_day_and_enjoying_app: "¡Trackear.app ahora es un proyecto open source!"
-  feedback_html: "Podés contribuir desde <a href='https://github.com/Ruk33/trackear' target='_blank' rel='nofollow'>GitHub</a> con cambios, features o reporte de issues. ¡Te esperamos!"
+  feedback_html: "Podés contribuir desde <a href='https://github.com/Trackear/trackear' target='_blank' rel='nofollow'>GitHub</a> con cambios, features o reporte de issues. ¡Te esperamos!"
   your_projects: "Tus proyectos"
   you_dont_have_projects: "No tenes proyectos... ¡todavía!"
   create_new_project: "Crear nuevo proyecto"

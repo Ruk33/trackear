@@ -78,7 +78,7 @@ en:
   welcome: "Welcome %{name}, we have something to tell you..."
   exit_impersonate: "Exit impersonating %{email}"
   excellent_day_and_enjoying_app: "Trackear.app is now open source!"
-  feedback_html: "You can contribute from <a href='https://github.com/Ruk33/trackear' target='_blank' rel='nofollow'>GitHub</a> with changes, features or bug reports. Come and check us out!"
+  feedback_html: "You can contribute from <a href='https://github.com/Trackear/trackear' target='_blank' rel='nofollow'>GitHub</a> with changes, features or bug reports. Come and check us out!"
   your_projects: "Your projects"
   you_dont_have_projects: "You don't have any projects... yet!"
   create_new_project: "Create new project"
