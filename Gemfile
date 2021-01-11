@@ -104,7 +104,7 @@ gem 'sentry-raven'
 
 gem 'receipts'
 
-gem 'pay'
+gem 'pay', git: 'https://github.com/nm/pay.git', branch: 'paddle'
 gem 'paddle_pay', '~> 0.0.1'
 
 gem 'browser'
