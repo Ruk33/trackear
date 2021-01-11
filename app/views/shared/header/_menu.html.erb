@@ -1,25 +1,25 @@
 <nav class="relative py-6">
   <div class="mx-auto container flex items-center justify-between h-16">
     <a href="/" class="flex items-center">
-      <svg class="w-5 mr-2 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg class="w-6 mr-2 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <span class="text-gray-800 font-bold text-lg">trackear</span>
+      <span class="text-white font-bold text-xl">Trackear</span>
     </a>
-    <div class="flex menu text-purple-800 font-bold">
-      <a class="px-3 mx-1 hover:text-white transition-all duration-500 ease-in-out" href="/#why-trackear">
+    <div class="flex menu text-white font-bold">
+      <a class="px-3 mx-1 hover:text-pink-500 transition-all duration-500 ease-in-out" href="/#why-trackear">
         ¿Por qué trackear.app?
       </a>
-      <a class="px-3 mx-1 hover:text-white transition-all duration-500 ease-in-out" href="/#pricing">
+      <a class="px-3 mx-1 hover:text-pink-500 transition-all duration-500 ease-in-out" href="/#pricing">
         Precio
       </a>
-      <a class="px-3 mx-1 hover:text-white transition-all duration-500 ease-in-out" href="/#faq">
+      <a class="px-3 mx-1 hover:text-pink-500 transition-all duration-500 ease-in-out" href="/#faq">
         Preguntas frecuentes
       </a>
     </div>
     <div>
-      <%= link_to "Ingresar", new_user_session_path, class: "py-2 px-4 mx-1 text-gray-800 hover:text-white transition-all duration-500 ease-in-out" %>
-      <%= link_to "Registrarse gratis", new_user_registration_path, class: "font-bold py-2 px-4 mx-1 border border-green-400 rounded bg-green-500 text-white shadow hover:bg-green-600 transition-all duration-500 ease-in-out" %>
+      <%= link_to "Ingresar", new_user_session_path, class: "py-2 px-4 mx-1 text-white hover:text-pink-500 transition-all duration-500 ease-in-out" %>
+      <%= link_to "Registrarse gratis", new_user_registration_path, class: "font-bold py-2 px-4 mx-1 border border-w-3 border-green rounded bg-green-500 text-white hover:bg-green-700 transition-all duration-500 ease-in-out" %>
     </div>
   </div>
 </nav>

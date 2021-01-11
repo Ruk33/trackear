@@ -25,7 +25,18 @@ You can use it for free in https://www.trackear.app/.
 - Make sure to complete with a valid GOOGLE API KEY (https://console.developers.google.com/)
 - Initiate the database with `docker-compose up -d db` (if you have PSQL installed and running, this step is not required)
 - Create the database and run the migrations with `rails db:create db:migrate`
+- Initiate the server with `rails s`
 - Go to http://localhost:3000/ (first time may take a while since assets are being compiled)
+
+## Problems loading assets
+If you are experiencing problems loading the assets. Try disabling
+the secure_headers gem by commenting the line in the Gemfile.
+After that, run bundle and then restar the rails server.
+
+## Assets
+If compiling the assets takes a long time, in a new terminal
+type `ruby bin/webpack-dev-server`. This will improve the asset
+generation time.
 
 ## Tech stack
 - Ruby
