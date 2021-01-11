@@ -35,7 +35,7 @@ After that, run bundle and then restar the rails server.
 
 ## Assets
 If compiling the assets takes a long time, in a new terminal
-type `ruby bin/webpack-dev-server. This will improve the asset
+type `ruby bin/webpack-dev-server`. This will improve the asset
 generation time.
 
 ## Tech stack
