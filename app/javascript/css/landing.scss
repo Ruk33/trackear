@@ -8,18 +8,6 @@ body {
   font-family: 'Nunito';
 }
 
-.home-preview {
-  @apply shadow-xl;
-  @apply border;
-  @apply border-gray-400;
-  @apply rounded;
-  @apply my-12;
-  background-image: url('../../assets/images/guest/home-3.png');
-  background-position-x: center;
-  width: 105%;
-  margin-left: -30px;
-  height: 900px;
-}
 
 .image-animation {
   @apply transition;
