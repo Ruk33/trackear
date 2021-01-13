@@ -2,3 +2,6 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" onload="this.rel='stylesheet'">
 <%= stylesheet_pack_tag "landing" %>
 
+<% if ENV['ANALYTICS_URL'].present? %>
+<script async defer data-domain="trackear.app" src="<%= ENV['ANALYTICS_URL'] %>"></script>
+<% end %>
