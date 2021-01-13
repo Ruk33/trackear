@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/nm/pay.git
+  revision: 44e37d5fd198d9182b3d5ec2007355cee5f963a4
+  branch: paddle
+  specs:
+    pay (2.2.2)
+      rails (>= 4.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -251,8 +259,6 @@ GEM
     parallel (1.19.2)
     parser (2.7.1.4)
       ast (~> 2.4.1)
-    pay (2.3.1)
-      rails (>= 4.2)
     pdf-core (0.8.1)
     pg (1.2.3)
     pg (1.2.3-x64-mingw32)
@@ -416,7 +422,7 @@ DEPENDENCIES
   money-rails (~> 1.13.3)
   omniauth-google-oauth2 (~> 0.8.0)
   paddle_pay (~> 0.0.1)
-  pay
+  pay!
   pg (>= 0.18, < 2.0)
   puma (~> 4.1)
   rack-attack (~> 6.2.2)
