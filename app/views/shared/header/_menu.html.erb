@@ -1,25 +1,50 @@
-<nav class="relative py-6">
-  <div class="mx-auto container flex items-center justify-between h-16">
-    <a href="/" class="flex items-center">
-      <svg class="w-6 mr-2 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span class="text-white font-bold text-xl">Trackear</span>
-    </a>
-    <div class="flex menu text-white font-bold">
-      <a class="px-3 mx-1 hover:text-pink-500 transition-all duration-500 ease-in-out" href="/#why-trackear">
-        ¿Por qué trackear.app?
+<nav style="backdrop-filter: blur(5px);" class="sticky top-0 bg-blue-900 bg-opacity-50 shadow-lg z-10 md:flex md:justify-between">
+  <div class="flex items-center justify-between px-4 py-3 md:py-3">
+      <a href="/" class="flex items-center">
+        <svg class="w-6 mr-2 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+       </svg>
+        <span class="text-white font-bold text-xl">Trackear</span>
       </a>
-      <a class="px-3 mx-1 hover:text-pink-500 transition-all duration-500 ease-in-out" href="/#pricing">
-        Precio
-      </a>
-      <a class="px-3 mx-1 hover:text-pink-500 transition-all duration-500 ease-in-out" href="/#faq">
-        Preguntas frecuentes
-      </a>
-    </div>
-    <div>
-      <%= link_to "Ingresar", new_user_session_path, class: "py-2 px-4 mx-1 text-white hover:text-pink-500 transition-all duration-500 ease-in-out" %>
-      <%= link_to "Registrarse gratis", new_user_registration_path, class: "font-bold py-2 px-4 mx-1 border border-w-3 border-green rounded bg-green-500 text-white hover:bg-green-700 transition-all duration-500 ease-in-out" %>
+      <div class="md:hidden">
+        <button onclick="toggleMenu()" type="button" class="text-white rounded-full text-2xl p-3">
+          <svg  viewBox="0 0 24 24" class="h-6 w-6 text-white fill-current">
+            <path id="burguer1" fill-rule="evenodd" class="block" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
+            <path id="burguer2" fill-rule="evenodd" class="hidden"d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.828-4.828 4.828a1 1 0 0 1-1.414-1.414l4.828-4.829-4.828-4.828a1 1 0 0 1 1.414-1.414l4.829 4.828 4.828-4.828a1 1 0 1 1 1.414 1.414l-4.828 4.829 4.828 4.828z"/>
+         </svg>
+       </button>
+      </div>
+  </div>
+  <div id="menu" class="hidden w-full md:bg-transparent bg-opacity-0 md:flex px-4 pb-4 md:p-0 md:justify-between items-center">
+    <div class="text-white font-bold md:flex items-center">
+        <a onclick="hideMenu()" class="block px-3 mx-1 hover:text-pink-500 rounded hover:bg-blue-800 transition-all duration-500 ease-in-out" href="/#why-trackear">
+          ¿Por qué trackear.app?
+        </a>
+        <a onclick="hideMenu()" class="mt-1 block px-3 py-1 mx-1 hover:text-pink-500 rounded hover:bg-blue-800 transition-all duration-500 ease-in-out" href="/#pricing">
+          Precio
+        </a>
+        <a onclick="hideMenu()" class="mt-1 block px-3 py-1 mx-1 hover:text-pink-500 rounded hover:bg-blue-800 transition-all duration-500 ease-in-out" href="/#faq">
+          Preguntas frecuentes
+        </a>
+      </div>
+    <div class="mr-1">
+        <%= link_to "Ingresar", new_user_session_path, class: "mt-1 block md:inline md:mt-2 py-3 px-4 text-white hover:text-pink-500 transition-all duration-500 ease-in-out" %>
+        <%= link_to "Registrarse gratis", new_user_registration_path, class: "block md:inline md:mt-2 font-bold py-2 px-4 mx-1 border border-green-400 rounded bg-green-500 text-gray-100 hover:bg-green-700 hover:text-white transition-all duration-500 ease-in-out" %>
     </div>
   </div>
 </nav>
+<script>
+function toggleMenu() {
+  var menu = document.getElementById("menu");
+  if (menu.classList.contains("hidden")) {
+    menu.classList.remove("hidden");
+  } else {
+    menu.classList.add("hidden");
+  }
+}
+
+function hideMenu() {
+  var menu = document.getElementById("menu");
+  menu.classList.add("hidden");
+}
+</script>
