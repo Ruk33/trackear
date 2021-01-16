@@ -1,6 +1,6 @@
 <div>
-  <div class="hero-header">
-    <div class="text-center py-16">
+  <div>
+    <div class="text-center py-10 md:py-12">
       <h1 class="text-5xl font-bold text-white">
         Registrá tu trabajo, invitá a tu equipo y facturá.
       </h1>
@@ -9,19 +9,22 @@
       </p>
     </div>
     <div class="text-center">
-      <%= link_to "Probá Trackear gratis por 30 días", new_user_session_path, class: "inline-block px-10 py-4 text-xl font-bold bg-pink-500 text-white rounded animation-expand-hover" %>
-      <div class="block text-lg mt-2 text-purple-400">o <%= link_to "¡Levantá tu propia instancia gratis!", "https://github.com/Ruk33/trackear", class: "text-indigo-300 hover:text-white transition-all duration-500 ease-in-out" %></div>
+      <%= link_to "Probá Trackear gratis por 30 días", new_user_session_path, class: "shadow-xl inline-block px-5 md:px-10 py-4 text-xl font-bold bg-pink-500 text-white rounded animation-expand-hover" %>
+      <div class="block text-lg mt-4 text-purple-400">o <%= link_to "¡Levantá tu propia instancia gratis!", "https://github.com/Ruk33/trackear", class: "text-indigo-200 hover:text-white transition-all duration-500 ease-in-out" %></div>
     </div>
   </div>
 </div>
 
 <%= render "home/home/home_guest" %>
 
-<hr class="pb-10" />
-
-<%# ¿Por qué trackear.app?  %>
-<div class="grid gap-16 grid-cols-2 my-6" id="why-trackear">
-  <div>
+<hr id="why-trackear" class="p-12" />
+<div >
+  <h2 class="text-3xl font-bold text-gray-800">
+        ¿Por qué trackear.app?
+</h2>
+</div>
+<div class="grid gap-16 grid-cols-1 md:grid-cols-2 my-6">
+  <div class="px-3">
     <div class="mb-16">
       <%= image_tag "guest/project-view.jpg", class: "w-full opacity-75 shadow-md rounded border mb-8 image-animation", alt: "Registrar tiempo freelancer", width: 608, height: 394 %>
       <h2 class="text-2xl font-bold my-2 text-gray-800">
@@ -34,7 +37,6 @@
         Olvidate de tener que mantener planillas de cálculo manualmente.
       </p>
     </div>
-
     <div class="mb-16">
       <%= image_tag "guest/invoice-creation.jpg", class: "w-full opacity-75 shadow-md rounded border mb-8 image-animation", alt: "Crear factura", width: 608, height: 394 %>
       <h2 class="text-2xl font-bold text-gray-800">
@@ -48,7 +50,7 @@
       </p>
     </div>
   </div>
-  <div>
+  <div class="px-3">
     <div class="mb-16">
       <%= image_tag "guest/stopwatch.jpg", class: "w-full opacity-75 shadow-md rounded border mb-8 image-animation", alt: "Cronómetro para registrar trabajo", width: 608, height: 394 %>
       <h2 class="text-2xl font-bold my-2 text-gray-800">
@@ -61,7 +63,6 @@
         Con el cronómetro podés obtener registros precisos de tu trabajo.
       </p>
     </div>
-
     <div class="mb-16">
       <%= image_tag "guest/invoice-summary.jpg", class: "w-full opacity-75 shadow-md rounded border mb-8 image-animation", alt: "Registro de documentación en Trackear.app", width: 608, height: 394 %>
       <h2 class="text-2xl font-bold text-gray-800">
@@ -77,8 +78,9 @@
   </div>
 </div>
 <%# Precio %>
-<div class="mt-16 p-20 shadow border rounded bg-white" id="pricing">
-  <div class="grid gap-8 grid-cols-2">
+<hr id="pricing">
+<div class="mt-16 p-5 md:p-20 shadow rounded bg-white" >
+  <div class="grid gap-8 grid-cols-1 md:grid-cols-2">
     <div>
       <h2 class="text-5xl font-bold">
         Precio
@@ -100,65 +102,65 @@
     </div>
   </div>
 
-  <hr class="my-12" />
-
-  <h2 class="text-2xl font-bold" id="faq">Preguntas frecuentes</h2>
-  <div class="grid gap-8 grid-cols-2 my-6">
+  <hr id="faq" class="p-5 my-12" />
+<!-- Preguntas Frecuentes-->
+  <h2 class="text-2xl font-bold text-gray-800">Preguntas frecuentes</h2>
+  <div class="grid md:gap-8 grid-cols-1 md:grid-cols-2 my-6">
     <div>
-      <div class="mb-10">
-        <h3 class="text-lg">¿Cuántos usuarios puedo invitar a mi proyecto?</h3>
-        <p class="text-lg text-gray-800 py-2">
+      <div class="mb-2 md:mb-10">
+        <h3 class="text-lg font-bold text-blue-900">¿Cuántos usuarios puedo invitar a mi proyecto?</h3>
+        <p class="text-lg text-gray-800 py-2 text-justify">
           No hay ningún límite. Podés invitar a todos los usuarios que quieras y necesites.
         </p>
       </div>
-      <div class="mb-10">
-        <h3 class="text-lg">¿Hay algún límite en cuanto a la documentación que puedo subir?</h3>
-        <p class="text-lg text-gray-800 py-2">
+      <div class="mb-2 md:mb-10">
+        <h3 class="text-lg font-bold text-blue-900">¿Hay algún límite en cuanto a la documentación que puedo subir?</h3>
+        <p class="text-lg text-gray-800 py-2 text-justify">
           Podés subir toda la documentación, recibos de pago, facturación, etc. que necesites. No hay límite alguno.
         </p>
       </div>
-      <div class="mb-10">
-        <h3 class="text-lg">¿Qué pasa cuando termina el período de prueba?, ¿puedo seguir accediendo a mi documentación y registros?</h3>
-        <p class="text-lg text-gray-800 py-2">
+      <div class="mb-2 md:mb-10">
+        <h3 class="text-lg font-bold text-blue-900">¿Qué pasa cuando termina el período de prueba?, ¿puedo seguir accediendo a mi documentación y registros?</h3>
+        <p class="text-lg text-gray-800 py-2 text-justify">
           Cuando tu período de prueba termina, vas a poder seguir accediendo a tu cuenta y a toda tu información con normalidad. El único cambio será que no podrás crear nuevos registros y/o adjuntar nueva documentación.
         </p>
       </div>
-      <div class="mb-10">
-        <h3 class="text-lg">¿Necesito ingresar un medio de pago para probar Trackear?</h3>
-        <p class="text-lg text-gray-800 py-2">
+      <div class="mb-2 md:mb-10">
+        <h3 class="text-lg font-bold text-blue-900">¿Necesito ingresar un medio de pago para probar Trackear?</h3>
+        <p class="text-lg text-gray-800 py-2 text-justify">
           No. Podés probar Trackear completamente gratis y sin necesidad de ingresar algún medio de pago.
         </p>
       </div>
     </div>
     <div>
-      <div class="mb-10">
-        <h3 class="text-lg">¿Puedo levantar una instancia de Trackear gratis en mi servidor?</h3>
-        <p class="text-lg text-gray-800 py-2">
+      <div class="mb-2 md:mb-10">
+        <h3 class="text-lg font-bold text-blue-900">¿Puedo levantar una instancia de Trackear gratis en mi servidor?</h3>
+        <p class="text-lg text-gray-800 py-2 text-justify">
           Si. Trackear es una plataforma de <%= link_to "código abierto y libre", "https://github.com/Trackear/trackear", class: "text-blue-500" %>. Podés descargar el código y subirlo a tu servidor.
         </p>
       </div>
-      <div class="mb-10">
-        <h3 class="text-lg">¿Ofrecen descuentos?</h3>
-        <p class="text-lg text-gray-800 py-2">
+      <div class="mb-2 md:mb-10">
+        <h3 class="text-lg font-bold text-blue-900">¿Ofrecen descuentos?</h3>
+        <p class="text-lg text-gray-800 py-2 text-justify">
           Si. Pagando 1 año por adelantado, te ofrecemos un 15% de descuento.
         </p>
       </div>
-      <div class="mb-10">
-        <h3 class="text-lg">¿Puedo pedir una extensión de mi prueba gratuita?</h3>
-        <p class="text-lg text-gray-800 py-2">
+      <div class="mb-2 md:mb-10">
+        <h3 class="text-lg font-bold text-blue-900">¿Puedo pedir una extensión de mi prueba gratuita?</h3>
+        <p class="text-lg text-gray-800 py-2 text-justify">
           Si. Queremos que estés completamente seguro y satisfecho de que Trackear es de tu utilidad.
         </p>
       </div>
-      <div class="mb-10">
-        <h3 class="text-lg">¿Puedo cancelar mi suscripción?</h3>
-        <p class="text-lg text-gray-800 py-2">
+      <div class="mb-2 md:mb-10">
+        <h3 class="text-lg font-bold text-blue-900">¿Puedo cancelar mi suscripción?</h3>
+        <p class="text-lg text-gray-800 py-2 text-justify">
           Si, vas a poder cancelar tu suscripción en cualquier momento.
         </p>
       </div>
-      <div class="mb-10">
-        <h3 class="text-lg">Tengo mas preguntas</h3>
-        <p class="text-lg text-gray-800 py-2">
-          Enviános un email a contact@black-mountain.com.ar.
+      <div class="mb-2 md:mb-10">
+        <h3 class="text-lg font-bold text-blue-900">Tengo mas preguntas</h3>
+        <p class="text-md text-gray-800 py-2 text-justify">
+          Enviános un email a soporte@trackear.app
         </p>
       </div>
     </div>
