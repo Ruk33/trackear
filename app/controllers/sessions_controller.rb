@@ -8,7 +8,13 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session[:user_id] = nil
+    impersonating_from = session[:impersonating_from]
+    if impersonating_from.present?
+      session[:user_id] = impersonating_from
+      session[:impersonating_from] = nil
+    else
+      session[:user_id] = nil
+    end
     redirect_to root_url
   end
 end
