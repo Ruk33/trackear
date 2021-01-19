@@ -8,11 +8,6 @@ class User < ApplicationRecord
 
   friendly_id :slug_candidates, use: :slugged
 
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,
-         # :confirmable, :lockable,
-         :trackable, :omniauthable, omniauth_providers: [:google_oauth2]
-
   has_many :project_contracts
   has_many :project_invitations
   has_many :projects, through: :project_contracts

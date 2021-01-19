@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  devise_for :users, controllers: {
-    omniauth_callbacks: 'users/omniauth_callbacks',
-    sessions: 'users/sessions',
-    registrations: 'users/registrations'
-  }
-
   # match '/404', to: 'error#not_found', via: :all
   # match '/422', to: 'error#unacceptable', via: :all
   # match '/500', to: 'error#internal_error', via: :all
@@ -66,6 +60,9 @@ Rails.application.routes.draw do
   resources :other_submissions, only: [:create]
 
   get '/', to: 'home#index', as: 'home'
+  get '/login' => redirect(ENV['LOGIN_URL']), :as => :login
+  delete '/logout', as: 'destroy_user_session', to: 'sessions#destroy'
+  get '/sessions/:token', to: 'sessions#new'
   get '/settings', to: 'home#settings', as: 'settings'
   get '/subscription', to: 'home#subscription', as: 'subscription'
   post '/subscription/cancel', to: 'home#cancel_subscription', as: 'cancel_subscription'

@@ -11,6 +11,9 @@ class ApplicationController < ActionController::Base
   around_action :user_time_zone, if: :user_signed_in?
   around_action :switch_locale
 
+  helper_method :current_user
+  helper_method :user_signed_in?
+
   # Only check for active subscription
   # for the current user
   def pay_wall
@@ -40,6 +43,18 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def authenticate_user!
+
+  end
+
+  def current_user
+    @current_user ||= User.find(session[:user_id]) if session[:user_id]
+  end
+
+  def user_signed_in?
+    current_user.present?
+  end
 
   def track_user_activity
     user_id = user_signed_in? ? current_user.id : "guest"
