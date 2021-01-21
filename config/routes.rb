@@ -60,7 +60,7 @@ Rails.application.routes.draw do
   resources :other_submissions, only: [:create]
 
   get '/', to: 'home#index', as: 'home'
-  get '/login' => redirect(ENV['LOGIN_URL']), :as => :login
+  get '/login', to: redirect(ENV['LOGIN_URL']), as: :login
   delete '/logout', as: 'destroy_user_session', to: 'sessions#destroy'
   get '/sessions/:token', to: 'sessions#new'
   get '/settings', to: 'home#settings', as: 'settings'
