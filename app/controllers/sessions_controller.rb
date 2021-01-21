@@ -1,4 +1,8 @@
 class SessionsController < ApplicationController
+  def index
+    redirect ENV['LOGIN_URL']
+  end
+
   def new
     token = params[:token]
     session_from_auth = Session.find_by(token: token, used: false)
