@@ -1,6 +1,6 @@
 class SessionsController < ApplicationController
   def index
-    redirect ENV['LOGIN_URL']
+    redirect_to ENV['LOGIN_URL']
   end
 
   def new
