@@ -62,10 +62,6 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
-gem 'devise', '~> 4.7.1'
-
-gem 'omniauth-google-oauth2', '~> 0.8.0'
-
 gem 'cancancan', '~> 3.0.2'
 
 gem 'money-rails', '~> 1.13.3'

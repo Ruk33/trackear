@@ -62,7 +62,7 @@ class UsersController < ApplicationController
 
   def become
     session[:impersonating_from] = current_user.id
-    sign_in(:user, @user)
+    session[:user_id] = @user.id
     redirect_to home_url
   end
 
