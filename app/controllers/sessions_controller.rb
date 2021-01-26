@@ -4,11 +4,20 @@ class SessionsController < ApplicationController
   end
 
   def new
-    token = params[:token]
-    session_from_auth = Session.find_by(token: token, used: false)
-    session_from_auth.update(used: true)
-    session[:user_id] = session_from_auth.user_id
-    redirect_to root_url
+    begin
+      token = params[:token]
+
+      session_from_auth = Session.find_by(token: token, used: false)
+      session_from_auth.update(used: true)
+      session[:user_id] = session_from_auth.user_id
+
+      user = User.find(session_from_auth.user_id)
+      user.update(trial_ends_at: 30.days.from_now) if user.trial_ends_at.nil?
+
+      redirect_to root_url
+    rescue
+      redirect_to root_url
+    end
   end
 
   def destroy
