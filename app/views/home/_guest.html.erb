@@ -1,168 +1,105 @@
-<div>
-  <div>
-    <div class="text-center py-10 md:py-12">
-      <h1 class="text-5xl font-bold text-white">
-        Registrá tu trabajo, invitá a tu equipo y facturá.
-      </h1>
-      <p class="text-2xl text-gray-300">
-        La herramienta indispensable para el freelancer argentino
-      </p>
+<div class="px-4 py-8 relative overflow-hidden lg:flex items-center" style="min-height: 600px;">
+  <div class="py-16 lg:w-1/2 w-full">
+    <h1 class="text-center lg:text-left text-5xl text-gray-900 font-bold mb-3">Gestioná tus proyectos Freelance con Trackear.app</h1>
+    <h2 class="text-center lg:text-left text-xl mb-6 text-gray-800">Trackear.app es un gestor de proyectos open source. Registrá el tiempo de tu trabajo; <strong>afianzá tus clientes e incrementá tus ganancias</strong> creando un equipo colaborativo de freelancers.</h2>
+    <div class="text-center lg:text-left">
+      <%= link_to "Probá Trackear.app gratis por 30 días", login_path, class: "transition-all duration-500 ease-in-out bg-pink-500 text-white rounded-xl p-3 font-bold font-bold px-6 inline-block text-xl hover:bg-pink-400 hover:shadow-lg" %>
     </div>
-    <div class="text-center">
-      <%= link_to "Probá Trackear gratis por 30 días", login_path, class: "shadow-xl inline-block px-5 md:px-10 py-4 text-xl font-bold bg-pink-500 text-white rounded animation-expand-hover" %>
-      <div class="block text-lg mt-4 text-purple-400">o <%= link_to "¡Levantá tu propia instancia gratis!", "https://github.com/Ruk33/trackear", class: "text-indigo-200 hover:text-white transition-all duration-500 ease-in-out" %></div>
+  </div>
+  <div class="lg:w-1/2 w-full">
+    <%= image_tag "header.svg", class: "select-none", style: "max-height: 500px" %>
+  </div>
+</div>
+
+
+<div class="py-16">
+  <h3 class="text-center text-4xl font-bold">¿Cómo funciona Trackear.app?</h3>
+  <p class="text-xl text-center w-1/2 mx-auto mb-16">En Trackear.app podés elegir trabajar solo o, de forma colaborativa creando tu propio equipo de freelancers.</p>
+  <div class="lg:flex items-center mb-10">
+    <div class="w-full lg:w-1/2">
+      <%= render "home/home/solo_freelancer" %>
+    </div>
+    <div class="px-10">
+      <h4 class="text-2xl font-bold">Solo Freelancer</h4>
+      <p class="text-xl mb-6">Perfecto si todavía no tenés un equipo o preferís trabajar por tu cuenta.</p>
+      <div class="flex items-center text-xl">
+        <%= image_tag "guest/create-project-icon.png", class: "mr-2" %>
+        Creá tu proyecto
+      </div>
+      <div class="flex items-center text-xl">
+        <%= image_tag "guest/track-time-icon.png", class: "mr-2" %>
+        Registrá tu tiempo de trabajo
+      </div>
+      <div class="flex items-center text-xl">
+        <%= image_tag "guest/invoice-icon.png", class: "mr-2" %>
+        Creá la factura para tu cliente
+      </div>
+      <%= link_to "Creá tu primer proyecto", login_path, class: "mt-3 inline-block hover:bg-blue-300 hover:shadow bg-blue-400 font-bold p-4 text-white rounded transition-all duration-500 ease-in-out" %>
+    </div>
+  </div>
+
+  <hr class="py-6" />
+
+  <div class="lg:flex items-center">
+    <div class="px-10">
+      <h4 class="text-2xl font-bold">Team de Freelancers</h4>
+      <p class="text-xl mb-6">Ideal para proyectos en crecimiento y fidelizar clientes.</p>
+      <div class="flex items-center text-xl">
+        <%= image_tag "guest/create-project-icon.png", class: "mr-2" %>
+        Creá tu proyecto
+      </div>
+      <div class="flex items-center text-xl">
+        <%= image_tag "guest/invite-colaborator-icon.png", class: "mr-2" %>
+        Invitá a tus colaboradores al equipo
+      </div>
+      <div class="flex items-center text-xl">
+        <%= image_tag "guest/set-rates-icon.png", class: "mr-2" %>
+        Definí las tarifas de tu equipo
+      </div>
+      <div class="flex items-center text-xl">
+        <%= image_tag "guest/track-time-icon.png", class: "mr-2" %>
+        Cada colaborador registra el tiempo de su trabajo
+      </div>
+      <div class="flex items-center text-xl">
+        <%= image_tag "guest/colaborator-invoice-icon.png", class: "mr-2" %>
+        Cada colaborador emite su factura
+      </div>
+      <div class="flex items-center text-xl">
+        <%= image_tag "guest/invoice-icon.png", class: "mr-2" %>
+        Creá una factura general para tu cliente
+      </div>
+      <%= link_to "Creá tu primer proyecto", login_path, class: "mt-3 inline-block hover:bg-blue-300 hover:shadow bg-blue-400 font-bold p-4 text-white rounded transition-all duration-500 ease-in-out" %>
+    </div>
+    <div class="w-full lg:w-1/2">
+      <%= render "home/home/team_freelancer" %>
     </div>
   </div>
 </div>
 
-<%= render "home/home/home_guest" %>
 
-<hr id="why-trackear" class="p-12" />
-<div>
-  <h2 class="text-3xl font-bold text-gray-800">
-      ¿Por qué trackear.app?
-  </h2>
+<div class="py-16">
+  <h3 class="text-4xl font-bold text-center">Trackear.app es ideal para...</h3>
+  <div class="text-center grid grid-cols-1 lg:grid-cols-4 gap-4 py-10">
+    <div>
+      <h4 class="text-2xl text-pink-500">Software developers</h4>
+    </div>
+    <div>
+      <h4 class="text-2xl text-pink-500">Diseñadores gráficos</h4>
+    </div>
+    <div>
+      <h4 class="text-2xl text-pink-500">Automation/QCs</h4>
+    </div>
+    <div>
+      <h4 class="text-2xl text-pink-500">Social media manager</h4>
+    </div>
+  </div>
+  <h3 class="text-4xl text-gray-600 text-center">... y todo profesional independiente listo para el siguiente nivel!</h3>
 </div>
-<div class="grid gap-16 grid-cols-1 md:grid-cols-2 my-6">
-  <div class="px-3">
-    <div class="mb-16">
-      <%= image_tag "guest/project-view.jpg", class: "w-full opacity-75 shadow-md rounded border mb-8 image-animation", alt: "Registrar tiempo freelancer", width: 608, height: 394 %>
-      <h2 class="text-2xl font-bold my-2 text-gray-800">
-        Llevá el registro de tu trabajo
-      </h2>
-      <p class="text-xl text-gray-800 py-2">
-        Con Trackear vas a poder llevar el registro de tu trabajo (y el de tu equipo) de forma fácil y rápida.
-      </p>
-      <p class="text-xl text-gray-800 py-2">
-        Olvidate de tener que mantener planillas de cálculo manualmente.
-      </p>
-    </div>
-    <div class="mb-16">
-      <%= image_tag "guest/invoice-creation.jpg", class: "w-full opacity-75 shadow-md rounded border mb-8 image-animation", alt: "Crear factura", width: 608, height: 394 %>
-      <h2 class="text-2xl font-bold text-gray-800">
-        Facturación
-      </h2>
-      <p class="text-xl text-gray-800 py-2">
-        Creá facturas internas para tu equipo y para tus clientes en un par de clicks.
-      </p>
-      <p class="text-xl text-gray-800 py-2">
-        Con Trackear vas a poder notificar a tus clientes de una nueva factura por e-mail.
-      </p>
-    </div>
-  </div>
-  <div class="px-3">
-    <div class="mb-16">
-      <%= image_tag "guest/stopwatch.jpg", class: "w-full opacity-75 shadow-md rounded border mb-8 image-animation", alt: "Cronómetro para registrar trabajo", width: 608, height: 394 %>
-      <h2 class="text-2xl font-bold my-2 text-gray-800">
-        Cronometrá tu actividad
-      </h2>
-      <p class="text-xl text-gray-800 py-2">
-        ¿Necesitás llevar un registro más preciso de tu trabajo? ¡Usá la función cronómetro para obtener un registro perfecto!
-      </p>
-      <p class="text-xl text-gray-800 py-2">
-        Con el cronómetro podés obtener registros precisos de tu trabajo.
-      </p>
-    </div>
-    <div class="mb-16">
-      <%= image_tag "guest/invoice-summary.jpg", class: "w-full opacity-75 shadow-md rounded border mb-8 image-animation", alt: "Registro de documentación en Trackear.app", width: 608, height: 394 %>
-      <h2 class="text-2xl font-bold text-gray-800">
-        Documentación
-      </h2>
-      <p class="text-xl text-gray-800 py-2">
-        Adjunta comprobantes de pago, facturas de AFIP para vos y todo tu equipo.
-      </p>
-      <p class="text-xl text-gray-800 py-2">
-        Nunca mas pierdas tiempo buscando esta documentación cuando te la pidan. Con Trackear, lo tenés siempre disponible.
-      </p>
-    </div>
-  </div>
-</div>
-<%# Precio %>
-<hr id="pricing" />
-<div class="mt-16 p-5 md:p-20 shadow rounded bg-white" >
-  <div class="grid gap-8 grid-cols-1 md:grid-cols-2">
-    <div>
-      <h2 class="text-5xl font-bold">
-        Precio
-      </h2>
-      <p class="text-2xl text-gray-800 py-2">
-        Un único precio fijo mensual. Invitá a todo tu equipo sin límite alguno. Clientes ilimitados y facturacion ilimitada.
-      </p>
-    </div>
 
-    <div>
-      <h3 class="text-center text-5xl font-bold pt-12 text-pink-500">
-        ARS $480 <span class="text-gray-500">/mes</span>
-      </h3>
-      <div class="text-center text-gray-800 pb-6">IVA incluído</div>
-
-      <div class="text-center">
-        <%= link_to "Probalo gratis por 30 días", login_path, class: "inline-block px-8 py-4 text-lg font-bold border border-pink-500 text-pink-500 rounded shadow" %>
-      </div>
-    </div>
-  </div>
-
-  <hr id="faq" class="p-5 my-12" />
-  <!-- Preguntas Frecuentes-->
-  <h2 class="text-2xl font-bold text-gray-800">Preguntas frecuentes</h2>
-  <div class="grid md:gap-8 grid-cols-1 md:grid-cols-2 my-6">
-    <div>
-      <div class="mb-10">
-        <h3 class="text-lg font-bold text-blue-900">¿Cuántos usuarios puedo invitar a mi proyecto?</h3>
-        <p class="text-lg text-gray-800 py-2 text-justify">
-          No hay ningún límite. Podés invitar a todos los usuarios que quieras y necesites.
-        </p>
-      </div>
-      <div class="mb-10">
-        <h3 class="text-lg font-bold text-blue-900">¿Hay algún límite en cuanto a la documentación que puedo subir?</h3>
-        <p class="text-lg text-gray-800 py-2 text-justify">
-          Podés subir toda la documentación, recibos de pago, facturación, etc. que necesites. No hay límite alguno.
-        </p>
-      </div>
-      <div class="mb-10">
-        <h3 class="text-lg font-bold text-blue-900">¿Qué pasa cuando termina el período de prueba?, ¿puedo seguir accediendo a mi documentación y registros?</h3>
-        <p class="text-lg text-gray-800 py-2 text-justify">
-          Cuando tu período de prueba termina, vas a poder seguir accediendo a tu cuenta y a toda tu información con normalidad. El único cambio será que no podrás crear nuevos registros y/o adjuntar nueva documentación.
-        </p>
-      </div>
-      <div class="mb-10">
-        <h3 class="text-lg font-bold text-blue-900">¿Necesito ingresar un medio de pago para probar Trackear?</h3>
-        <p class="text-lg text-gray-800 py-2 text-justify">
-          No. Podés probar Trackear completamente gratis y sin necesidad de ingresar algún medio de pago.
-        </p>
-      </div>
-    </div>
-    <div>
-      <div class="mb-10">
-        <h3 class="text-lg font-bold text-blue-900">¿Puedo levantar una instancia de Trackear gratis en mi servidor?</h3>
-        <p class="text-lg text-gray-800 py-2 text-justify">
-          Si. Trackear es una plataforma de <%= link_to "código abierto y libre", "https://github.com/Trackear/trackear", class: "text-blue-500" %>. Podés descargar el código y subirlo a tu servidor.
-        </p>
-      </div>
-      <div class="mb-10">
-        <h3 class="text-lg font-bold text-blue-900">¿Ofrecen descuentos?</h3>
-        <p class="text-lg text-gray-800 py-2 text-justify">
-          Si. Pagando 1 año por adelantado, te ofrecemos un 15% de descuento.
-        </p>
-      </div>
-      <div class="mb-10">
-        <h3 class="text-lg font-bold text-blue-900">¿Puedo pedir una extensión de mi prueba gratuita?</h3>
-        <p class="text-lg text-gray-800 py-2 text-justify">
-          Si. Queremos que estés completamente seguro y satisfecho de que Trackear es de tu utilidad.
-        </p>
-      </div>
-      <div class="mb-10">
-        <h3 class="text-lg font-bold text-blue-900">¿Puedo cancelar mi suscripción?</h3>
-        <p class="text-lg text-gray-800 py-2 text-justify">
-          Si, vas a poder cancelar tu suscripción en cualquier momento.
-        </p>
-      </div>
-      <div class="mb-10">
-        <h3 class="text-lg font-bold text-blue-900">Tengo mas preguntas</h3>
-        <p class="text-md text-gray-800 py-2 text-justify">
-          Enviános un email a soporte@trackear.app
-        </p>
-      </div>
-    </div>
+<div class="rounded bg-pink-500 text-white p-10 text-center overflow-hidden relative">
+  <%= image_tag "guest/robot.png", class: "hidden lg:block absolute z-0", style: "top: -55px; right: -175px;" %>
+  <div class="relative z-1">
+    <h2 class="text-4xl">¿Listo para llevar tu negocio al próximo nivel?</h2>
+    <%= link_to "Probá Trackear.app gratis por 30 días", login_path, class: "transition-all duration-500 ease-in-out hover:shadow-lg inline-block bg-white text-3xl text-pink-500 p-4 rounded" %>
   </div>
 </div>
