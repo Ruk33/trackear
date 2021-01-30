@@ -210,6 +210,7 @@ en:
   subscribe: "Subscribe for %{price} monthly"
   trial_message_short: "You are on your trial period. You have %{days} days left."
   subscribed: "You are subscribed. The next billing period is %{date}."
+  subscribed_past_due: "Your subscription is past due and the payment couldn't be processed successfully. Please update your billing information."
   cancel_subscription: "Cancel subscription"
   subscription_ended: "Your subscription has ended."
   subscription_cancelled: "Your subscription has been successfully cancelled."

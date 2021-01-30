@@ -209,6 +209,7 @@ es:
   subscribe: "Suscribirse por %{price} mensual"
   trial_message_short: "Estás en tu período de prueba. Te quedan %{days} días restantes."
   subscribed: "Estás suscrito. El próximo pago se realizará el %{date}."
+  subscribed_past_due: "Tu suscripción está vencida y el pago no pudo ser procesado. Por favor, actualizá la información de pago."
   cancel_subscription: "Cancelar suscripción"
   subscription_ended: "Tu suscripción se ha vencido."
   subscription_cancelled: "Tu suscripción ha sido cancelada exitosamente."

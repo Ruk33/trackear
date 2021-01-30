@@ -13,6 +13,13 @@
           <%= link_to t(:cancel_subscription), cancel_subscription_path, method: :post, class: "btn btn-secondary", data: { confirm: "¿Confirmar cancelación de suscripción?" } %>
           <%= link_to t(:update_subscription_payment_method), current_user.subscription.update_url, class: "btn btn-primary ml-2" %>
         </div>
+      <% elsif current_user.subscription.present? %>
+        <%= t :subscribed_past_due %>
+
+        <div>
+          <%= link_to t(:cancel_subscription), cancel_subscription_path, method: :post, class: "btn btn-secondary", data: { confirm: "¿Confirmar cancelación de suscripción?" } %>
+          <%= link_to t(:update_subscription_payment_method), current_user.subscription.update_url, class: "btn btn-primary ml-2" %>
+        </div>
       <% else %>
         <%= t :subscription_ended %>
         <div>
