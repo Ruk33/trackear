@@ -11,6 +11,10 @@ Rails.application.routes.draw do
 
   resources :analytics
 
+  resources :activity_stop_watches do
+    post :resume_from_track, on: :collection
+  end
+
   resources :projects do
     resources :invoice_statuses, only: [] do
       post :confirm_hours, on: :member
@@ -64,6 +68,7 @@ Rails.application.routes.draw do
   delete '/logout', to: 'sessions#destroy', as: 'destroy_user_session'
   get '/sessions/:token', to: 'sessions#new'
   get '/settings', to: 'home#settings', as: 'settings'
+  get '/company_settings', to: 'home#company_settings', as: 'company_settings'
   get '/subscription', to: 'home#subscription', as: 'subscription'
   post '/subscription/cancel', to: 'home#cancel_subscription', as: 'cancel_subscription'
   get '/solutions', to: 'home#solutions', as: 'home_solutions'

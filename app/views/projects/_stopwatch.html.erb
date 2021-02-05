@@ -26,10 +26,10 @@
         </div>
       </div>
       <div class="w-1/4 text-right">
-        <%= link_to [@project, @stopwatch], data: { confirm: t(:stopwatch_discard_confirmation) }, method: :delete, class: "btn btn-sm text-gray-400 hover:text-gray-300 rounded mr-2" do %>
+        <%= link_to [@stopwatch.project, @stopwatch], data: { confirm: t(:stopwatch_discard_confirmation) }, method: :delete, class: "btn btn-sm text-gray-400 hover:text-gray-300 rounded mr-2" do %>
           <%= t :stopwatch_discard %>
         <% end %>
-        <%= link_to finish_project_activity_stop_watch_path(@project, @stopwatch), method: :post, class: "btn btn-primary btn-sm" do %>
+        <%= link_to finish_project_activity_stop_watch_path(@stopwatch.project, @stopwatch), method: :post, class: "btn btn-primary btn-sm" do %>
           <%= t :stopwatch_finish %>
         <% end %>
       </div>

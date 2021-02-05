@@ -23,7 +23,6 @@ let calendar = new Calendar(
   {
     noEventsText: 'No hay registros en este período',
     locale: esLocale,
-    initialView: 'listMonth',
     timeZone: 'UTC',
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
     events: {
@@ -54,7 +53,7 @@ let calendar = new Calendar(
     dateClick: function(info) {
       newTrackFrom.valueAsDate = info.date
       newTrackModal.style = 'display: block'
-      createPopper(container, newTrackModal, { placement: 'right-start' });
+      createPopper(container, newTrackModal, { placement: 'left-start' });
     },
     eventSourceSuccess: function(e) {
       let sum = 0;

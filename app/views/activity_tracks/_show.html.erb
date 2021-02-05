@@ -1,27 +1,45 @@
-<%= render "shared/content/box" do %>
+<div class="grid grid-cols-3 gap-4 p-4 bg-white border mb-4">
   <div class="flex">
-    <%= render "shared/icon/avatar", image_url: log.project_contract.user.picture || image_url('default-avatar.png'), extra_css: "mr-3" %>
+    <%= render "shared/icon/avatar", image_url: log.project_contract.user.avatar || image_url('default-avatar.png'), extra_css: "mr-3" %>
     <div>
-      <h5 class="font-bold my-1">
-        <%= log.project_contract.user.first_name %> <%= log.project_contract.user.last_name %>
-        <span class="text-gray-500">
-          (<%= distance_of_time_in_words(log.from, log.to, true, :accumulate_on => :hours) %>)
-        </span>
-      </h5>
       <p class="text-lg text-gray-800">
         <%= log.description.gsub(/\n/, '<br/>').html_safe %>
       </p>
+      <h5 class="my-1">
+        <%= log.project_contract.user.first_name %> <%= log.project_contract.user.last_name %> en <%= link_to "Proyecto #{log.project_contract.project.name}", log.project_contract.project %>
+      </h5>
     </div>
   </div>
-  <div class="bg-gray-100 -m-6 p-2 pl-4 mt-2 flex items-center justify-between text-gray-600">
+
+  <div class="flex items-center text-lg text-gray-600">
     <%= t(:log_from_to_logged, from: log.from.strftime("%d %B %Y"), time_words: distance_of_time_in_words(log.from, log.to, true, accumulate_on: :hours)) %>
-    <div>
-      <%= link_to(edit_project_activity_track_path(log.project_contract.project, log), class: "btn btn-secondary btn-sm  mx-1") do %>
-        <%= t :edit %>
-      <% end %>
-      <%= link_to([log.project_contract.project, log], method: :delete, data: { confirm: "Confirm you want to remove this activity?" }, class: "btn btn-secondary btn-sm text-red-400 mx-1") do %>
-        <%= t :delete %>
-      <% end %>
-    </div>
   </div>
-<% end %>
+
+  <div class="flex items-center text-lg justify-end">
+    <%= link_to(resume_from_track_activity_stop_watches_path(track_id: log.id), method: :post, class: "mx-2") do %>
+      <div class="flex items-center">
+        <svg class="w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Continuar</span>
+      </div>
+    <% end %>
+    <%= link_to(edit_project_activity_track_path(log.project_contract.project, log), class: "mx-2") do %>
+      <div class="flex items-center">
+        <svg class="w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        <span><%= t :edit %></span>
+      </div>
+    <% end %>
+    <%= link_to([log.project_contract.project, log], method: :delete, data: { confirm: "Confirm you want to remove this activity?" }, class: "text-red-400 hover:text-red-500 mx-2") do %>
+      <div class="flex items-center">
+        <svg class="w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        <span><%= t :delete %></span>
+      </div>
+    <% end %>
+  </div>
+</div>

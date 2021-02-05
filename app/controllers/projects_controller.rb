@@ -31,7 +31,7 @@ class ProjectsController < ApplicationController
   def index
     track_page_view("auth/projects")
 
-    @projects = current_user.projects.uniq
+    @active_contracts = current_user.project_contracts.currently_active.includes(:project)
   end
 
   def onboarding
@@ -130,6 +130,7 @@ class ProjectsController < ApplicationController
         @invoices = @invoices.includes([:user, :invoice_entries])
         @logs = @all_logs.paginate(page: params[:page], per_page: 6)
 
+        add_breadcrumb "Proyectos", projects_path
         add_breadcrumb @project.name, @project
       }
     end

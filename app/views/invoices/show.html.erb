@@ -15,7 +15,7 @@
       <%= t :created_by %>
     </h4>
     <div class="flex items-center">
-      <%= render "shared/icon/avatar", image_url: @invoice.user.picture, extra_css: "mr-3" %>
+      <%= render "shared/icon/avatar", image_url: @invoice.user.avatar, extra_css: "mr-3" %>
       <div>
         <div class="text-lg font-bold"><%= @invoice.user.first_name %> <%= @invoice.user.last_name %></div>
         <span class="text-gray-500"><%= @invoice.user.email %></span>

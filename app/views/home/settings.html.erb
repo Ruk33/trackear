@@ -1,10 +1,8 @@
-<% content_for :content do %>
-  <h4 class="text-sm font-bold text-gray-600 my-3 uppercase">
-    <%= t :settings %>
-  </h4>
-  <%= render "shared/content/box" do %>
-    <%= render "users/form", user: current_user %>
-  <% end %>
-<% end %>
+<h1 class="text-4xl mb-10">Preferencias</h1>
 
-<%= render "auth_layout" %>
+<%= link_to "Usuario", settings_path, style: "margin-bottom: -1px;", class: "ml-2 inline-block p-3 border-t border-r border-l border-gray-400 bg-white text-sm text-gray-600 uppercase rounded-t" %>
+<%= link_to "Empresa", company_settings_path, style: "margin-bottom: -1px;", class: "inline-block p-3 border-t border-r border-l border-gray-400 bg-gray-200 text-sm text-gray-600 uppercase rounded-t" %>
+
+<%= render "shared/content/box" do %>
+  <%= render "users/form", user: current_user %>
+<% end %>

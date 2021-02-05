@@ -13,7 +13,7 @@
       <% end %>
     <% else %>
       <div class="flex items-center">
-        <%= render "shared/icon/avatar", image_url: contract.user.picture || image_url('default-avatar.png'), extra_css: "mr-3" %>
+        <%= render "shared/icon/avatar", image_url: contract.user.avatar || image_url('default-avatar.png'), extra_css: "mr-3" %>
         <div>
           <div class="text-lg font-bold"><%= contract.user.first_name %> <%= contract.user.last_name %></div>
           <span class="text-gray-500"><%= contract.activity %></span>

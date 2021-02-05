@@ -1,3 +1,5 @@
+<h1 class="text-4xl mb-10">Proyecto</h1>
+
 <% content_for :menu do %>
   <div class="mt-4 pb-5">
     <%= link_to home_path, class: "btn btn-secondary w-full back-animation" do %>
@@ -26,8 +28,10 @@
       ></div>
       <div class="text-xl absolute bottom-0 mb-8">Monto a cobrar: <span id="summary">0</span></div>
       <div id="newTrack" style="display: none;" class="bg-white p-5 border border-gray-400 rounded shadow-2xl">
-        <h2 class="font-bold">Crear nuevo registro</h2>
-        <%= render 'activity_tracks/form', activity_track: @new_activity_track, project: @project %>
+        <div style="width: 450px;">
+          <h2 class="font-bold">Crear nuevo registro</h2>
+          <%= render 'activity_tracks/form', activity_track: @new_activity_track, project: @project %>
+        </div>
       </div>
       <%= javascript_pack_tag "projects/calendar" %>
     <% end %>

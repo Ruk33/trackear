@@ -45,7 +45,7 @@ class UsersController < ApplicationController
   def update
     @user.update(update_user_params)
     respond_to do |format|
-      format.html { redirect_to settings_url, notice: 'Successfully updated.' }
+      format.html { redirect_back(fallback_location: settings_url, notice: "Actualizado correctamente") }
       format.json { render :show, status: :ok, location: @user }
     end
   end
@@ -80,6 +80,7 @@ class UsersController < ApplicationController
 
   def update_user_params
     params.require(:user).permit(
+      :user_avatar,
       :first_name,
       :last_name,
       :locale,

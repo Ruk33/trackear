@@ -9,12 +9,12 @@
     <div class="flex menu">
       <% if session[:impersonating_from].present? %>
         <%= link_to(destroy_user_session_path, method: :delete, class: "px-3 mx-1 flex items-center text-white") do %>
-          <%= image_tag (current_user.picture || ""), class: "logout-avatar mr-3" %>
+          <%= image_tag (current_user.avatar || ""), class: "logout-avatar mr-3" %>
           <%= t :exit_impersionate, email: current_user.email %>
         <% end %>
       <% else %>
         <%= link_to(destroy_user_session_path, method: :delete, class: "px-3 mx-1 flex items-center text-white") do %>
-          <%= image_tag (current_user.picture || ""), class: "logout-avatar mr-3" %>
+          <%= image_tag (current_user.avatar || ""), class: "logout-avatar mr-3" %>
           <%= t :logout, email: current_user.first_name %>
         <% end %>
       <% end %>

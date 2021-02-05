@@ -2,6 +2,12 @@
   <%= render 'shared/form/errors', errors: user.errors %>
 
   <div class="form-group">
+    <%= form.hidden_field :user_avatar, value: user.cached_user_avatar_data %>
+    <%= form.label :user_avatar, "Avatar" %>
+    <%= form.file_field :user_avatar, class: "form-control", style: "height: 45px;" %>
+  </div>
+
+  <div class="form-group">
     <%= form.label :first_name, t(:first_name) %>
     <%= form.text_field :first_name, class: "form-control" %>
   </div>
@@ -19,27 +25,6 @@
   <div class="form-group">
     <%= form.label :time_zone, t(:time_zone) %>
     <%= form.time_zone_select :time_zone, ActiveSupport::TimeZone.country_zones(:ar), { default: 'Eastern Time (US & Canada)' }, { class: 'bg-white form-control' } %>
-  </div>
-
-  <div class="form-group">
-    <%= form.hidden_field :company_logo, value: user.cached_company_logo_data %>
-    <%= form.label :company_logo, t(:company_logo) %>
-    <%= form.file_field :company_logo, class: "form-control", style: "height: 45px;" %>
-  </div>
-
-  <div class="form-group">
-    <%= form.label :company_name, t(:company_name) %>
-    <%= form.text_field :company_name, class: "form-control" %>
-  </div>
-
-  <div class="form-group">
-    <%= form.label :company_address, t(:company_address) %>
-    <%= form.text_field :company_address, class: "form-control" %>
-  </div>
-
-  <div class="form-group">
-    <%= form.label :company_email, t(:company_email) %>
-    <%= form.text_field :company_email, class: "form-control" %>
   </div>
 
   <div class="text-right">

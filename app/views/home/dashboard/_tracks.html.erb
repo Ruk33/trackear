@@ -1,0 +1,32 @@
+<div class="mt-10 flex items-center justify-between">
+  <h1 class="text-2xl">Registros semanales</h1>
+
+  <%= form_tag({}, method: :get) do |form| %>
+    <div class="flex items-center">
+      <%= select_tag :project_id, options_for_select(@active_contracts.collect{ |c| [c.project.name, c.project.id] }), include_blank: "Todos los proyectos", class: "mr-4 p-2 rounded shadow" %>
+      <%= date_field_tag :from, {}, class: "shadow p-2 rounded mr-2" %>
+      <%= date_field_tag :to, {}, class: "shadow p-2 rounded mr-4" %>
+      <button class="btn btn-secondary">Filtrar</button>
+    </div>
+  <% end %>
+</div>
+
+<% if @tracks.empty? %>
+  <div class="text-xl text-gray-600 text-center pt-4 pb-2">No se encontraron registros.</div>
+  <%= link_to "Limpiar filtros", "/", class: "text-lg block text-center" %>
+<% end %>
+
+<% @tracks.to_a.group_by { |d| d.from.beginning_of_week }.each do |date| %>
+  <div class="mt-4 mb-16">
+    <div class="flex items-center justify-between mb-2">
+      <h2 class="text-xl text-gray-800"><%= week_title date[0] %></h2>
+      <div class="text-lg text-gray-800">Total de la semana: <%= calculate_hours_from date[1] %></div>
+    </div>
+
+    <% date[1].each do |track| %>
+      <div class="mb-2">
+        <%= render "activity_tracks/show", log: track %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -83,7 +83,7 @@
           <tr>
             <td class="py-2">
               <div class="flex items-center">
-                <%= render "shared/icon/avatar_sm", image_url: invoice.user.picture, extra_css: "mr-2" %>
+                <%= render "shared/icon/avatar_sm", image_url: invoice.user.avatar, extra_css: "mr-2" %>
                 <%= link_to humanized_invoice_period(invoice), status_project_invoice_path(invoice.project, invoice) %>
               </div>
             </td>

@@ -5,18 +5,94 @@
     <%= render "shared/header/auth/styles" %>
   </head>
   <body class="flex flex-col h-full bg-gray-100">
-    <%= render "shared/header/auth/menu" %>
     <main class="flex-1">
-      <%= render "shared/header/auth/alert" %>
-      <div class="container mx-auto mt-3 pb-8">
-        <div>
-          <div class="breadcrumb container mx-auto py-6 text-base text-gray-500">
-            <%= render_breadcrumbs separator: ' / ' %>
+      <div class="flex h-full">
+        <div class="w-64 bg-gray-900">
+          <a href="/" class="flex bg-black p-6 border-b border-gray-800 items-center justify-center mb-10">
+            <svg class="w-5 mr-2 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-white font-bold text-lg">trackear</span>
+          </a>
+
+          <div class="text-center mb-6">
+            <%= image_tag (current_user.avatar || image_url('default-avatar.png')), class: "object-cover logout-avatar" %>
+            <div class="mt-2 text-sm text-gray-200"><%= current_user.first_name %><br /><%= current_user.last_name %></div>
+          </div>
+
+          <%= link_to home_path, class: "sidebar" do %>
+            <div class="flex items-center">
+              <svg class="w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <%= t(:dashboard) %>
+            </div>
+          <% end %>
+
+          <%= link_to projects_path, class: "sidebar" do %>
+            <div class="flex items-center">
+              <svg class="w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+              <%= t(:your_projects) %>
+            </div>
+          <% end %>
+
+          <%= link_to settings_path, class: "sidebar" do %>
+            <div class="flex items-center">
+              <svg class="w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <%= t(:settings) %>
+            </div>
+          <% end %>
+
+          <%= link_to subscription_path, class: "sidebar" do %>
+            <div class="flex items-center">
+              <svg class="w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              <%= t(:subscription) %>
+            </div>
+          <% end %>
+
+          <% if session[:impersonating_from].present? %>
+            <%= link_to(destroy_user_session_path, method: :delete, class: "sidebar") do %>
+              <div class="flex items-center">
+                <svg class="w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <%= t :exit_impersionate, email: current_user.email %>
+              </div>
+            <% end %>
+          <% else %>
+            <%= link_to(destroy_user_session_path, method: :delete, class: "sidebar") do %>
+              <div class="flex items-center">
+                <svg class="w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <%= t :logout %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+
+        <div class="w-full relative">
+          <%= render "shared/header/auth/alert" %>
+          <div class="mx-10 mt-3" style="padding-bottom: 200px;">
+            <div>
+              <div class="breadcrumb container py-6 text-base text-gray-500">
+                <%= render_breadcrumbs separator: ' / ' %>
+              </div>
+            </div>
+            <%= yield %>
+          </div>
+          <div class="absolute bottom-0 w-full">
+            <%= render "shared/footer/footer" %>
           </div>
         </div>
-        <%= yield %>
       </div>
     </main>
-    <%= render "shared/footer/footer" %>
   </body>
 </html>

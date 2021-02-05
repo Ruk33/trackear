@@ -3,6 +3,7 @@
 class User < ApplicationRecord
   include Pay::Billable
   include Shrine::Attachment(:company_logo)
+  include Shrine::Attachment(:user_avatar)
 
   extend FriendlyId
 
@@ -12,7 +13,7 @@ class User < ApplicationRecord
   has_many :project_invitations
   has_many :projects, through: :project_contracts
 
-  has_many :activity_tracks
+  has_many :activity_tracks, through: :project_contracts
   has_many :activity_stop_watches
 
   has_many :invoices
@@ -38,8 +39,8 @@ class User < ApplicationRecord
     is_admin? || on_trial_or_subscribed?
   end
 
-  def avatar_or_default
-    picture || ''
+  def avatar
+    user_avatar_url || picture
   end
 
   def slug_candidates

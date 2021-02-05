@@ -8,7 +8,7 @@
       <% @invoice_status.invoice_statuses.each do |member_status| %>
         <div class="p-3 mb-2 border flex items-center justify-between">
           <div class="flex items-center">
-            <%= render "shared/icon/avatar", image_url: member_status.user.picture, extra_css: "mr-3" %>
+            <%= render "shared/icon/avatar", image_url: member_status.user.avatar, extra_css: "mr-3" %>
             <h5 class="font-bold">
               <%= "#{member_status.user.first_name} #{member_status.user.last_name}" %>
             </h5>

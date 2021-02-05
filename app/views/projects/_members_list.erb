@@ -3,10 +3,10 @@
     <% contracts.each do |contract| %>
       <% if can? :manage, contract %>
         <%= link_to edit_project_project_contract_path(project, contract) do %>
-          <%= render "shared/icon/avatar_sm", image_url: contract.user.picture, extra_css: "-mr-1 border-2" %>
+          <%= render "shared/icon/avatar_sm", image_url: contract.user.avatar, extra_css: "-mr-1 border-2" %>
         <% end %>
       <% else %>
-          <%= render "shared/icon/avatar_sm", image_url: contract.user.picture, extra_css: "-mr-1 border-2" %>
+          <%= render "shared/icon/avatar_sm", image_url: contract.user.avatar, extra_css: "-mr-1 border-2" %>
       <% end %>
     <% end %>
   </div>

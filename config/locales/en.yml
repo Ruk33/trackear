@@ -24,7 +24,7 @@ en:
   hours: "Hours"
   amount: "Amount"
   choose_another_date: "Chose another date"
-  default_stopwatch_description: "Logged from stopwatch"
+  default_stopwatch_description: "No description"
   select_date: "Select date"
   filters: "Filters"
   all_invoices: "All invoices"

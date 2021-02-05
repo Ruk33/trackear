@@ -2,7 +2,7 @@
 Trackear is a simple web application for freelancers to track work and
 generate invoices.
 
-You can use it for free in https://www.trackear.app/.
+Check it out at https://www.trackear.app/.
 
 ## Docker installation
 - Install [Docker](https://docs.docker.com/get-docker/)
@@ -31,17 +31,15 @@ You can use it for free in https://www.trackear.app/.
 ## Problems loading assets
 If you are experiencing problems loading the assets. Try disabling
 the secure_headers gem by commenting the line in the Gemfile.
-After that, run bundle and then restar the rails server.
+After that, run bundle and then restart the rails server.
 
 ## Assets
-If compiling the assets takes a long time, in a new terminal
-type `ruby bin/webpack-dev-server`. This will improve the asset
-generation time.
+If compiling the assets takes a long time, you can speed it up by running `ruby bin/webpack-dev-server` in a new terminal.
 
 ## Tech stack
 - Ruby
 - Ruby on Rails
-- PSQL
+- PostgreSQL
 - Elm
 - SASS
 - Cypress
@@ -52,7 +50,7 @@ entities/models (users, invoices, etc.) in the project.
 
 ## End to end test
 - Install test dependencies with `bundle install --with=development,test`
-- Create test database and run migrations with `RAILS_ENV=test rails db:create db:migrate`
+- Create the test database and run migrations with `RAILS_ENV=test rails db:create db:migrate`
 - Start rails in test mode with `rails s -e test`
 - Run cypress with `yarn e2e`
 - Search for `app`
@@ -60,8 +58,8 @@ entities/models (users, invoices, etc.) in the project.
 
 ## End to end test on Windows
 - Install test dependencies with `bundle install --with=development,test`
-- Set environment to test with `set RAILS_ENV=test`
-- Create test database and run migrations with `rails db:create db:migrate`
+- Set the environment to test with `set RAILS_ENV=test`
+- Create the test database and run migrations with `rails db:create db:migrate`
 - Start rails in test mode with `rails s -e test`
 - Run cypress with `yarn e2e`
 - Search for `app`
@@ -71,29 +69,18 @@ entities/models (users, invoices, etc.) in the project.
 Please review our FAQ.md file.
 
 ## Contributing
-Thank you for considering contributing to this project, we really appreciate it!
+Thank you for considering contributing to this project. We appreciate it!
 
 There are many ways you can contribute:
 
 - [Report bug or issues](https://github.com/Trackear/trackear/issues/new?assignees=&labels=&template=bug_report.md&title=)
 - [Suggest new features](https://github.com/Trackear/trackear/issues/new?assignees=&labels=&template=feature_request.md&title=)
-- Contribute with translations. Open a new issue so we can know what translation you will be working on. This way, we preveng multiple people working on the same thing.
-- Contribute with art / style improvement. Open a new issue to share it with us!
-- Contribute with code changes. Fork the project, make your changes and create a pull request.
-- Donations
+- Contribute with translations. Open a new issue so we can know what translation you will be working on. This way, we prevent multiple people from working on the same thing.
+- Contribute with art/style improvement. Open a new issue to share it with us!
+- Contribute with code changes. Fork the project, make your changes, and create a pull request.
 
-Please before doing so, make sure to check our CONTRIBUTING.md file and be sure
+Please, before doing so, make sure to check our CONTRIBUTING.md file and be sure
 to create a new Github issue so we can be in sync and well organized.
-
-## Donations
-Trackear.app is an application / project intended to be fully free. If you
-would like to contribute with donations to help us, you can do so with the
-following links.
-
-- [Donation 50 ARS](https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=114997172-e63f95ba-8a6f-45c8-9007-f67087588812)
-- [Donation 100 ARS](https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=114997172-425093a5-2c89-4253-9536-66cb7dc6a314)
-- [Donation 250 ARS](https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=114997172-9735ce3a-6445-4cf0-b0d0-0f49d1cdaff3)
-- [Donation 500 ARS](https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=114997172-ceadee56-00df-48d2-82e0-5168b8c34a0e)
 
 ## License
 Please review our LICENSE.md file.

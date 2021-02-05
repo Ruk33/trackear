@@ -1,0 +1,11 @@
+<h1 class="text-4xl mb-10">Dashboard</h1>
+
+<% if @stopwatch.present? %>
+  <%= render "home/dashboard/running_stopwatch" %>
+<% elsif @active_contracts.any? %>
+  <%= render "home/dashboard/stopwatch" %>
+<% else %>
+  <%= render "home/dashboard/create_project" %>
+<% end %>
+
+<%= render "home/dashboard/tracks" %>

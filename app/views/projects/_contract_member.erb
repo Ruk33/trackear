@@ -1,5 +1,5 @@
 <div class="media mt-3 p-3 border rounded shadow-sm">
-  <%= image_tag (contract.user.picture || ""), class: "avatar align-self-center mr-3" %>
+  <%= image_tag (contract.user.avatar || ""), class: "avatar align-self-center mr-3" %>
   <div class="media-body text-dark">
     <% if can? :manage, contract %>
       <%= link_to contract.user.first_name, edit_project_project_contract_path(project, contract) %>

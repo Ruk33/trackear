@@ -9,9 +9,10 @@ body {
 }
 
 .logout-avatar {
-  width: 32px;
-  height: 32px;
+  width: 64px;
+  height: 64px;
   border-radius: 100%;
+  margin: 0 auto;
 }
 
 .fc .fc-daygrid-day.fc-day-today {
@@ -146,10 +147,11 @@ body {
 }
 
 .btn.btn-secondary {
-  @apply text-gray-600;
-  @apply border;
+  @apply text-gray-800;
   @apply p-3;
   @apply rounded;
+  background: linear-gradient(45deg, #f3f7fa, #f7fafc);
+  @apply border;
 
   &:hover {
     @apply border-gray-400;
@@ -157,9 +159,7 @@ body {
 }
 
 .btn.btn-primary {
-  background-color: #48d466;
-  border-color: #48d466;
-  @apply border;
+  background: linear-gradient(45deg, #79cc4e, #92e283);
   @apply text-white;
   @apply p-3;
   @apply rounded;
@@ -203,5 +203,17 @@ body {
   .current, a {
     @apply font-normal;
     @apply px-3;
+  }
+}
+
+a.sidebar {
+  color: white;
+  @apply border-b;
+  @apply border-gray-800;
+  @apply block;
+  @apply p-4;
+
+  svg {
+    @apply text-pink-500;
   }
 }
