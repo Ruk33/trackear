@@ -1,4 +1,5 @@
 es:
+  clients: "Clientes"
   invited_to_project: "%{user}, te han invitado a unirte al proyecto %{project}."
   accept_invitation: "Aceptar"
   decline_invitation: "Rechazar"

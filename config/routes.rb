@@ -5,6 +5,8 @@ Rails.application.routes.draw do
   # match '/422', to: 'error#unacceptable', via: :all
   # match '/500', to: 'error#internal_error', via: :all
 
+  resources :clients, except: [:show]
+
   resources :users do
     post :become, on: :member
   end

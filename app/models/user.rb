@@ -9,6 +9,7 @@ class User < ApplicationRecord
 
   friendly_id :slug_candidates, use: :slugged
 
+  has_many :clients
   has_many :project_contracts
   has_many :project_invitations
   has_many :projects, through: :project_contracts
@@ -27,8 +28,6 @@ class User < ApplicationRecord
 
   validates :first_name, presence: true
   validates :last_name, presence: true
-
-  # validates_inclusion_of :time_zone, in: ActiveSupport::TimeZone.all.map(&:name)
 
   scope :online, -> { where("updated_at > ?", 25.minutes.ago) }
 
