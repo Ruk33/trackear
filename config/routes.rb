@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   resources :analytics
 
-  resources :activity_stop_watches do
+  resources :activity_stop_watches, only: [:create] do
     post :resume_from_track, on: :collection
   end
 
@@ -39,7 +39,7 @@ Rails.application.routes.draw do
     resources :project_contracts, module: :projects, except: [:index]
 
     resources :activity_tracks, module: :projects, except: [:index]
-    resources :activity_stop_watches, except: [:index] do
+    resources :activity_stop_watches, module: :projects, except: [:index] do
       post :stop, on: :member
       post :resume, on: :member
       post :destroy, on: :member

@@ -9,6 +9,6 @@
       </div>
     <% end %>
     <span class="text-sm px-3 text-gray-400"><%= t :or %></span>
-    <%= render 'activity_stop_watches/form', project: @project, activity_stop_watch: ActivityStopWatch.new, user: current_user %>
+    <%= render 'projects/activity_stop_watches/form', project: @project, activity_stop_watch: ActivityStopWatch.new, user: current_user %>
   </div>
 <% end %>
