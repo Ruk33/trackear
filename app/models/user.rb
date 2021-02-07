@@ -23,9 +23,6 @@ class User < ApplicationRecord
   has_many :expenses
   has_many :expense_invitations
 
-  has_many :submissions
-  has_many :other_submissions
-
   validates :first_name, presence: true
   validates :last_name, presence: true
 
@@ -93,12 +90,6 @@ class User < ApplicationRecord
     user
   end
 
-  def can_submit_feedback
-    last_ten_days_feedbacks = last_ten_days_submissions | last_ten_days_other_submissions
-    max_submissions_in_ten_days = 4
-    last_ten_days_feedbacks.length < max_submissions_in_ten_days
-  end
-
   def trial_days_left
     [0, (trial_ends_at - DateTime.now).to_i / 1.days].max
   end
@@ -109,23 +100,12 @@ class User < ApplicationRecord
   end
 
   private
-    def days_to_seconds days
-        60 * 60 * 24 * days
-    end
 
-    def last_ten_days_submissions
-        self.submissions.submitted_in_period(Time.now() - days_to_seconds(10), Time.now())
-    end
+  def add_30_days_trial
+    self.trial_ends_at = 30.days.from_now
+  end
 
-    def last_ten_days_other_submissions
-        self.other_submissions.submitted_in_period(Time.now() - days_to_seconds(10), Time.now())
-    end
-
-    def add_30_days_trial
-      self.trial_ends_at = 30.days.from_now
-    end
-
-    def track_new_user
-      Analytic.new_user
-    end
+  def track_new_user
+    Analytic.new_user
+  end
 end
