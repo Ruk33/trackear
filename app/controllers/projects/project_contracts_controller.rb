@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ProjectContractsController < ApplicationController
+class Projects::ProjectContractsController < ApplicationController
   before_action :authenticate_user!
 
   before_action :set_project, only: %i[show new create edit update destroy]

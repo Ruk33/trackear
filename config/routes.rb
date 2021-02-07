@@ -36,7 +36,7 @@ Rails.application.routes.draw do
       post :decline, on: :member
     end
 
-    resources :project_contracts, except: [:index]
+    resources :project_contracts, module: :projects, except: [:index]
 
     resources :activity_tracks, module: :projects, except: [:index]
     resources :activity_stop_watches, except: [:index] do
