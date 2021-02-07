@@ -87,15 +87,15 @@
     <%= t :invoice_status %>
   </h4>
   <% if @invoice_status.admin_waiting_for_hours_confirmation? %>
-    <%= render 'invoices/invoice_status/admin/waiting_for_hours_confirmation' %>
+    <%= render 'projects/invoices/invoice_status/admin/waiting_for_hours_confirmation' %>
   <% elsif @invoice_status.admin_review_entries? %>
-    <%= render 'invoices/invoice_status/admin/admin_review_entries' %>
+    <%= render 'projects/invoices/invoice_status/admin/admin_review_entries' %>
   <% elsif @invoice_status.admin_waiting_for_client_payment? %>
-    <%= render 'invoices/invoice_status/admin/admin_waiting_for_client_payment' %>
+    <%= render 'projects/invoices/invoice_status/admin/admin_waiting_for_client_payment' %>
   <% elsif @invoice_status.admin_client_paid? %>
-    <%= render 'invoices/invoice_status/admin/admin_client_paid' %>
+    <%= render 'projects/invoices/invoice_status/admin/admin_client_paid' %>
   <% elsif @invoice_status.admin_complete? %>
-    <%= render 'invoices/invoice_status/admin/admin_complete' %>
+    <%= render 'projects/invoices/invoice_status/admin/admin_complete' %>
   <% end %>
 <% end %>
 

@@ -45,13 +45,13 @@
     <%= t :invoice_status %>
   </h4>
   <% if @invoice_status.user_waiting_for_client_payment? %>
-    <%= render 'invoices/invoice_status/member/waiting_client_payment' %>
+    <%= render 'projects/invoices/invoice_status/member/waiting_client_payment' %>
   <% elsif @invoice_status.user_client_paid? %>
-    <%= render 'invoices/invoice_status/member/user_client_paid' %>
+    <%= render 'projects/invoices/invoice_status/member/user_client_paid' %>
   <% elsif @invoice_status.user_paying_in_progress? %>
-    <%= render 'invoices/invoice_status/member/user_paying_in_progress' %>
+    <%= render 'projects/invoices/invoice_status/member/user_paying_in_progress' %>
   <% elsif @invoice_status.user_complete? %>
-    <%= render 'invoices/invoice_status/member/user_complete' %>
+    <%= render 'projects/invoices/invoice_status/member/user_complete' %>
   <% end %>
 <% end %>
 

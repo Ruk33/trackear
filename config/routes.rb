@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   end
 
   resources :projects do
-    resources :invoice_statuses, only: [] do
+    resources :invoice_statuses, module: :projects, only: [] do
       post :confirm_hours, on: :member
     end
 
