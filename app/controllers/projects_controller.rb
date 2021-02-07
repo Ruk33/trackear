@@ -4,13 +4,11 @@ class ProjectsController < ApplicationController
   include ProjectsHelper
 
   before_action :authenticate_user!
-
   before_action :pay_wall, only: [
     :new,
     :create,
     :invite_member_from_onboarding
   ]
-
   before_action :set_project, only: %i[
     onboarding
     update_rate_from_onboarding
@@ -34,6 +32,10 @@ class ProjectsController < ApplicationController
     @active_contracts = current_user.project_contracts.currently_active.includes(:project)
   end
 
+  # When a new project gets created
+  # run the onboarding process will run.
+  # This flow helps the user to set his
+  # project up (rates, invite members, etc.)
   def onboarding
     track_page_view("auth/projects/onboarding")
 

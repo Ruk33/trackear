@@ -2,11 +2,8 @@
 
 class Projects::InvoicesController < ApplicationController
   before_action :authenticate_user!
-
   before_action :set_project
-
   before_action :set_invoice, except: %i[index new create]
-
   before_action :project_pay_wall, only: [
     :new,
     :create,

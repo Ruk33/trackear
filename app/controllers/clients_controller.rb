@@ -63,13 +63,12 @@ class ClientsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_client
-      @client = current_user.clients.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def client_params
-      params.require(:client).permit(:first_name, :last_name, :email, :address)
-    end
+  def set_client
+    @client = current_user.clients.find(params[:id])
+  end
+
+  def client_params
+    params.require(:client).permit(:first_name, :last_name, :email, :address)
+  end
 end

@@ -1,28 +1,16 @@
 class ProjectInvitationsController < ApplicationController
   before_action :authenticate_user!
-
-  before_action :set_project, only: %i[new create accept decline]
-
-  before_action :set_invitation, only: %i[accept decline]
-
-  before_action :project_pay_wall, only: [
-    :new,
-    :create
-  ]
+  before_action :set_project, only: [:new, :create, :accept, :decline]
+  before_action :set_invitation, only: [:accept, :decline]
+  before_action :project_pay_wall, only: [:new, :create]
 
   load_and_authorize_resource
-
-  # def index; end
-
-  # def show; end
 
   def new
     track_page_view("auth/project_invitations/new")
 
     @invitation = @project.project_invitations.new(user: current_user)
   end
-
-  # def edit; end
 
   def create
     track_page_view("auth/project_invitations/create")
@@ -55,10 +43,6 @@ class ProjectInvitationsController < ApplicationController
     @invitation.decline
     redirect_to home_path
   end
-
-  # def update; end
-
-  # def destroy; end
 
   private
 
