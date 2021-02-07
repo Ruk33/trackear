@@ -5,14 +5,14 @@
       <p class="text-lg text-gray-800">
         <%= log.description.gsub(/\n/, '<br/>').html_safe %>
       </p>
-      <h5 class="my-1">
+      <h5 class="my-1 text-gray-500">
         <%= log.project_contract.user.first_name %> <%= log.project_contract.user.last_name %> en <%= link_to "Proyecto #{log.project_contract.project.name}", log.project_contract.project %>
       </h5>
     </div>
   </div>
 
-  <div class="flex items-center text-lg text-gray-600">
-    <%= t(:log_from_to_logged, from: log.from.strftime("%d %B %Y"), time_words: distance_of_time_in_words(log.from, log.to, true, accumulate_on: :hours)) %>
+  <div class="flex items-center justify-center text-lg text-gray-700">
+    <%= t(:log_from_to_logged, from: log.from.strftime("%d %b %Y"), time_words: distance_of_time_in_words(log.from, log.to, true, accumulate_on: :hours)) %>
   </div>
 
   <div class="flex items-center text-lg justify-end">

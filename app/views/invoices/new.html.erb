@@ -1,41 +1,5 @@
-<% content_for :menu do %>
-  <div class="mt-4 pb-5">
-    <%= link_to project_invoices_path(@project), class: "btn btn-secondary w-full back-animation" do %>
-      <div class="flex items-center">
-        <svg class="w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z" />
-        </svg>
-        <%= t :back %>
-      </div>
-    <% end %>
-  </div>
-<%end%>
+<h1 class="text-4xl my-2">Crear factura</h1>
 
-<% content_for :content do %>
-  <h4 class="text-sm font-bold text-gray-600 my-3 uppercase">
-    <%= t :create_invoice %>
-  </h4>
-
-  <%= render "shared/content/box" do %>
-    <input type="hidden" id="project_slug" value="<%= @project.slug %>">
-    <%= render 'new_invoice_form', invoice: @invoice, project: @project %>
-
-    <div
-      id="invoice-form"
-      data-project_id="<%= @project.id %>"
-      data-name_label="<%= t :name %>"
-      data-hours_label="<%= t :hours %>"
-      data-amount_label="<%= t :amount %>"
-      data-date_label="<%= t :date %>"
-      data-choose_another_date_label="<%= t :choose_another_date %>"
-      data-create_invoice_label="<%= t :create_invoice %>"
-      data-continue_label="<%= t :continue %>"
-      data-select_date_label="<%= t :select_date %>"
-      data-default_avatar="<%= image_url('default-avatar.png') %>"
-    ></div>
-  <% end %>
+<%= render "shared/content/box" do %>
+  <%= render "form", invoice: @invoice, projects: @projects %>
 <% end %>
-
-<%= render "projects/layout" %>
-<%= javascript_pack_tag "invoices/new" %>
-<%= stylesheet_pack_tag "invoices/new" %>

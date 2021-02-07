@@ -1,0 +1,42 @@
+<%= form_with(model: [project, invoice], local: true) do |form| %>
+  <%= render 'shared/form/errors', errors: invoice.errors %>
+
+  <div class="form-group">
+    <%= form.label :currency %>
+    <%= form.select :currency, [['USD', 'USD'], ['ARS', 'ARS']], {}, { class: "form-control" } %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :discount_percentage %>
+    <%= form.number_field :discount_percentage, class: "form-control" %>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <div class="form-group">
+        <%= form.label :from %>
+        <%= form.date_field :from, class: "form-control", readonly: invoice.persisted? %>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="form-group">
+        <%= form.label :to %>
+        <%= form.date_field :to, class: "form-control", readonly: invoice.persisted? %>
+      </div>
+    </div>
+  </div>
+
+  <% if current_user.is_admin? %>
+    <div class="form-group">
+      <%= form.check_box :is_client_visible %>
+      <%= form.label :is_client_visible, "Is client invoice?" %>
+    </div>
+  <% end %>
+
+  <% if invoice.persisted? %>
+    <%= form.submit "Update invoice", class: "btn btn-primary" %>
+  <% else %>
+    <%= form.submit "Create invoice", class: "btn btn-primary" %>
+  <% end %>
+<% end %>

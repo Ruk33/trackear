@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   # match '/500', to: 'error#internal_error', via: :all
 
   resources :clients, except: [:show]
+  resources :invoices, only: [:index, :new, :create]
 
   resources :users do
     post :become, on: :member
@@ -45,7 +46,7 @@ Rails.application.routes.draw do
       post :finish, on: :member
     end
 
-    resources :invoices do
+    resources :invoices, module: :projects do
       post :add_entries_to_client_invoice, on: :member
       post :make_internal, on: :member
       post :make_client, on: :member

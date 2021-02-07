@@ -1,4 +1,8 @@
-<h1 class="text-4xl mb-10">Dashboard</h1>
+<h1 class="text-4xl my-2">Dashboard</h1>
+
+<%= render "home/dashboard/subscription" %>
+
+<%= render "home/dashboard/invitations" %>
 
 <% if @stopwatch.present? %>
   <%= render "home/dashboard/running_stopwatch" %>

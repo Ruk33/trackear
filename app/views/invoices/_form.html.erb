@@ -1,42 +1,30 @@
-<%= form_with(model: [project, invoice], local: true) do |form| %>
+<%= form_with(model: invoice, local: true) do |form| %>
   <%= render 'shared/form/errors', errors: invoice.errors %>
 
   <div class="form-group">
-    <%= form.label :currency %>
-    <%= form.select :currency, [['USD', 'USD'], ['ARS', 'ARS']], {}, { class: "form-control" } %>
+    <%= form.label :project_id, "Proyecto" %>
+    <%= form.select :project_id, projects.collect { |c| [ "Proyecto: #{c.name}", c.id ] }, {}, class: "w-full px-3 py-2 border" %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="form-group">
+      <%= form.label :from, "Desde" %>
+      <%= form.date_field :from, class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <%= form.label :to, "Hasta" %>
+      <%= form.date_field :to, class: "form-control" %>
+    </div>
   </div>
 
   <div class="form-group">
-    <%= form.label :discount_percentage %>
+    <%= form.label :discount_percentage, "Descuento (%)" %>
     <%= form.number_field :discount_percentage, class: "form-control" %>
   </div>
 
-  <div class="row">
-    <div class="col">
-      <div class="form-group">
-        <%= form.label :from %>
-        <%= form.date_field :from, class: "form-control", readonly: invoice.persisted? %>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="form-group">
-        <%= form.label :to %>
-        <%= form.date_field :to, class: "form-control", readonly: invoice.persisted? %>
-      </div>
-    </div>
+  <div class="flex items-center justify-end">
+    <%= link_to t(:cancel), invoices_path, class: "btn btn-secondary mr-2", id: "cancel-invoice-form" %>
+    <%= form.submit "Crear factura", class: "btn btn-primary" unless invoice.persisted? %>
+    <%= form.submit "Actualizar factura", class: "btn btn-primary" if invoice.persisted? %>
   </div>
-
-  <% if current_user.is_admin? %>
-    <div class="form-group">
-      <%= form.check_box :is_client_visible %>
-      <%= form.label :is_client_visible, "Is client invoice?" %>
-    </div>
-  <% end %>
-
-  <% if invoice.persisted? %>
-    <%= form.submit "Update invoice", class: "btn btn-primary" %>
-  <% else %>
-    <%= form.submit "Create invoice", class: "btn btn-primary" %>
-  <% end %>
 <% end %>

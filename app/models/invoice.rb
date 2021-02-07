@@ -135,7 +135,7 @@ class Invoice < ApplicationRecord
   end
 
   def is_paid?
-    return true if calculate_total == 0 && invoice_status.is_completed?
+    return true if calculate_total == 0 && invoice_status && invoice_status.is_completed?
 
     payment.present?
   end
