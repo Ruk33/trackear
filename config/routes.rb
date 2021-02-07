@@ -38,7 +38,7 @@ Rails.application.routes.draw do
 
     resources :project_contracts, except: [:index]
 
-    resources :activity_tracks, except: [:index]
+    resources :activity_tracks, module: :projects, except: [:index]
     resources :activity_stop_watches, except: [:index] do
       post :stop, on: :member
       post :resume, on: :member

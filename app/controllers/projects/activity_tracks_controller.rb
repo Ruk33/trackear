@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ActivityTracksController < ApplicationController
+class Projects::ActivityTracksController < ApplicationController
   before_action :authenticate_user!
 
   before_action :set_currently_active_contract, only: %i[show new create edit update destroy]
