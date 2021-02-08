@@ -10,15 +10,17 @@ class InvoicesController < ApplicationController
   def new
     @invoice = current_user.invoices.new
     @projects = current_user.projects
+    @clients = current_user.clients
   end
 
   def create
-    @invoice = current_user.invoices.new(invoice_params)
+    @invoice = current_user.invoices.for_client.new(invoice_params)
 
     if @invoice.save
       redirect_to [@invoice.project, @invoice], notice: "Factura creada exitosamente"
     else
       @projects = current_user.projects
+      @clients = current_user.clients
       render :new
     end
   end
@@ -28,9 +30,9 @@ class InvoicesController < ApplicationController
   def invoice_params
     params.require(:invoice).permit(
       :project_id,
+      :client_id,
       :from,
       :to,
-      :discount_percentage
     )
   end
 end

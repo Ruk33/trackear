@@ -11,16 +11,12 @@ class Invoice < ApplicationRecord
 
   belongs_to :project
   belongs_to :user
+  belongs_to :client, optional: true
   has_one :invoice_status
   has_many :invoice_entries
+
   accepts_nested_attributes_for :invoice_entries
 
-  validates :discount_percentage, numericality: {
-    greater_than_or_equal_to: 0,
-    less_than_or_equal_to: 100
-  }
-
-  after_create :create_admin_invoice_status, if: :is_client_visible?
   after_create :create_entries_for_member_invoice, unless: :is_client_visible?
 
   before_update :calc_and_set_afip_amount, if: :exchange_cents_changed?
@@ -100,10 +96,6 @@ class Invoice < ApplicationRecord
 
     update(is_visible: true)
     invoice_status.admin_client_notification_sent
-  end
-
-  def self.new_client_invoice(params)
-    new(params.merge(is_client_visible: true))
   end
 
   def self.new_team_member_invoice(client_invoice)

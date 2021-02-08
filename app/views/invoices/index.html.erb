@@ -1,11 +1,20 @@
-<h1 class="text-4xl my-2">Facturas</h1>
+<div class="flex items-center justify-between">
+  <h1 class="text-4xl my-2 mr-6">Facturas</h1>
+
+  <%= form_tag "/", method: :get, class: "flex items-center" do %>
+    <%= select_tag :project_id, nil, include_blank: "Todos los proyectos", onchange: "this.form.submit()", class: "mr-2 p-2 rounded shadow" %>
+    <%= date_field_tag :from, params[:from], onchange: "this.form.submit()", class: "shadow p-2 rounded mr-2" %>
+    <%= date_field_tag :to, params[:to], onchange: "this.form.submit()", class: "shadow p-2 rounded mr-2" %>
+  <% end %>
+
+  <%= link_to "Crear factura", new_invoice_path, class: "btn btn-primary" %>
+</div>
 
 <% @invoices.each do |invoice| %>
   <div class="mb-2">
     <%= render "shared/content/box" do %>
       <div class="grid grid-cols-5 gap-4">
         <div class="flex items-center">
-          <%= render "shared/icon/avatar", image_url: invoice.user.avatar, extra_css: "mr-2" %>
           <div class="text-gray-600">
             <%= link_to humanized_invoice_period(invoice), status_project_invoice_path(invoice.project, invoice), class: "text-lg" %>
             <br />
@@ -34,7 +43,3 @@
     <% end %>
   </div>
 <% end %>
-
-<div class="text-center mt-2">
-  <%= link_to "Crear factura", new_invoice_path, class: "btn btn-primary" %>
-</div>

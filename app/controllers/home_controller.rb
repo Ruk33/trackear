@@ -63,6 +63,6 @@ class HomeController < ApplicationController
       project = [project]
     end
 
-    ActivityTrackService.all_from(project, user, from, to).order(created_at: :desc)
+    ActivityTrackService.all_from(project, user, from, to).order(from: :desc)
   end
 end
