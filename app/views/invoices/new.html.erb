@@ -1,5 +1,3 @@
 <h1 class="text-4xl my-2">Crear factura</h1>
 
-<%= render "shared/content/box" do %>
-  <%= render "form", invoice: @invoice, projects: @projects, clients: @clients %>
-<% end %>
+<%= react_component("views/invoices/new", {}) %>

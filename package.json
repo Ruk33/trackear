@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@babel/preset-react": "^7.12.13",
+    "@babel/preset-typescript": "^7.12.13",
     "@fullcalendar/core": "^5.5.0",
     "@fullcalendar/daygrid": "^5.5.0",
     "@fullcalendar/interaction": "^5.5.0",
@@ -7,24 +9,44 @@
     "@fullcalendar/react": "^5.5.0",
     "@fullcalendar/timegrid": "^5.5.0",
     "@fullhuman/postcss-purgecss": "^3.0.0",
+    "@hot-loader/react-dom": "^17.0.1",
     "@rails/ujs": "^6.0.3-4",
     "@rails/webpacker": "5.1.1",
+    "@types/date-fns": "^2.6.0",
+    "@types/luxon": "^1.25.1",
+    "@types/react": "^17.0.1",
+    "@types/react-dom": "^17.0.0",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "chart.js": "^2.9.4",
     "chartkick": "^3.2.1",
     "cocoon-js": "^0.0.5",
     "cypress-file-upload": "^4.1.1",
+    "date-fns": "^2.17.0",
+    "date-fns-tz": "^1.1.1",
     "elm": "^0.19.1-3",
     "elm-webpack-loader": "^7.0.1",
     "jquery": "^3.5.1",
+    "luxon": "^1.25.0",
     "moment": "^2.29.1",
+    "prop-types": "^15.7.2",
+    "react": "^17.0.1",
+    "react-currency-input-field": "^3.2.5",
+    "react-dom": "^17.0.1",
+    "react-hot-loader": "^4.13.0",
+    "react-input-mask": "^3.0.0-alpha.2",
+    "react-intl-currency-input": "^0.2.6",
+    "react-maskinput": "^3.2.0",
+    "react-nice-dates": "^3.0.7",
+    "react_ujs": "^2.6.1",
     "tailwindcss": "^1.8.12",
     "tippy.js": "^6.2.7",
-    "turbolinks": "^5.2.0"
+    "turbolinks": "^5.2.0",
+    "typescript": "^4.1.3"
   },
   "devDependencies": {
     "cypress": "^5.4.0",
     "elm-hot-webpack-loader": "^1.1.7",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
     "e2e": "cypress open --project ./spec"

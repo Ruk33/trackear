@@ -30,6 +30,11 @@ class ProjectsController < ApplicationController
     track_page_view("auth/projects")
 
     @active_contracts = current_user.project_contracts.currently_active.includes(:project)
+
+    respond_to do |format|
+      format.html
+      format.json
+    end
   end
 
   # When a new project gets created
