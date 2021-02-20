@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, ChangeEvent, useMemo } from "react"
 import { hot } from "react-hot-loader"
 import { DateTime } from "luxon"
+import Joyride, { Placement, TooltipRenderProps } from "react-joyride"
 import CurrencyInput from 'react-currency-input-field'
 import TrackerMaskInput from "components/TrackearMaskInput"
 import TrackearDateRangePicker from "components/TrackearDateRangePicker"
@@ -8,6 +9,21 @@ import TrackearDateRangePicker from "components/TrackearDateRangePicker"
 const intlConfig = {
   locale: "en-US",
   currency: "USD",
+}
+
+const floaterProps = {
+  styles: {
+    floater: {
+      filter: "drop-shadow(rgba(0, 0, 0, 0.15) 0px 5px 5px)",
+    }
+  }
+}
+
+const tourStyles = {
+  options: {
+    beaconSize: 26,
+    spotlightShadow: "0 0 15px rgba(0, 0, 0, 0.5)"
+  }
 }
 
 type Project = {
@@ -190,6 +206,7 @@ function ProjectSelect(props: ProjectSelectProps) {
         <option value="" disabled>Seleccionar proyecto</option>
         {buildProjectOptions(projects)}
       </select>
+      <div className="ml-6 project_select" />
     </FetchingWrapper>
   )
 }
@@ -261,6 +278,7 @@ function ClientSelect(props: ClientSelectProps) {
         <option value="">Seleccionar cliente</option>
         {buildClientOptions(clients)}
       </select>
+      <div className="ml-6 client_select" />
     </FetchingWrapper>
   )
 }
@@ -432,19 +450,22 @@ function EntryRow(props: EntryRowProps) {
 type SelectEntriesProps = {
   start: Date | undefined,
   end: Date | undefined,
-  onChangeStart: (date: Date) => void,
-  onChangeEnd: (date: Date) => void,
+  onChangeStart: (date: Date | null) => void,
+  onChangeEnd: (date: Date | null) => void,
   disabled: boolean,
 }
 
 function SelectDates(props: SelectEntriesProps) {
   return (
-    <TrackearDateRangePicker
-      start={props.start}
-      end={props.end}
-      onChangeStart={props.onChangeStart}
-      onChangeEnd={props.onChangeEnd}
-    />
+    <div className="flex items-center">
+      <TrackearDateRangePicker
+        start={props.start || null}
+        end={props.end || null}
+        onChangeStart={props.onChangeStart}
+        onChangeEnd={props.onChangeEnd}
+      />
+      <div className="ml-6 date_select" />
+    </div>
   )
 }
 
@@ -532,10 +553,10 @@ type InvoiceFormProps = {
   onSetClient: (client: Client) => void,
 
   startDate: Date | undefined,
-  onSetStartDate: (date: Date) => void,
+  onSetStartDate: (date: Date | null) => void,
 
   endDate: Date | undefined,
-  onSetEndDate: (date: Date) => void,
+  onSetEndDate: (date: Date | null) => void,
 
   entries: Entry[],
   onSetEntries: (entries: Entry[]) => void,
@@ -711,16 +732,19 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
   )
 }
 
-type Props = {
-
+type InvoicesNewProps = {
+  onProjectSelected: () => void,
+  onClientSelected: () => void,
+  onSelectDates: () => void,
 }
 
-function InvoicesNew(props: Props) {
+function InvoicesNew(props: InvoicesNewProps) {
+  const { onProjectSelected, onClientSelected, onSelectDates } = props
   const [project, setProject] = useState("")
   const [client, setClient] = useState<Client | undefined>(undefined)
   const [entries, setEntries] = useState<Entry[]>([])
-  const [start, setStart] = useState<Date | undefined>()
-  const [end, setEnd] = useState<Date | undefined>()
+  const [start, setStart] = useState<Date | null>()
+  const [end, setEnd] = useState<Date | null>()
   const [preview, setPreview] = useState(false)
   const [removedTracks, setRemovedTracks] = useState(new Map<number, boolean>())
 
@@ -740,6 +764,27 @@ function InvoicesNew(props: Props) {
     setRemovedTracks(new Map(removedTracks).set(track.id, false))
   }, [setRemovedTracks, removedTracks])
 
+  const onSetEntries = useCallback((entries: Entry[]) => {
+    onSelectDates()
+    setEntries(entries)
+  }, [onSelectDates, setEntries])
+
+  useEffect(() => {
+    if (!project) {
+      return
+    }
+
+    onProjectSelected()
+  }, [project, onProjectSelected])
+
+  useEffect(() => {
+    if (!client) {
+      return
+    }
+
+    onClientSelected()
+  }, [client, onClientSelected])
+
   return (
     <div className="bg-white p-4 rounded border">
       <div className={`${!preview ? "visible" : "hidden"}`}>
@@ -748,12 +793,12 @@ function InvoicesNew(props: Props) {
           onSetProject={setProject}
           client={client}
           onSetClient={setClient}
-          startDate={start}
+          startDate={start || undefined}
           onSetStartDate={setStart}
-          endDate={end}
+          endDate={end || undefined}
           onSetEndDate={setEnd}
           entries={entries}
-          onSetEntries={setEntries}
+          onSetEntries={onSetEntries}
           onPreviewInvoice={onPreview}
           removedTracks={removedTracks}
           onRemoveTrack={removeTrack}
@@ -772,4 +817,78 @@ function InvoicesNew(props: Props) {
   )
 }
 
-export default hot(module)(InvoicesNew)
+function Tooltip(props: TooltipRenderProps) {
+  return <div>Something</div>
+}
+
+function TourInvoicesNew() {
+  const [run, setRun] = useState(false)
+  const [stepIndex, setStepIndex] = useState<number | undefined>(0)
+  const steps = useMemo(() => {
+    const placement: Placement = "right"
+    return [
+      {
+        target: ".project_select",
+        content: <div className="text-left">Seleccioná el proyecto para el que querés hacer la factura.</div>,
+        placement: placement
+      },
+      {
+        target: ".client_select",
+        content: (
+          <div className="text-left">
+            <p className="py-2">
+              Seleccioná el cliente al cual le vas a generar la factura.
+            </p>
+            <p className="py-2">
+              ¿Necesitas crear un nuevo cliente? <a href="/clients/new" className="btn btn-primary btn-sm">Crear nuevo cliente</a>
+            </p>
+          </div>
+        ),
+        placement: placement
+      },
+      {
+        target: ".date_select",
+        content: <div className="text-left">Seleccioná el período para cargar los registros de tiempo.</div>,
+        placement: placement
+      }
+    ]
+  }, [])
+
+  const showClientTooltip = useCallback(() => {
+    setStepIndex(1)
+  }, [setStepIndex])
+
+  const showDateTooltip = useCallback(() => {
+    setStepIndex(2)
+  }, [setStepIndex])
+
+  const hideTips = useCallback(() => {
+    setRun(false)
+  }, [setRun])
+
+  useEffect(() => {
+    setRun(true)
+  }, [])
+
+  return (
+    <div>
+      <Joyride
+        run={run}
+        hideBackButton={true}
+        disableOverlay={true}
+        stepIndex={stepIndex}
+        steps={steps}
+        spotlightPadding={0}
+        floaterProps={floaterProps}
+        styles={tourStyles}
+      />
+      <InvoicesNew
+        onProjectSelected={showClientTooltip}
+        onClientSelected={showDateTooltip}
+        onSelectDates={hideTips}
+      />
+    </div>
+  )
+}
+
+export default hot(module)(TourInvoicesNew)
