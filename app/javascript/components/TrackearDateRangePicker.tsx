@@ -1,9 +1,9 @@
-import React, { useState } from "react"
+import React from "react"
 import { es } from "date-fns/locale"
 import { DateRangePicker } from
 "react-nice-dates"
 
-import "react-nice-dates/build/style.css"
+require("../../../node_modules/react-nice-dates/build/style.css")
 
 type MaybeDate = Date | null;
 

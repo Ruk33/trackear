@@ -1,5 +1,5 @@
+import ReactDOM from "react-dom"
 import React, { useCallback, useEffect, useState, ChangeEvent, useMemo } from "react"
-import { hot } from "react-hot-loader"
 import { DateTime } from "luxon"
 import Joyride, { Placement, TooltipRenderProps } from "react-joyride"
 import CurrencyInput from 'react-currency-input-field'
@@ -891,4 +891,5 @@ function TourInvoicesNew() {
   )
 }
 
-export default hot(module)(TourInvoicesNew)
+ReactDOM.render(<TourInvoicesNew />, document.getElementById("invoices"))
+

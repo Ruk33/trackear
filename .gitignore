@@ -45,6 +45,7 @@ yarn-debug.log*
 .yarn-integrity
 cert/*
 
+/app/assets/javascripts/*
 /public/packs
 /public/packs-test
 /node_modules

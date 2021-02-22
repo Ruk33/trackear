@@ -5,6 +5,6 @@
   <script async defer data-domain="trackear.app" src="<%= (ENV['ANALYTICS_URL'] || Rails.application.credentials.analytics_url) %>"></script>
 <% end %>
 
-<%= stylesheet_pack_tag "main" %>
-<%= javascript_pack_tag "main", "application" %>
+<%= stylesheet_link_tag "packs/main" %>
+<%= javascript_include_tag "packs/main" %>
 

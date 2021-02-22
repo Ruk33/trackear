@@ -1,11 +1,19 @@
 module.exports = {
   future: {
-    // removeDeprecatedGapUtilities: true,
-    // purgeLayersByDefault: true,
-    // defaultLineHeights: true,
-    // standardFontWeights: true
+    removeDeprecatedGapUtilities: true,
+    purgeLayersByDefault: true,
+    defaultLineHeights: true,
+    standardFontWeights: true
   },
-  purge: [],
+  purge: {
+    enabled: true,
+    content: [
+      "./app/views/**/*.erb",
+      "./app/javascript/**/*.js",
+      "./app/javascript/**/*.tsx",
+      "./app/css/**/*.scss"
+    ],
+  },
   target: "relaxed",
   prefix: "",
   important: false,
