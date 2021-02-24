@@ -1,20 +1,20 @@
-import React from "react"
+import React, { memo } from "react"
 import { es } from "date-fns/locale"
-import { DateRangePicker } from
-"react-nice-dates"
+import { DateRangePicker } from "react-nice-dates"
 
 require("../../../node_modules/react-nice-dates/build/style.css")
 
 type MaybeDate = Date | null;
 
 type Props = {
+  disabled?: boolean,
   start: MaybeDate,
   end: MaybeDate,
   onChangeStart: (date: MaybeDate) => void,
   onChangeEnd: (date: MaybeDate) => void,
 }
 
-export default function TrackearDateRangePicker(props: Props) {
+function TrackearDateRangePicker(props: Props) {
   return (
     <DateRangePicker
       startDate={props.start || undefined}
@@ -28,13 +28,15 @@ export default function TrackearDateRangePicker(props: Props) {
       {({ startDateInputProps, endDateInputProps }) => (
         <div>
           <input
-            className="text-center rounded-l p-2 shadow"
+            className="text-center rounded-l p-2 shadow cursor-pointer"
             {...startDateInputProps}
+            disabled={props.disabled}
             placeholder="Desde"
           />
           <input
-            className="text-center rounded-r p-2 shadow"
+            className="text-center rounded-r p-2 shadow cursor-pointer"
             {...endDateInputProps}
+            disabled={props.disabled}
             placeholder="Hasta"
           />
         </div>
@@ -42,3 +44,5 @@ export default function TrackearDateRangePicker(props: Props) {
     </DateRangePicker>
   )
 }
+
+export default memo(TrackearDateRangePicker)

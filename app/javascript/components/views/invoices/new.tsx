@@ -1,10 +1,20 @@
 import ReactDOM from "react-dom"
 import React, { useCallback, useEffect, useState, ChangeEvent, useMemo } from "react"
 import { DateTime } from "luxon"
-import Joyride, { Placement, TooltipRenderProps } from "react-joyride"
-import CurrencyInput from 'react-currency-input-field'
+import Joyride, { Placement } from "react-joyride"
+import CurrencyInput from "react-currency-input-field"
 import TrackerMaskInput from "components/TrackearMaskInput"
 import TrackearDateRangePicker from "components/TrackearDateRangePicker"
+import TrackearButton from "components/TrackearButton"
+import TrackearFetching from "components/TrackearFetching"
+import TrackearModal from "components/TrackearModal"
+import ClientForm from "../clients/ClientForm"
+import { Client, getAllClients } from "components/service/Client"
+import { Project, getAllProjects } from "components/service/Project"
+import { calculateTotalFromEntries, Entry } from "components/service/Entry"
+import { Track, calculateTrackAmount, hoursFromTrack, formatQtyTrack, setHoursAndMinutesFromTrack } from "components/service/Track"
+import TrackearSelectInput, { SelectOption } from "components/TrackearSelectInput"
+import TrackearTable, { TableColumn, TableRow } from "components/TrackearTable"
 
 const intlConfig = {
   locale: "en-US",
@@ -26,135 +36,15 @@ const tourStyles = {
   }
 }
 
-type Project = {
-  id: string,
-  name: string,
-}
-
-type Client = {
-  id: string,
-  first_name: string,
-  last_name: string,
-  email: string,
-  address: string,
-}
-
-type Contract = {
-  is_admin: boolean,
-}
-
-/**
- * Entry contains all the
- * tracks registered by a
- * user.
- */
-type Entry = {
-  contract: Contract,
-  tracks: Track[],
-  user: User,
-}
-
-/**
- * Track is the entry of work
- * registered by a user. It
- * contains a from and a to
- * date from where we can
- * calculate it's quantity.
- */
-type Track = {
-  id: number,
-  description: string,
-  from: string,
-  to: string,
-  project_rate: string,
-  user_rate: string,
-}
-
-type User = {
-  id: number,
-  email: string,
-  first_name: string,
-  last_name: string,
-  picture: string,
-}
-
-function hoursFromTrack(track: Track) {
-  return DateTime
-  .fromISO(track.to)
-  .diff(DateTime.fromISO(track.from), "hours")
-  .hours
-}
-
-function hoursAndMinutesFromTrack(track: Track) {
-  return DateTime
-  .fromISO(track.to)
-  .diff(DateTime.fromISO(track.from), ["hours", "minutes"])
-  .toObject()
-}
-
-function calculateTrackAmount(track: Track) {
-  const hours = hoursFromTrack(track)
-  const rate = Number(track.project_rate) || 0
-  return Number((rate * hours).toFixed(2))
-}
-
-function calculateTotalFromEntries(entries: Entry[], ignoredTracks: Map<number, boolean>) {
-  return entries.reduce((entryResult, entry) => {
-    return entryResult + entry.tracks.reduce((result, track) => {
-      if (ignoredTracks.get(track.id)) {
-        return result
-      }
-      return result + calculateTrackAmount(track)
-    }, 0)
-  }, 0)
-}
-
-type FetchingWrapperProps = {
-  /*
-   * Shows a loading message if true
-   */
-  loading: boolean,
-
-  /*
-   * If loading isn't true and error is
-   * truthy, the error message will be displayed.
-   */
-  error: string | undefined,
-
-  /*
-   * If both, loading and error are falsy,
-   * display these React children.
-   */
-  children: any
-}
-
-function FetchingWrapper(props: FetchingWrapperProps) {
-  if (props.loading) {
-    return (
-      <div>
-        Cargando...
-      </div>
-    )
-  }
-
-  if (props.error) {
-    return (
-      <div>
-        {props.error}
-      </div>
-    )
-  }
-
-  return props.children
+const tourLocale = {
+  back: "Atras",
+  close: "Cerrar",
+  last: "Último",
+  next: "Siguiente",
+  skip: "Saltar"
 }
 
 type ProjectSelectProps = {
-  /*
-   * Endpoint to get all the projects
-   * of the current user (logged user)
-   */
-  projectsUri: string,
-
   /*
    * Selected project id.
    */
@@ -165,60 +55,66 @@ type ProjectSelectProps = {
 
 function ProjectSelect(props: ProjectSelectProps) {
   const [projects, setProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
   const fetchProjects = useCallback(async () => {
-    setLoading(false)
+    setLoading(true)
 
     try {
-      const rawResult = await fetch(props.projectsUri)
-      const jsonResult = await rawResult.json()
-      setProjects(jsonResult)
+      const projects = await getAllProjects()
+      setProjects(projects)
     } catch (e) {
       setError("Hubo un problema al obtener los proyectos.")
     }
-  }, [setLoading, setProjects, setError, props])
+
+    setLoading(false)
+  }, [setLoading, setProjects, setError])
 
   const onSelectProject = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
     props.onSelectProject(e.target.value)
   }, [props])
 
-  const buildProjectOptions = useCallback((projects: Project[]) => {
-    return projects.map((project) => (
-      <option key={project.id} value={project.id}>
-        {project.name}
-      </option>
-    ))
-  }, [])
+  const projectOptions: SelectOption[] = useMemo(() => {
+    return projects.map((project) => ({
+      id: project.id,
+      label: project.name,
+      value: project.id,
+    }))
+  }, [projects])
 
   useEffect(() => {
     fetchProjects()
   }, [fetchProjects])
 
   return (
-    <FetchingWrapper loading={loading} error={error}>
-      <select
+    <TrackearFetching loading={loading} error={error}>
+      <TrackearSelectInput
+        options={projectOptions}
         value={props.project}
         onChange={onSelectProject}
-        className="p-2 rounded shadow bg-white"
-      >
-        <option value="" disabled>Seleccionar proyecto</option>
-        {buildProjectOptions(projects)}
-      </select>
+      />
       <div className="ml-6 project_select" />
-    </FetchingWrapper>
+    </TrackearFetching>
   )
 }
 
 type ClientSelectProps = {
-  /*
-   * Endpoint to get all the current user's (logged user)
-   * clients.
+  /**
+   * Loading/fetching clients?
    */
-  clientsUri: string,
+  loading: boolean,
+
+  /**
+   * Error while getting the clients.
+   */
+  error: string,
+
+  clients: Client[],
 
   client: Client | undefined,
+
+  onUpdateClient: () => void,
 
   onSelectClient: (client: Client) => void,
 
@@ -226,23 +122,7 @@ type ClientSelectProps = {
 }
 
 function ClientSelect(props: ClientSelectProps) {
-  const { client, clientsUri } = props
-  const [clients, setClients] = useState<Client[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-
-  const fetchClients = useCallback(async () => {
-    setLoading(false)
-
-    try {
-      const rawResult = await fetch(clientsUri)
-      const jsonResult = await rawResult.json()
-
-      setClients(jsonResult)
-    } catch (e) {
-      setError("Hubo un problema al obtener los clientes.")
-    }
-  }, [setLoading, setClients, setError, clientsUri])
+  const { client, clients, onUpdateClient } = props
 
   const onSelectClient = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
     const selectedClientId = e.target.value
@@ -255,31 +135,25 @@ function ClientSelect(props: ClientSelectProps) {
     props.onSelectClient(selectedClient)
   }, [props, clients])
 
-  const buildClientOptions = useCallback((clients: Client[]) => {
-    return clients.map((client) => (
-      <option key={client.id} value={client.id}>
-        {client.first_name} {client.last_name} ({client.email})
-      </option>
-    ))
-  }, [])
-
-  useEffect(() => {
-    fetchClients()
-  }, [fetchClients])
+  const clientOptions: SelectOption[] = useMemo(() => {
+    return clients.map((client) => ({
+      id: String(client.id),
+      label: `${client.first_name} ${client.last_name} (${client.email})`,
+      value: String(client.id),
+    }))
+  }, [clients])
 
   return (
-    <FetchingWrapper loading={loading} error={error}>
-      <select
+    <TrackearFetching loading={props.loading} error={props.error}>
+      <TrackearSelectInput
         disabled={props.disabled}
-        value={client ? client.id : undefined}
+        value={client ? String(client.id) : undefined}
         onChange={onSelectClient}
-        className="p-2 rounded shadow bg-white"
-      >
-        <option value="">Seleccionar cliente</option>
-        {buildClientOptions(clients)}
-      </select>
+        options={clientOptions}
+      />
+      {client && <button className="text-blue-400 p-2" onClick={onUpdateClient}>Actualizar cliente</button>}
       <div className="ml-6 client_select" />
-    </FetchingWrapper>
+    </TrackearFetching>
   )
 }
 
@@ -336,17 +210,6 @@ function EntryRow(props: EntryRowProps) {
   const { entry, onRemove, onRestore, onUpdate, removedTracks } = props
   const { user, tracks } = entry
 
-  const getQty = useCallback((track: Track) => {
-    const diff = hoursAndMinutesFromTrack(track)
-    const safeHours = Number(diff.hours) || 0
-    const safeMinutes = Number(diff.minutes) || 0
-    const hours = safeHours < 10 ? `0${safeHours}` : `${safeHours}`
-    const ceilMinutes = Math.ceil(safeMinutes)
-    const minutes = ceilMinutes < 10 ? `0${ceilMinutes}` : `${ceilMinutes}`
-
-    return `${hours}:${minutes}`
-  }, [])
-
   const onUpdateDescription = useCallback((e: ChangeEvent<HTMLTextAreaElement>, track: Track) => {
     onUpdate({
       ...track,
@@ -356,19 +219,15 @@ function EntryRow(props: EntryRowProps) {
 
   const onUpdateQty = useCallback((e: ChangeEvent<HTMLInputElement>, track: Track) => {
     const [hours, minutes] = e.target.value.split(":")
-    const newDate =
-      DateTime
-      .fromISO(track.from)
-      .plus({
-        hours: Number(hours) || 0,
-        minutes: Number(minutes) || 0
-      })
-      .toISO()
+    const updatedTrack = { ...track }
 
-    onUpdate({
-      ...track,
-      to: newDate
-    })
+    setHoursAndMinutesFromTrack(
+      updatedTrack,
+      Number(hours) || 0,
+      Number(minutes) || 0,
+    )
+
+    onUpdate(updatedTrack)
   }, [onUpdate])
 
   const onUpdateRate = useCallback((value: string | undefined, track: Track) => {
@@ -406,7 +265,7 @@ function EntryRow(props: EntryRowProps) {
               className={`border p-2 w-full text-right ${removedTracks.get(track.id) && "opacity-50"}`}
               maskChar="0"
               mask="00:00"
-              value={getQty(track)}
+              value={formatQtyTrack(track)}
               onChange={(e) => onUpdateQty(e, track)}
             />
           </td>
@@ -463,6 +322,7 @@ function SelectDates(props: SelectEntriesProps) {
         end={props.end || null}
         onChangeStart={props.onChangeStart}
         onChangeEnd={props.onChangeEnd}
+        disabled={props.disabled}
       />
       <div className="ml-6 date_select" />
     </div>
@@ -549,7 +409,11 @@ type InvoiceFormProps = {
   project: string,
   onSetProject: (project: string) => void,
 
+  onUpdateClient: () => void,
   client: undefined | Client,
+  clients: Client[],
+  fetchingClients: boolean,
+  errorFetchingClients: string,
   onSetClient: (client: Client) => void,
 
   startDate: Date | undefined,
@@ -572,14 +436,23 @@ function InvoiceForm(props: InvoiceFormProps) {
   const {
     project,
     onSetProject,
+
+    onUpdateClient,
     client,
+    clients,
+    fetchingClients,
+    errorFetchingClients,
     onSetClient,
+
     startDate,
     onSetStartDate,
+
     endDate,
     onSetEndDate,
+
     entries,
     onSetEntries,
+
     removedTracks,
     onRemoveTrack,
     onRestoreTrack,
@@ -623,7 +496,6 @@ function InvoiceForm(props: InvoiceFormProps) {
       <div className="flex items-center mb-2">
         <div className="font-bold w-48">Proyecto</div>
         <ProjectSelect
-          projectsUri="/projects.json"
           project={project}
           onSelectProject={onSetProject}
         />
@@ -631,8 +503,11 @@ function InvoiceForm(props: InvoiceFormProps) {
       <div className="flex items-center mb-2">
         <div className="font-bold w-48">Cliente</div>
         <ClientSelect
-          clientsUri="/clients.json"
+          onUpdateClient={onUpdateClient}
           client={client}
+          clients={clients}
+          loading={fetchingClients}
+          error={errorFetchingClients}
           onSelectClient={onSetClient}
           disabled={!project}
         />
@@ -647,7 +522,7 @@ function InvoiceForm(props: InvoiceFormProps) {
           onChangeEnd={onSetEndDate}
         />
       </div>
-      <FetchingWrapper
+      <TrackearFetching
         loading={loading}
         error={error}
       >
@@ -660,15 +535,19 @@ function InvoiceForm(props: InvoiceFormProps) {
           onRemoveTrack={onRemoveTrack}
           onRestoreTrack={onRestoreTrack}
         />
-      </FetchingWrapper>
+      </TrackearFetching>
       {entries.length > 0 && <div className="text-center">
-        <button
+        <TrackearButton
           type="button"
           className="my-4 btn btn-primary mx-auto"
           onClick={props.onPreviewInvoice}
+          icon={<svg className="w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>}
         >
           Ver factura como cliente
-        </button>
+        </TrackearButton>
       </div>}
     </>
   )
@@ -682,18 +561,51 @@ type PreviewInvoiceProps = {
 }
 
 function PreviewInvoice(props: PreviewInvoiceProps) {
-  const { removedTracks, onClosePreview, client } = props
+  const { entries, removedTracks, onClosePreview, client } = props
 
-  const buildRow = useCallback((entry: Entry) => {
+  const columns: TableColumn[] = useMemo(() => {
+    return [
+      {
+        id: "description",
+        component: "Descripción",
+      },
+      {
+        id: "qty",
+        component: "Cantidad",
+      },
+      {
+        id: "amount",
+        component: "Total",
+      },
+    ]
+  }, [])
+
+  const buildRows = useCallback((entry: Entry): TableRow[][] => {
     const tracks = entry.tracks.filter((track) => !removedTracks.get(track.id))
-    return tracks.map((track) => (
-      <tr key={track.id}>
-        <td className="text-left p-2">{track.description}</td>
-        <td className="text-right p-2">{hoursFromTrack(track).toFixed(2)}</td>
-        <td className="text-right p-2">${calculateTrackAmount(track)}</td>
-      </tr>
-    ))
+    return tracks.map((track) => ([
+      {
+        id: "description",
+        component: track.description
+      },
+      {
+        id: "qty",
+        component: hoursFromTrack(track).toFixed(2),
+      },
+      {
+        id: "amount",
+        component: `$${calculateTrackAmount(track)}`,
+      },
+    ]))
   }, [removedTracks])
+
+  const rows: TableRow[][] = useMemo(() => {
+    return entries.reduce((result: TableRow[][], entry: Entry) => {
+      return [
+        ...result,
+        ...buildRows(entry)
+      ]
+    }, [])
+  }, [entries, buildRows])
 
   return (
     <>
@@ -707,25 +619,19 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
           <p>Address: ...</p>
         </div>
       </div>
-      <table className="w-full border">
-        <thead>
-          <tr>
-            <th className="py-4 px-2 bg-gray-100 border text-left">Description</th>
-            <th className="py-4 px-2 bg-gray-100 border text-right">Qty</th>
-            <th className="py-4 px-2 bg-gray-100 border text-right">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {props.entries.map(buildRow)}
-        </tbody>
-      </table>
+
+      <TrackearTable
+        columns={columns}
+        rows={rows}
+      />
+
       <div className="text-center mt-2">
         <button
-          className="btn btn-primary"
+          className="btn btn-secondary"
           type="button"
           onClick={onClosePreview}
         >
-          Editar
+          Continuar editando
         </button>
       </div>
     </>
@@ -733,15 +639,20 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
 }
 
 type InvoicesNewProps = {
+  onUpdateClient: () => void,
+  client: Client | undefined,
+  clients: Client[],
+  setClient: (client: Client) => void,
+  fetchingClients: boolean,
+  errorFetchingClients: string,
   onProjectSelected: () => void,
   onClientSelected: () => void,
   onSelectDates: () => void,
 }
 
 function InvoicesNew(props: InvoicesNewProps) {
-  const { onProjectSelected, onClientSelected, onSelectDates } = props
+  const { onUpdateClient, client, clients, setClient, fetchingClients, errorFetchingClients, onProjectSelected, onClientSelected, onSelectDates } = props
   const [project, setProject] = useState("")
-  const [client, setClient] = useState<Client | undefined>(undefined)
   const [entries, setEntries] = useState<Entry[]>([])
   const [start, setStart] = useState<Date | null>()
   const [end, setEnd] = useState<Date | null>()
@@ -791,7 +702,11 @@ function InvoicesNew(props: InvoicesNewProps) {
         <InvoiceForm
           project={project}
           onSetProject={setProject}
+          onUpdateClient={onUpdateClient}
           client={client}
+          clients={clients}
+          fetchingClients={fetchingClients}
+          errorFetchingClients={errorFetchingClients}
           onSetClient={setClient}
           startDate={start || undefined}
           onSetStartDate={setStart}
@@ -817,13 +732,55 @@ function InvoicesNew(props: InvoicesNewProps) {
   )
 }
 
-function Tooltip(props: TooltipRenderProps) {
-  return <div>Something</div>
-}
-
 function TourInvoicesNew() {
+  const [updatingClient, setUpdatingClient] = useState(false)
+  const [creatingClient, setCreatingClient] = useState(false)
+  const [client, setClient] = useState<Client | undefined>(undefined)
+  const [clients, setClients] = useState<Client[]>([])
+  const [fetchingClients, setFetchingClients] = useState(false)
+  const [errorFetchingClients, setErrorFetchingClients] = useState("")
   const [run, setRun] = useState(false)
   const [stepIndex, setStepIndex] = useState<number | undefined>(0)
+
+  const fetchClients = useCallback(async (selectLast) => {
+    setFetchingClients(true)
+
+    try {
+      const result = await getAllClients()
+      setClients(result)
+
+      if (selectLast) {
+        setClient(result[result.length - 1])
+      }
+    } catch (e) {
+      setErrorFetchingClients("Hubo un error al obtener tus clientes. Por favor, intentalo mas tarde.")
+    }
+
+    setFetchingClients(false)
+  }, [setFetchingClients, setClients, setClient, setErrorFetchingClients])
+
+  const showClientTooltip = useCallback(() => {
+    setStepIndex(1)
+  }, [setStepIndex])
+
+  const showDateTooltip = useCallback(() => {
+    setStepIndex(2)
+  }, [setStepIndex])
+
+  const hideTips = useCallback(() => {
+    setRun(false)
+  }, [setRun])
+
+  const openClientForm = useCallback(() => {
+    setCreatingClient(true)
+    setRun(false)
+  }, [setCreatingClient])
+
+  const closeClientForm = useCallback(() => {
+    setCreatingClient(false)
+    setRun(true)
+  }, [setCreatingClient])
+
   const steps = useMemo(() => {
     const placement: Placement = "right"
     return [
@@ -840,7 +797,7 @@ function TourInvoicesNew() {
               Seleccioná el cliente al cual le vas a generar la factura.
             </p>
             <p className="py-2">
-              ¿Necesitas crear un nuevo cliente? <a href="/clients/new" className="btn btn-primary btn-sm">Crear nuevo cliente</a>
+              ¿Necesitas crear un nuevo cliente? <button type="button" onClick={openClientForm} className="btn btn-primary btn-sm">Crear nuevo cliente</button>
             </p>
           </div>
         ),
@@ -854,24 +811,73 @@ function TourInvoicesNew() {
     ]
   }, [])
 
-  const showClientTooltip = useCallback(() => {
-    setStepIndex(1)
-  }, [setStepIndex])
+  const closeAndSelectCreatedClient = useCallback(() => {
+    closeClientForm()
+    fetchClients(true)
+  }, [closeClientForm, fetchClients])
 
-  const showDateTooltip = useCallback(() => {
-    setStepIndex(2)
-  }, [setStepIndex])
+  const onUpdateClient = useCallback(() => {
+    setUpdatingClient(true)
+  }, [setUpdatingClient])
 
-  const hideTips = useCallback(() => {
-    setRun(false)
-  }, [setRun])
+  const closeUpdateClient = useCallback(() => {
+    setUpdatingClient(false)
+  }, [setUpdatingClient])
+
+  const closeAndRefetchClients = useCallback(() => {
+    closeUpdateClient()
+    fetchClients(false)
+  }, [closeUpdateClient, fetchClients])
+
+  const clientAsForm = useMemo(() => {
+    if (!client) {
+      return undefined
+    }
+
+    const selectedClient = clients.find((c) => c.id === client.id)
+
+    if (!selectedClient) {
+      return undefined;
+    }
+
+    return {
+      firstName: selectedClient.first_name,
+      lastName: selectedClient.last_name,
+      email: selectedClient.email,
+      address: selectedClient.address
+    }
+  }, [clients, client])
 
   useEffect(() => {
+    fetchClients(false)
     setRun(true)
   }, [])
 
   return (
     <div>
+      <TrackearModal
+        isOpen={creatingClient}
+        onRequestClose={closeClientForm}
+      >
+        <div style={{ minWidth: "600px" }}>
+          <h1 className="font-bold text-lg mb-2">Crear nuevo cliente</h1>
+          <ClientForm onSuccess={closeAndSelectCreatedClient} />
+        </div>
+      </TrackearModal>
+
+      <TrackearModal
+        isOpen={updatingClient}
+        onRequestClose={closeUpdateClient}
+      >
+        <div style={{ minWidth: "600px" }}>
+          <h1 className="font-bold text-lg mb-2">Actualizar cliente</h1>
+          <ClientForm
+            id={client ? String(client.id) : undefined}
+            client={clientAsForm}
+            onSuccess={closeAndRefetchClients}
+          />
+        </div>
+      </TrackearModal>
       <Joyride
         run={run}
         hideBackButton={true}
@@ -881,8 +887,15 @@ function TourInvoicesNew() {
         spotlightPadding={0}
         floaterProps={floaterProps}
         styles={tourStyles}
+        locale={tourLocale}
       />
       <InvoicesNew
+        onUpdateClient={onUpdateClient}
+        client={client}
+        clients={clients}
+        setClient={setClient}
+        fetchingClients={fetchingClients}
+        errorFetchingClients={errorFetchingClients}
         onProjectSelected={showClientTooltip}
         onClientSelected={showDateTooltip}
         onSelectDates={hideTips}

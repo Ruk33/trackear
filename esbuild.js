@@ -14,11 +14,6 @@ esbuild.build({
   bundle: true,
   outdir: "app/assets/javascripts",
   plugins: [
-    alias({
-      "react-dom": prod ?
-      require.resolve("react-dom") :
-      require.resolve("@hot-loader/react-dom")
-    }),
     postcss({
       plugins: [
         tailwindcss("./tailwind.config.js"),

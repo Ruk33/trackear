@@ -77,7 +77,6 @@ module.exports = function(api) {
           async: false
         }
       ],
-      'react-hot-loader/babel',
       isProductionEnv && [
         'babel-plugin-transform-react-remove-prop-types',
         {

@@ -1,18 +1,10 @@
-import React from "react"
-import { hot } from "react-hot-loader"
+import React, { memo } from "react"
 import MaskInput, { IInputProps } from "react-maskinput"
 
 type Props = {
   className: string,
 }
 
-/*
- * For some reason, while using hot code
- * replacement, the default value for
- * format is lost. This is why we have to
- * make sure we always send it so
- * it doesn't explode on reload...
- */
 const defaultMaskFormat = [
   { str: "0", regexp: /[0-9]/ },
   { str: "*", regexp: /./ },
@@ -28,4 +20,4 @@ function TrackerMaskInput(props: Props & IInputProps) {
   )
 }
 
-export default hot(module)(TrackerMaskInput)
+export default memo(TrackerMaskInput)
