@@ -1,12 +1,12 @@
+import { useCallback, useState } from "react"
 import { Client, getAllClients } from "components/service/Client"
-import { useState } from "react"
 
 export function useFetchClients() {
   const [clients, setClients] = useState<Client[]>([])
   const [fetching, setFetching] = useState(false)
   const [error, setError] = useState("")
 
-  async function fetchClients() {
+  const fetchClients = useCallback(async function () {
     setFetching(true)
 
     try {
@@ -20,7 +20,7 @@ export function useFetchClients() {
     }
 
     return []
-  }
+  }, [setFetching, setClients, setError])
 
   return {
     error,

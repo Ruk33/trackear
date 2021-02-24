@@ -8,7 +8,6 @@ import TrackearDateRangePicker from "components/TrackearDateRangePicker"
 import TrackearButton from "components/TrackearButton"
 import TrackearFetching from "components/TrackearFetching"
 import { Client } from "components/service/Client"
-import { Project, getAllProjects } from "components/service/Project"
 import { calculateTotalFromEntries, Entry } from "components/service/Entry"
 import { Track, calculateTrackAmount, hoursFromTrack, formatQtyTrack, setHoursAndMinutesFromTrack } from "components/service/Track"
 import TrackearSelectInput, { SelectOption } from "components/TrackearSelectInput"
@@ -16,6 +15,7 @@ import TrackearTable, { TableColumn } from "components/TrackearTable"
 import NewClientModal from "components/modal/clients/NewClientModal"
 import UpdateClientModal from "components/modal/clients/UpdateClientModal"
 import { useFetchClients } from "components/hook/ClientHook"
+import { useFetchProjects } from "components/hook/ProjectHook"
 
 const intlConfig = {
   locale: "en-US",
@@ -54,27 +54,12 @@ type ProjectSelectProps = {
   onSelectProject: (project: string) => void,
 }
 
-function ProjectSelect(props: ProjectSelectProps) {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+function ProjectSelect({ project, onSelectProject }: ProjectSelectProps) {
+  const { projects, fetchProjects, fetching, error } = useFetchProjects()
 
-  const fetchProjects = useCallback(async () => {
-    setLoading(true)
-
-    try {
-      const projects = await getAllProjects()
-      setProjects(projects)
-    } catch (e) {
-      setError("Hubo un problema al obtener los proyectos.")
-    }
-
-    setLoading(false)
-  }, [setLoading, setProjects, setError])
-
-  const onSelectProject = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-    props.onSelectProject(e.target.value)
-  }, [props])
+  const handleSelectProject = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    onSelectProject(e.target.value)
+  }, [onSelectProject])
 
   const projectOptions: SelectOption[] = useMemo(() => {
     return projects.map((project) => ({
@@ -89,12 +74,12 @@ function ProjectSelect(props: ProjectSelectProps) {
   }, [fetchProjects])
 
   return (
-    <TrackearFetching loading={loading} error={error}>
+    <TrackearFetching loading={fetching} error={error}>
       <TrackearSelectInput
         placeholder="Seleccionar proyecto"
         options={projectOptions}
-        value={props.project}
-        onChange={onSelectProject}
+        value={project}
+        onChange={handleSelectProject}
       />
       <div className="ml-6 project_select" />
     </TrackearFetching>
@@ -124,9 +109,9 @@ type ClientSelectProps = {
 }
 
 function ClientSelect(props: ClientSelectProps) {
-  const { client, clients, onUpdateClient } = props
+  const { client, clients, onUpdateClient, onSelectClient } = props
 
-  const onSelectClient = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+  const handleSelectClient = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
     const selectedClientId = e.target.value
     const selectedClient = clients.find((client) => String(client.id) === selectedClientId)
 
@@ -134,8 +119,8 @@ function ClientSelect(props: ClientSelectProps) {
       return
     }
 
-    props.onSelectClient(selectedClient)
-  }, [props, clients])
+    onSelectClient(selectedClient)
+  }, [onSelectClient, clients])
 
   const clientOptions: SelectOption[] = useMemo(() => {
     return clients.map((client) => ({
@@ -151,7 +136,7 @@ function ClientSelect(props: ClientSelectProps) {
         placeholder="Seleccionar cliente"
         disabled={props.disabled}
         value={client ? String(client.id) : undefined}
-        onChange={onSelectClient}
+        onChange={handleSelectClient}
         options={clientOptions}
       />
       {client && <button className="text-blue-400 p-2" onClick={onUpdateClient}>Actualizar cliente</button>}
@@ -733,9 +718,7 @@ function TourInvoicesNew() {
     try {
       const result = await fetchClients()
       setClient(result[result.length - 1])
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }, [fetchClients])
 
   const showClientTooltip = useCallback(() => {
@@ -826,7 +809,6 @@ function TourInvoicesNew() {
         onSuccess={closeAndRefetchClients}
         client={client}
       />
-
       <Joyride
         run={run}
         hideBackButton={true}
