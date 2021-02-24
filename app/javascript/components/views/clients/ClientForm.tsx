@@ -35,7 +35,7 @@ type Props = {
    * client is created or updated
    * successfully.
    */
-  onSuccess: () => void,
+  onSuccess?: () => void,
 }
 
 type FieldProps = {
@@ -89,6 +89,10 @@ export default function ClientForm({ id, client, onSuccess }: Props) {
           headers: { "X-CSRF-Token": csrf }
         }
       )
+
+      if (!onSuccess) {
+        return
+      }
 
       onSuccess()
     } catch (e) {

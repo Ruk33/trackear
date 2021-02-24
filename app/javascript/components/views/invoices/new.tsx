@@ -7,14 +7,15 @@ import TrackerMaskInput from "components/TrackearMaskInput"
 import TrackearDateRangePicker from "components/TrackearDateRangePicker"
 import TrackearButton from "components/TrackearButton"
 import TrackearFetching from "components/TrackearFetching"
-import TrackearModal from "components/TrackearModal"
-import ClientForm from "../clients/ClientForm"
-import { Client, getAllClients } from "components/service/Client"
+import { Client } from "components/service/Client"
 import { Project, getAllProjects } from "components/service/Project"
 import { calculateTotalFromEntries, Entry } from "components/service/Entry"
 import { Track, calculateTrackAmount, hoursFromTrack, formatQtyTrack, setHoursAndMinutesFromTrack } from "components/service/Track"
 import TrackearSelectInput, { SelectOption } from "components/TrackearSelectInput"
-import TrackearTable, { TableColumn, TableRow } from "components/TrackearTable"
+import TrackearTable, { TableColumn } from "components/TrackearTable"
+import NewClientModal from "components/modal/clients/NewClientModal"
+import UpdateClientModal from "components/modal/clients/UpdateClientModal"
+import { useFetchClients } from "components/hook/ClientHook"
 
 const intlConfig = {
   locale: "en-US",
@@ -722,28 +723,18 @@ function TourInvoicesNew() {
   const [updatingClient, setUpdatingClient] = useState(false)
   const [creatingClient, setCreatingClient] = useState(false)
   const [client, setClient] = useState<Client | undefined>(undefined)
-  const [clients, setClients] = useState<Client[]>([])
-  const [fetchingClients, setFetchingClients] = useState(false)
-  const [errorFetchingClients, setErrorFetchingClients] = useState("")
+  const { clients, fetchClients, error, fetching } = useFetchClients()
   const [run, setRun] = useState(false)
   const [stepIndex, setStepIndex] = useState<number | undefined>(0)
 
-  const fetchClients = useCallback(async (selectLast) => {
-    setFetchingClients(true)
-
+  const fetchClientsAndSelectNewest = useCallback(async () => {
     try {
-      const result = await getAllClients()
-      setClients(result)
-
-      if (selectLast) {
-        setClient(result[result.length - 1])
-      }
+      const result = await fetchClients()
+      setClient(result[result.length - 1])
     } catch (e) {
-      setErrorFetchingClients("Hubo un error al obtener tus clientes. Por favor, intentalo mas tarde.")
-    }
 
-    setFetchingClients(false)
-  }, [setFetchingClients, setClients, setClient, setErrorFetchingClients])
+    }
+  }, [fetchClients])
 
   const showClientTooltip = useCallback(() => {
     setStepIndex(1)
@@ -799,8 +790,8 @@ function TourInvoicesNew() {
 
   const closeAndSelectCreatedClient = useCallback(() => {
     closeClientForm()
-    fetchClients(true)
-  }, [closeClientForm, fetchClients])
+    fetchClientsAndSelectNewest()
+  }, [closeClientForm, fetchClientsAndSelectNewest])
 
   const onUpdateClient = useCallback(() => {
     setUpdatingClient(true)
@@ -812,58 +803,28 @@ function TourInvoicesNew() {
 
   const closeAndRefetchClients = useCallback(() => {
     closeUpdateClient()
-    fetchClients(false)
+    fetchClients()
   }, [closeUpdateClient, fetchClients])
 
-  const clientAsForm = useMemo(() => {
-    if (!client) {
-      return undefined
-    }
-
-    const selectedClient = clients.find((c) => c.id === client.id)
-
-    if (!selectedClient) {
-      return undefined;
-    }
-
-    return {
-      firstName: selectedClient.first_name,
-      lastName: selectedClient.last_name,
-      email: selectedClient.email,
-      address: selectedClient.address
-    }
-  }, [clients, client])
-
   useEffect(() => {
-    fetchClients(false)
+    fetchClients()
     setRun(true)
   }, [])
 
   return (
     <div>
-      <TrackearModal
+      <NewClientModal
         isOpen={creatingClient}
-        onRequestClose={closeClientForm}
-      >
-        <div style={{ minWidth: "600px" }}>
-          <h1 className="font-bold text-lg mb-2">Crear nuevo cliente</h1>
-          <ClientForm onSuccess={closeAndSelectCreatedClient} />
-        </div>
-      </TrackearModal>
-
-      <TrackearModal
+        onClose={closeClientForm}
+        onSuccess={closeAndSelectCreatedClient}
+      />
+      <UpdateClientModal
         isOpen={updatingClient}
-        onRequestClose={closeUpdateClient}
-      >
-        <div style={{ minWidth: "600px" }}>
-          <h1 className="font-bold text-lg mb-2">Actualizar cliente</h1>
-          <ClientForm
-            id={client ? String(client.id) : undefined}
-            client={clientAsForm}
-            onSuccess={closeAndRefetchClients}
-          />
-        </div>
-      </TrackearModal>
+        onClose={closeUpdateClient}
+        onSuccess={closeAndRefetchClients}
+        client={client}
+      />
+
       <Joyride
         run={run}
         hideBackButton={true}
@@ -880,8 +841,8 @@ function TourInvoicesNew() {
         client={client}
         clients={clients}
         setClient={setClient}
-        fetchingClients={fetchingClients}
-        errorFetchingClients={errorFetchingClients}
+        fetchingClients={fetching}
+        errorFetchingClients={error}
         onProjectSelected={showClientTooltip}
         onClientSelected={showDateTooltip}
         onSelectDates={hideTips}
