@@ -2,24 +2,18 @@ import React, { memo, useMemo } from "react"
 
 export type TableColumn = {
   id: string,
-  props?: any,
-  component: any,
-}
-
-export type TableRow = {
-  id: string,
-  component: any,
-  props?: any,
+  props?: React.ComponentProps<"th">,
+  component: React.ReactNode,
 }
 
 type Props = {
   columns: TableColumn[],
-  rows: TableRow[][],
   className?: string,
+  children: React.ReactNode,
 }
 
 function TrackearTable(props: Props) {
-  const { className, columns, rows } = props
+  const { className, columns, children } = props
 
   const css = useMemo(() => {
     return [
@@ -38,18 +32,6 @@ function TrackearTable(props: Props) {
     ))
   }, [columns])
 
-  const tableRows = useMemo(() => {
-    return rows.map((cells, index) => (
-      <tr key={`row-${index}`}>
-        {cells.map((cell) => (
-          <td key={cell.id} {...cell.props}>
-            {cell.component}
-          </td>
-        ))}
-      </tr>
-    ))
-  }, [rows])
-
   return (
     <table className={css}>
       <thead className="border">
@@ -58,7 +40,7 @@ function TrackearTable(props: Props) {
         </tr>
       </thead>
       <tbody>
-        {tableRows}
+        {children}
       </tbody>
     </table>
   )

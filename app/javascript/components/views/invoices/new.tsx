@@ -568,44 +568,31 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
       {
         id: "description",
         component: "Descripción",
+        props: { className: "py-4 px-2 bg-gray-100 border text-left" },
       },
       {
         id: "qty",
         component: "Cantidad",
+        props: { className: "py-4 px-2 bg-gray-100 border text-right" },
       },
       {
         id: "amount",
         component: "Total",
+        props: { className: "py-4 px-2 bg-gray-100 border text-right" },
       },
     ]
   }, [])
 
-  const buildRows = useCallback((entry: Entry): TableRow[][] => {
+  const buildRows = useCallback((entry: Entry) => {
     const tracks = entry.tracks.filter((track) => !removedTracks.get(track.id))
-    return tracks.map((track) => ([
-      {
-        id: "description",
-        component: track.description
-      },
-      {
-        id: "qty",
-        component: hoursFromTrack(track).toFixed(2),
-      },
-      {
-        id: "amount",
-        component: `$${calculateTrackAmount(track)}`,
-      },
-    ]))
+    return tracks.map((track) => (
+      <tr key={track.id}>
+        <td className="text-left p-2">{track.description}</td>
+        <td className="text-right p-2">{hoursFromTrack(track).toFixed(2)}</td>
+        <td className="text-right p-2">${calculateTrackAmount(track)}</td>
+      </tr>
+    ))
   }, [removedTracks])
-
-  const rows: TableRow[][] = useMemo(() => {
-    return entries.reduce((result: TableRow[][], entry: Entry) => {
-      return [
-        ...result,
-        ...buildRows(entry)
-      ]
-    }, [])
-  }, [entries, buildRows])
 
   return (
     <>
@@ -620,10 +607,9 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
         </div>
       </div>
 
-      <TrackearTable
-        columns={columns}
-        rows={rows}
-      />
+      <TrackearTable columns={columns}>
+        {entries.map(buildRows)}
+      </TrackearTable>
 
       <div className="text-center mt-2">
         <button
