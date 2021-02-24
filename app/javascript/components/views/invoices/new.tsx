@@ -91,6 +91,7 @@ function ProjectSelect(props: ProjectSelectProps) {
   return (
     <TrackearFetching loading={loading} error={error}>
       <TrackearSelectInput
+        placeholder="Seleccionar proyecto"
         options={projectOptions}
         value={props.project}
         onChange={onSelectProject}
@@ -147,6 +148,7 @@ function ClientSelect(props: ClientSelectProps) {
   return (
     <TrackearFetching loading={props.loading} error={props.error}>
       <TrackearSelectInput
+        placeholder="Seleccionar cliente"
         disabled={props.disabled}
         value={client ? String(client.id) : undefined}
         onChange={onSelectClient}

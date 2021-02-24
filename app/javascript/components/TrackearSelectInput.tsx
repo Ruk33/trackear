@@ -10,13 +10,14 @@ export type SelectOption = {
 
 type Props = {
   disabled?: boolean,
+  placeholder?: string,
   options?: SelectOption[],
   value?: SelectValue,
   onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void,
 }
 
 function TrackearSelectInput(props: Props) {
-  const { disabled, options, value, onChange } = props
+  const { placeholder, disabled, options, value, onChange } = props
 
   const builtOptions = useMemo(() => {
     if (!options) {
@@ -37,7 +38,7 @@ function TrackearSelectInput(props: Props) {
       onChange={onChange}
       className="p-2 rounded shadow bg-white cursor-pointer"
     >
-      <option value="" disabled>Seleccionar</option>
+      <option value="" selected disabled>{placeholder || "Seleccionar"}</option>
       {builtOptions}
     </select>
   )
