@@ -250,6 +250,13 @@ function EntryRow(props: EntryRowProps) {
   }, [onUpdateAllTracksRate, loseFocusFromTrack])
 
   const onUpdateRate = useCallback((value: string | undefined, track: Track) => {
+    // For some reason the currency inputs
+    // executes the callback even if the
+    // user doesn't type anything...
+    if (value === track.project_rate) {
+      return
+    }
+
     setFocusedTrack(track.id)
     onUpdate({
       ...track,
@@ -291,7 +298,7 @@ function EntryRow(props: EntryRowProps) {
           </td>
           <td className="text-right p-2">
             <Popover
-              isOpen={focusedTrack === track.id}
+              isOpen={!!track.project_rate && focusedTrack === track.id}
               positions={['top']}
               padding={10}
               content={(
