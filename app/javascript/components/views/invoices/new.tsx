@@ -51,11 +51,11 @@ type ProjectSelectProps = {
    * Selected project id.
    */
   project: string,
-
+  onProjectsLoaded: () => void,
   onSelectProject: (project: string) => void,
 }
 
-function ProjectSelect({ project, onSelectProject }: ProjectSelectProps) {
+function ProjectSelect({ project, onProjectsLoaded, onSelectProject }: ProjectSelectProps) {
   const { projects, fetchProjects, fetching, error } = useFetchProjects()
 
   const handleSelectProject = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
@@ -70,9 +70,14 @@ function ProjectSelect({ project, onSelectProject }: ProjectSelectProps) {
     }))
   }, [projects])
 
+  const onFetchProjects = useCallback(async () => {
+    await fetchProjects()
+    onProjectsLoaded()
+  }, [fetchProjects, onProjectsLoaded])
+
   useEffect(() => {
-    fetchProjects()
-  }, [fetchProjects])
+    onFetchProjects()
+  }, [onFetchProjects])
 
   return (
     <>
@@ -104,6 +109,11 @@ type ClientSelectProps = {
 
   client: Client | undefined,
 
+  /**
+   * Callback to be executed when the user
+   * clicks on update client button
+   * to open the update client's modal.
+   */
   onUpdateClient: () => void,
 
   onSelectClient: (client: Client) => void,
@@ -406,7 +416,7 @@ function Entries(props: EntriesProps) {
         ))}
         <tr>
           <td colSpan={3}></td>
-          <td className="text-right p-2 py-4 text-2xl">Total: ${total}</td>
+          <td className="text-right p-2 py-4 text-2xl">Total: ${total.toFixed(2)}</td>
           <td></td>
         </tr>
       </tbody>
@@ -415,53 +425,79 @@ function Entries(props: EntriesProps) {
 }
 
 type InvoiceFormProps = {
+  /**
+   * Selected project id
+   */
   project: string,
+  onProjectsLoaded: () => void,
+  /**
+   * Callback to be executed when
+   * a project is selected
+   */
   onSetProject: (project: string) => void,
 
+  /**
+   * Callback to be executed when the user
+   * clicks on update client button.
+   */
   onUpdateClient: () => void,
+
+  /**
+   * Selected client
+   */
   client: undefined | Client,
   clients: Client[],
   fetchingClients: boolean,
   errorFetchingClients: string,
+  /**
+   * Callback to be executed when a client is selected
+   */
   onSetClient: (client: Client) => void,
 
-  startDate: Date | undefined,
-  onSetStartDate: (date: Date | null) => void,
-
-  endDate: Date | undefined,
-  onSetEndDate: (date: Date | null) => void,
-
   entries: Entry[],
-  fetchingEntries: boolean,
-  errorFetchingEntries: string,
+  /**
+   * Callback to be executed when the user
+   * imports entries fetched from selecting
+   * start date and end date.
+   */
   onImportEntries: (entries: Entry[]) => void,
+  /**
+   * Callback to be executed when the user
+   * updates an entry (changes rate, qty, etc.)
+   */
   onUpdateEntries: (entries: Entry[]) => void,
-
+  /**
+   * Map containing all removed tracks by id
+   */
   removedTracks: Map<number, boolean>,
+  /**
+   * Callback to be executed when a track is "removed"
+   */
   onRemoveTrack: (track: Track) => void,
+  /**
+   * Callback to be executed when a track gets restored
+   */
   onRestoreTrack: (track: Track) => void,
-
+  /**
+   * Callback to be executed when clicking on preview button
+   */
   onPreviewInvoice: () => void,
 }
 
 function InvoiceForm(props: InvoiceFormProps) {
   const {
     project,
+    onProjectsLoaded,
     onSetProject,
-
     onUpdateClient,
     client,
     clients,
     fetchingClients,
     errorFetchingClients,
     onSetClient,
-
     entries,
-    fetchingEntries,
-    errorFetchingEntries,
     onImportEntries,
     onUpdateEntries,
-
     removedTracks,
     onRemoveTrack,
     onRestoreTrack,
@@ -474,6 +510,7 @@ function InvoiceForm(props: InvoiceFormProps) {
         <ProjectSelect
           project={project}
           onSelectProject={onSetProject}
+          onProjectsLoaded={onProjectsLoaded}
         />
       </div>
       <div className="flex items-center mb-2">
@@ -492,18 +529,13 @@ function InvoiceForm(props: InvoiceFormProps) {
         project={project}
         onLoadEntries={onImportEntries}
       />
-      <TrackearFetching
-        loading={fetchingEntries}
-        error={errorFetchingEntries}
-      >
-        <Entries
-          entries={entries}
-          onUpdateEntries={onUpdateEntries}
-          removedTracks={removedTracks}
-          onRemoveTrack={onRemoveTrack}
-          onRestoreTrack={onRestoreTrack}
-        />
-      </TrackearFetching>
+      <Entries
+        entries={entries}
+        onUpdateEntries={onUpdateEntries}
+        removedTracks={removedTracks}
+        onRemoveTrack={onRemoveTrack}
+        onRestoreTrack={onRestoreTrack}
+      />
       {entries.length > 0 && <div className="text-center">
         <TrackearButton
           type="button"
@@ -526,10 +558,17 @@ type PreviewInvoiceProps = {
   removedTracks: Map<number, boolean>,
   onClosePreview: () => void,
   client: Client | undefined,
+  onCreateInvoice: () => void,
 }
 
 function PreviewInvoice(props: PreviewInvoiceProps) {
-  const { entries, removedTracks, onClosePreview, client } = props
+  const {
+    entries,
+    removedTracks,
+    onClosePreview,
+    client,
+    onCreateInvoice,
+  } = props
 
   const columns: TableColumn[] = useMemo(() => {
     return [
@@ -591,6 +630,7 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
         </TrackearButton>
         <TrackearButton
           className="btn btn-primary"
+          onClick={onCreateInvoice}
         >
           Finalizar
         </TrackearButton>
@@ -602,6 +642,7 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
 type InvoicesNewProps = {
   showCreateClientModal: boolean,
   onCloseCreateClientModal: () => void,
+  onProjectsLoaded: () => void,
   onProjectSelected: () => void,
   onClientSelected: () => void,
   onImportEntries: () => void,
@@ -611,27 +652,19 @@ function InvoicesNew(props: InvoicesNewProps) {
   const {
     showCreateClientModal,
     onCloseCreateClientModal,
+    onProjectsLoaded,
     onProjectSelected,
     onClientSelected,
     onImportEntries,
   } = props
 
-  const [invoicePersisted, setInvoicePersisted] = useState(false)
-
   const [showUpdateClientModal, setShowUpdateClientModal] = useState(false)
-
   const [project, setProject] = useState("")
   const [client, setClient] = useState<Client | undefined>(undefined)
-  const [start, setStart] = useState<Date | null>()
-  const [end, setEnd] = useState<Date | null>()
-
-  const [displayedEntries, setDisplayedEntries] = useState<Entry[]>([])
+  const [entries, setEntries] = useState<Entry[]>([])
   const [removedTracks, setRemovedTracks] = useState(new Map<number, boolean>())
-
   const [preview, setPreview] = useState(false)
-
   const { clients, fetchClients, error: clientsError, fetching: fetchingClients } = useFetchClients()
-  const { fetching: fetchingEntries, error: entriesError, fetchEntries } = useFetchEntries()
 
   const onPreview = useCallback(() => {
     setPreview(true)
@@ -649,31 +682,15 @@ function InvoicesNew(props: InvoicesNewProps) {
     setRemovedTracks(new Map(removedTracks).set(track.id, false))
   }, [setRemovedTracks, removedTracks])
 
-  const onAddEntries = useCallback((entries: Entry[]) => {
-    const merged = mergeEntries(displayedEntries, entries)
-    setDisplayedEntries(merged)
+  const onAddEntries = useCallback((importedEntries: Entry[]) => {
+    const merged = mergeEntries(entries, importedEntries)
+    setEntries(merged)
     onImportEntries()
-  }, [displayedEntries, setDisplayedEntries, onImportEntries])
+  }, [entries, setEntries, onImportEntries])
 
   const onUpdateEntries = useCallback((entries: Entry[]) => {
-    setDisplayedEntries(entries)
-  }, [setDisplayedEntries])
-
-  useEffect(() => {
-    if (!project) {
-      return
-    }
-
-    onProjectSelected()
-  }, [project, onProjectSelected])
-
-  useEffect(() => {
-    if (!client) {
-      return
-    }
-
-    onClientSelected()
-  }, [client, onClientSelected])
+    setEntries(entries)
+  }, [setEntries])
 
   const closeAndSelectCreatedClient = useCallback(async () => {
     try {
@@ -697,6 +714,26 @@ function InvoicesNew(props: InvoicesNewProps) {
     closeUpdateClientModal()
   }, [closeUpdateClientModal])
 
+  const onCreateInvoice = useCallback(() => {
+
+  }, [])
+
+  useEffect(() => {
+    if (!project) {
+      return
+    }
+
+    onProjectSelected()
+  }, [project, onProjectSelected])
+
+  useEffect(() => {
+    if (!client) {
+      return
+    }
+
+    onClientSelected()
+  }, [client, onClientSelected])
+
   useEffect(() => {
     fetchClients()
   }, [fetchClients])
@@ -717,6 +754,7 @@ function InvoicesNew(props: InvoicesNewProps) {
       <div className={`${!preview ? "visible" : "hidden"}`}>
         <InvoiceForm
           project={project}
+          onProjectsLoaded={onProjectsLoaded}
           onSetProject={setProject}
           onUpdateClient={openUpdateClientModal}
           client={client}
@@ -724,13 +762,7 @@ function InvoicesNew(props: InvoicesNewProps) {
           fetchingClients={fetchingClients}
           errorFetchingClients={clientsError}
           onSetClient={setClient}
-          startDate={start || undefined}
-          onSetStartDate={setStart}
-          endDate={end || undefined}
-          onSetEndDate={setEnd}
-          entries={displayedEntries}
-          fetchingEntries={fetchingEntries}
-          errorFetchingEntries={entriesError}
+          entries={entries}
           onImportEntries={onAddEntries}
           onUpdateEntries={onUpdateEntries}
           onPreviewInvoice={onPreview}
@@ -742,9 +774,10 @@ function InvoicesNew(props: InvoicesNewProps) {
       <div className={`${preview ? "visible" : "hidden"}`}>
         <PreviewInvoice
           client={client}
-          entries={displayedEntries}
+          entries={entries}
           removedTracks={removedTracks}
           onClosePreview={onClosePreview}
+          onCreateInvoice={onCreateInvoice}
         />
       </div>
     </div>
@@ -812,10 +845,6 @@ function TourInvoicesNew() {
     ]
   }, [])
 
-  useEffect(() => {
-    showTour()
-  }, [showTour])
-
   return (
     <div>
       <Joyride
@@ -831,6 +860,7 @@ function TourInvoicesNew() {
       <InvoicesNew
         showCreateClientModal={showCreateClientModal}
         onCloseCreateClientModal={closeCreateClientModal}
+        onProjectsLoaded={showTour}
         onProjectSelected={showClientTip}
         onClientSelected={showDateTip}
         onImportEntries={hideTour}
