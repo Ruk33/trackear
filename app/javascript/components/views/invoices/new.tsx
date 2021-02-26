@@ -1,6 +1,5 @@
 import ReactDOM from "react-dom"
 import React, { useCallback, useEffect, useState, ChangeEvent, useMemo } from "react"
-import { DateTime } from "luxon"
 import Joyride, { Placement } from "react-joyride"
 import CurrencyInput from "react-currency-input-field"
 import TrackerMaskInput from "components/TrackearMaskInput"
@@ -16,6 +15,8 @@ import NewClientModal from "components/modal/clients/NewClientModal"
 import UpdateClientModal from "components/modal/clients/UpdateClientModal"
 import { useFetchClients } from "components/hook/ClientHook"
 import { useFetchProjects } from "components/hook/ProjectHook"
+import { useFetchEntries } from "components/hook/EntryHook"
+import TrackearToast, { toast } from "components/TrackearToast"
 
 const intlConfig = {
   locale: "en-US",
@@ -411,7 +412,9 @@ type InvoiceFormProps = {
   onSetEndDate: (date: Date | null) => void,
 
   entries: Entry[],
-  onSetEntries: (entries: Entry[]) => void,
+  fetchingEntries: boolean,
+  errorFetchingEntries: string,
+  onUpdateEntries: (entries: Entry[]) => void,
 
   removedTracks: Map<number, boolean>,
   onRemoveTrack: (track: Track) => void,
@@ -439,45 +442,14 @@ function InvoiceForm(props: InvoiceFormProps) {
     onSetEndDate,
 
     entries,
-    onSetEntries,
+    fetchingEntries,
+    errorFetchingEntries,
+    onUpdateEntries,
 
     removedTracks,
     onRemoveTrack,
     onRestoreTrack,
   } = props
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-
-  /*
-   * Return endpoint to get all
-   * activity track from project id.
-   */
-  const entriesUri = useMemo(() => {
-    return `/projects/${project}/status_period.json`
-  }, [project])
-
-  const fetchEntries = useCallback(async () => {
-    if (!project || !startDate || !endDate) {
-      return
-    }
-
-    const formattedStart = DateTime.fromJSDate(startDate).toISODate()
-    const formattedEnd = DateTime.fromJSDate(endDate).toISODate()
-
-    setLoading(false)
-
-    try {
-      const rawResult = await fetch(`${entriesUri}?start_date=${formattedStart}&end_date=${formattedEnd}`)
-      const jsonResult = await rawResult.json()
-      onSetEntries(jsonResult)
-    } catch (e) {
-      setError("Hubo un problema al obtener los clientes.")
-    }
-  }, [entriesUri, project, startDate, endDate, onSetEntries])
-
-  useEffect(() => {
-    fetchEntries()
-  }, [fetchEntries])
 
   return (
     <>
@@ -511,14 +483,14 @@ function InvoiceForm(props: InvoiceFormProps) {
         />
       </div>
       <TrackearFetching
-        loading={loading}
-        error={error}
+        loading={fetchingEntries}
+        error={errorFetchingEntries}
       >
         <Entries
           start={startDate}
           end={endDate}
           entries={entries}
-          onUpdateEntries={onSetEntries}
+          onUpdateEntries={onUpdateEntries}
           removedTracks={removedTracks}
           onRemoveTrack={onRemoveTrack}
           onRestoreTrack={onRestoreTrack}
@@ -555,18 +527,18 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
     return [
       {
         id: "description",
-        component: "Descripción",
-        props: { className: "py-4 px-2 bg-gray-100 border text-left" },
+        component: "Description",
+        props: { className: "p-2 bg-gray-100 border text-left" },
       },
       {
         id: "qty",
-        component: "Cantidad",
-        props: { className: "py-4 px-2 bg-gray-100 border text-right" },
+        component: "Qty",
+        props: { className: "p-2 bg-gray-100 border text-right" },
       },
       {
         id: "amount",
         component: "Total",
-        props: { className: "py-4 px-2 bg-gray-100 border text-right" },
+        props: { className: "p-2 bg-gray-100 border text-right" },
       },
     ]
   }, [])
@@ -584,14 +556,16 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
 
   return (
     <>
+      <h1 className="text-2xl">Invoice</h1>
       <div className="grid grid-cols-2 gap-4 py-4">
         <div className="text-left">
           <h2 className="font-bold">Bill to</h2>
+          <p>Name: {client && `${client.first_name} ${client.last_name}`}</p>
           <p>Address: {client && client.address}</p>
         </div>
         <div className="text-right">
           <h2 className="font-bold">Company name</h2>
-          <p>Address: ...</p>
+          <p>Address: HARDCODED - Street</p>
         </div>
       </div>
 
@@ -600,38 +574,56 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
       </TrackearTable>
 
       <div className="text-center mt-2">
-        <button
-          className="btn btn-secondary"
+        <TrackearButton
+          className="btn btn-secondary mr-2"
           type="button"
           onClick={onClosePreview}
         >
           Continuar editando
-        </button>
+        </TrackearButton>
+        <TrackearButton
+          className="btn btn-primary"
+        >
+          Finalizar
+        </TrackearButton>
       </div>
     </>
   )
 }
 
 type InvoicesNewProps = {
-  onUpdateClient: () => void,
-  client: Client | undefined,
-  clients: Client[],
-  setClient: (client: Client) => void,
-  fetchingClients: boolean,
-  errorFetchingClients: string,
+  showCreateClientModal: boolean,
+  onCloseCreateClientModal: () => void,
   onProjectSelected: () => void,
   onClientSelected: () => void,
-  onSelectDates: () => void,
+  onFirstInvoiceSave: () => void,
 }
 
 function InvoicesNew(props: InvoicesNewProps) {
-  const { onUpdateClient, client, clients, setClient, fetchingClients, errorFetchingClients, onProjectSelected, onClientSelected, onSelectDates } = props
+  const {
+    showCreateClientModal,
+    onCloseCreateClientModal,
+    onProjectSelected,
+    onClientSelected,
+    onFirstInvoiceSave,
+  } = props
+
+  const [invoicePersisted, setInvoicePersisted] = useState(false)
+
+  const [showUpdateClientModal, setShowUpdateClientModal] = useState(false)
+
   const [project, setProject] = useState("")
-  const [entries, setEntries] = useState<Entry[]>([])
+  const [client, setClient] = useState<Client | undefined>(undefined)
   const [start, setStart] = useState<Date | null>()
   const [end, setEnd] = useState<Date | null>()
-  const [preview, setPreview] = useState(false)
+
+  const [displayedEntries, setDisplayedEntries] = useState<Entry[]>([])
   const [removedTracks, setRemovedTracks] = useState(new Map<number, boolean>())
+
+  const [preview, setPreview] = useState(false)
+
+  const { clients, fetchClients, error: clientsError, fetching: fetchingClients } = useFetchClients()
+  const { fetching: fetchingEntries, error: entriesError, fetchEntries } = useFetchEntries()
 
   const onPreview = useCallback(() => {
     setPreview(true)
@@ -650,9 +642,8 @@ function InvoicesNew(props: InvoicesNewProps) {
   }, [setRemovedTracks, removedTracks])
 
   const onSetEntries = useCallback((entries: Entry[]) => {
-    onSelectDates()
-    setEntries(entries)
-  }, [onSelectDates, setEntries])
+    setDisplayedEntries(entries)
+  }, [setDisplayedEntries])
 
   useEffect(() => {
     if (!project) {
@@ -670,24 +661,78 @@ function InvoicesNew(props: InvoicesNewProps) {
     onClientSelected()
   }, [client, onClientSelected])
 
+  const fetchEntriesWhenProjectAndDatesSelected = useCallback(async () => {
+    if (!project || !start || !end) {
+      return
+    }
+
+    const entries = await fetchEntries(project, start, end)
+
+    setDisplayedEntries(entries)
+    onFirstInvoiceSave()
+  }, [project, start, end, fetchEntries, setDisplayedEntries, onFirstInvoiceSave])
+
+  const closeAndSelectCreatedClient = useCallback(async () => {
+    try {
+      const clients = await fetchClients()
+      setClient(clients[clients.length - 1])
+    } catch (e) {}
+
+    onCloseCreateClientModal()
+  }, [fetchClients, setClient, onCloseCreateClientModal])
+
+  const openUpdateClientModal = useCallback(() => {
+    setShowUpdateClientModal(true)
+  }, [setShowUpdateClientModal])
+
+  const closeUpdateClientModal = useCallback(() => {
+    setShowUpdateClientModal(false)
+  }, [setShowUpdateClientModal])
+
+  const closeUpdateModalAndRefetchClients = useCallback(() => {
+    fetchClients()
+    closeUpdateClientModal()
+  }, [closeUpdateClientModal])
+
+  useEffect(() => {
+    fetchEntriesWhenProjectAndDatesSelected()
+  }, [fetchEntriesWhenProjectAndDatesSelected])
+
+  useEffect(() => {
+    fetchClients()
+  }, [fetchClients])
+
   return (
     <div className="bg-white p-4 rounded border">
+      <NewClientModal
+        isOpen={showCreateClientModal}
+        onClose={onCloseCreateClientModal}
+        onSuccess={closeAndSelectCreatedClient}
+      />
+      <UpdateClientModal
+        isOpen={showUpdateClientModal}
+        onClose={closeUpdateClientModal}
+        onSuccess={closeUpdateModalAndRefetchClients}
+        client={client}
+      />
       <div className={`${!preview ? "visible" : "hidden"}`}>
         <InvoiceForm
           project={project}
           onSetProject={setProject}
-          onUpdateClient={onUpdateClient}
+          onUpdateClient={openUpdateClientModal}
           client={client}
           clients={clients}
           fetchingClients={fetchingClients}
-          errorFetchingClients={errorFetchingClients}
+          errorFetchingClients={clientsError}
           onSetClient={setClient}
           startDate={start || undefined}
           onSetStartDate={setStart}
           endDate={end || undefined}
           onSetEndDate={setEnd}
-          entries={entries}
-          onSetEntries={onSetEntries}
+          entries={displayedEntries}
+          fetchingEntries={fetchingEntries}
+          errorFetchingEntries={entriesError}
+          onUpdateEntries={onSetEntries}
           onPreviewInvoice={onPreview}
           removedTracks={removedTracks}
           onRemoveTrack={removeTrack}
@@ -697,7 +742,7 @@ function InvoicesNew(props: InvoicesNewProps) {
       <div className={`${preview ? "visible" : "hidden"}`}>
         <PreviewInvoice
           client={client}
-          entries={entries}
+          entries={displayedEntries}
           removedTracks={removedTracks}
           onClosePreview={onClosePreview}
         />
@@ -707,41 +752,35 @@ function InvoicesNew(props: InvoicesNewProps) {
 }
 
 function TourInvoicesNew() {
-  const [updatingClient, setUpdatingClient] = useState(false)
-  const [creatingClient, setCreatingClient] = useState(false)
-  const [client, setClient] = useState<Client | undefined>(undefined)
-  const { clients, fetchClients, error, fetching } = useFetchClients()
-  const [run, setRun] = useState(false)
-  const [stepIndex, setStepIndex] = useState<number | undefined>(0)
+  const [showCreateClientModal, setShowCreateClientModal] = useState(false)
+  const [tourVisible, setTourVisible] = useState(false)
+  const [tourStep, setTourStep] = useState<number | undefined>(0)
 
-  const fetchClientsAndSelectNewest = useCallback(async () => {
-    try {
-      const result = await fetchClients()
-      setClient(result[result.length - 1])
-    } catch (e) {}
-  }, [fetchClients])
+  const showClientTip = useCallback(() => {
+    setTourStep(1)
+  }, [setTourStep])
 
-  const showClientTooltip = useCallback(() => {
-    setStepIndex(1)
-  }, [setStepIndex])
+  const showDateTip = useCallback(() => {
+    setTourStep(2)
+  }, [setTourStep])
 
-  const showDateTooltip = useCallback(() => {
-    setStepIndex(2)
-  }, [setStepIndex])
+  const showTour = useCallback(() => {
+    setTourVisible(true)
+  }, [setTourVisible])
 
-  const hideTips = useCallback(() => {
-    setRun(false)
-  }, [setRun])
+  const hideTour = useCallback(() => {
+    setTourVisible(false)
+  }, [setTourVisible])
 
-  const openClientForm = useCallback(() => {
-    setCreatingClient(true)
-    setRun(false)
-  }, [setCreatingClient])
+  const openCreateClientModal = useCallback(() => {
+    setShowCreateClientModal(true)
+    hideTour()
+  }, [setShowCreateClientModal, hideTour])
 
-  const closeClientForm = useCallback(() => {
-    setCreatingClient(false)
-    setRun(true)
-  }, [setCreatingClient])
+  const closeCreateClientModal = useCallback(() => {
+    setShowCreateClientModal(false)
+    showTour()
+  }, [showTour, setShowCreateClientModal])
 
   const steps = useMemo(() => {
     const placement: Placement = "right"
@@ -759,7 +798,7 @@ function TourInvoicesNew() {
               Seleccioná el cliente al cual le vas a generar la factura.
             </p>
             <p className="py-2">
-              ¿Necesitas crear un nuevo cliente? <button type="button" onClick={openClientForm} className="btn btn-primary btn-sm">Crear nuevo cliente</button>
+              ¿Necesitas crear un nuevo cliente? <button type="button" onClick={openCreateClientModal} className="btn btn-primary btn-sm">Crear nuevo cliente</button>
             </p>
           </div>
         ),
@@ -773,47 +812,17 @@ function TourInvoicesNew() {
     ]
   }, [])
 
-  const closeAndSelectCreatedClient = useCallback(() => {
-    closeClientForm()
-    fetchClientsAndSelectNewest()
-  }, [closeClientForm, fetchClientsAndSelectNewest])
-
-  const onUpdateClient = useCallback(() => {
-    setUpdatingClient(true)
-  }, [setUpdatingClient])
-
-  const closeUpdateClient = useCallback(() => {
-    setUpdatingClient(false)
-  }, [setUpdatingClient])
-
-  const closeAndRefetchClients = useCallback(() => {
-    closeUpdateClient()
-    fetchClients()
-  }, [closeUpdateClient, fetchClients])
-
   useEffect(() => {
-    fetchClients()
-    setRun(true)
-  }, [])
+    showTour()
+  }, [showTour])
 
   return (
     <div>
-      <NewClientModal
-        isOpen={creatingClient}
-        onClose={closeClientForm}
-        onSuccess={closeAndSelectCreatedClient}
-      />
-      <UpdateClientModal
-        isOpen={updatingClient}
-        onClose={closeUpdateClient}
-        onSuccess={closeAndRefetchClients}
-        client={client}
-      />
       <Joyride
-        run={run}
+        run={tourVisible}
         hideBackButton={true}
         disableOverlay={true}
-        stepIndex={stepIndex}
+        stepIndex={tourStep}
         steps={steps}
         spotlightPadding={0}
         floaterProps={floaterProps}
@@ -821,19 +830,15 @@ function TourInvoicesNew() {
         locale={tourLocale}
       />
       <InvoicesNew
-        onUpdateClient={onUpdateClient}
-        client={client}
-        clients={clients}
-        setClient={setClient}
-        fetchingClients={fetching}
-        errorFetchingClients={error}
-        onProjectSelected={showClientTooltip}
-        onClientSelected={showDateTooltip}
-        onSelectDates={hideTips}
+        showCreateClientModal={showCreateClientModal}
+        onCloseCreateClientModal={closeCreateClientModal}
+        onProjectSelected={showClientTip}
+        onClientSelected={showDateTip}
+        onFirstInvoiceSave={hideTour}
       />
+      <TrackearToast />
     </div>
   )
 }
 
 ReactDOM.render(<TourInvoicesNew />, document.getElementById("invoices"))
-

@@ -47,6 +47,7 @@
     "react-maskinput": "^3.2.0",
     "react-modal": "^3.12.1",
     "react-nice-dates": "^3.0.7",
+    "react-toastify": "^7.0.3",
     "react_ujs": "^2.6.1",
     "tailwindcss": "^1.8.12",
     "tippy.js": "^6.2.7",
