@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom"
 import React, { useCallback, useEffect, useState, ChangeEvent, useMemo } from "react"
 import Joyride, { Placement } from "react-joyride"
+import { Popover } from "react-tiny-popover"
 import CurrencyInput from "react-currency-input-field"
 import TrackerMaskInput from "components/TrackearMaskInput"
 import TrackearDateRangePicker from "components/TrackearDateRangePicker"
@@ -201,6 +202,13 @@ type EntryRowProps = {
   onUpdate: (track: Track) => void,
 
   /**
+   * Callback executed when the user
+   * wants to update all tracks rate from
+   * a user entries
+   */
+  onUpdateAllTracksRate: (user: number, rate: string) => void,
+
+  /**
    * Map of removed/discarded entries
    * by entry id.
    */
@@ -208,7 +216,8 @@ type EntryRowProps = {
 }
 
 function EntryRow(props: EntryRowProps) {
-  const { entry, onRemove, onRestore, onUpdate, removedTracks } = props
+  const [focusedTrack, setFocusedTrack] = useState(-1)
+  const { entry, onRemove, onRestore, onUpdate, onUpdateAllTracksRate, removedTracks } = props
   const { user, tracks } = entry
 
   const onUpdateDescription = useCallback((e: ChangeEvent<HTMLTextAreaElement>, track: Track) => {
@@ -231,7 +240,17 @@ function EntryRow(props: EntryRowProps) {
     onUpdate(updatedTrack)
   }, [onUpdate])
 
+  const loseFocusFromTrack = useCallback(() => {
+    setFocusedTrack(-1)
+  }, [setFocusedTrack])
+
+  const updateAllTracksRate = useCallback((value: string) => {
+    onUpdateAllTracksRate(entry.user.id, value)
+    loseFocusFromTrack()
+  }, [onUpdateAllTracksRate, loseFocusFromTrack])
+
   const onUpdateRate = useCallback((value: string | undefined, track: Track) => {
+    setFocusedTrack(track.id)
     onUpdate({
       ...track,
       project_rate: value || ""
@@ -271,13 +290,38 @@ function EntryRow(props: EntryRowProps) {
             />
           </td>
           <td className="text-right p-2">
-            <CurrencyInput
-              className={`border p-2 w-full text-right ${removedTracks.get(track.id) && "opacity-50"}`}
-              value={track.project_rate}
-              onValueChange={(value) => onUpdateRate(value, track)}
-              intlConfig={intlConfig}
-              placeholder="$00.00"
-            />
+            <Popover
+              isOpen={focusedTrack === track.id}
+              positions={['top']}
+              padding={10}
+              content={(
+                <div className="w-64 bg-gray-800 text-white p-6 shadow-md rounded">
+                  <p>¿Querés cambiar la tarifa de todos los registros de <span className="text-pink-500">{entry.user.first_name}</span> a <span className="text-pink-500">${track.project_rate}?</span></p>
+                  <div className="mt-3 flex justify-center items-center">
+                    <button
+                      onClick={loseFocusFromTrack}
+                      className="btn btn-sm mx-1"
+                    >
+                      No
+                    </button>
+                    <button
+                      onClick={() => updateAllTracksRate(track.project_rate)}
+                      className="btn btn-sm btn-primary mx-1"
+                    >
+                      Si, actualizar
+                    </button>
+                  </div>
+                </div>
+              )}
+            >
+              <CurrencyInput
+                className={`border p-2 w-full text-right ${removedTracks.get(track.id) && "opacity-50"}`}
+                value={track.project_rate}
+                onValueChange={(value) => onUpdateRate(value, track)}
+                intlConfig={intlConfig}
+                placeholder="$00.00"
+              />
+            </Popover>
           </td>
           <td className="text-right p-2">
             <QtyCashAmount
@@ -385,7 +429,27 @@ function Entries(props: EntriesProps) {
     })
 
     onUpdateEntries(updated)
-  }, [onUpdateEntries, entries])
+  }, [entries, onUpdateEntries])
+
+  const updateAllTracksRate = useCallback((fromUser: number, rate: string) => {
+    const updated = entries.map((entry) => {
+      if (entry.user.id !== fromUser) {
+        return entry
+      }
+
+      const tracksWithUpdatedRate = entry.tracks.map((track) => ({
+        ...track,
+        project_rate: rate
+      }))
+
+      return {
+        ...entry,
+        tracks: tracksWithUpdatedRate,
+      }
+    })
+
+    onUpdateEntries(updated)
+  }, [entries, onUpdateEntries])
 
   const total = useMemo(
     () => calculateTotalFromEntries(entries, removedTracks),
@@ -410,6 +474,7 @@ function Entries(props: EntriesProps) {
             entry={entry}
             onRemove={onRemoveTrack}
             onRestore={onRestoreTrack}
+            onUpdateAllTracksRate={updateAllTracksRate}
             onUpdate={handleUpdate}
             removedTracks={removedTracks}
           />
@@ -590,6 +655,11 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
     ]
   }, [])
 
+  const total = useMemo(
+    () => calculateTotalFromEntries(entries, removedTracks),
+    [entries, removedTracks]
+  )
+
   const buildRows = useCallback((entry: Entry) => {
     const tracks = entry.tracks.filter((track) => !removedTracks.get(track.id))
     return tracks.map((track) => (
@@ -618,6 +688,10 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
 
       <TrackearTable columns={columns}>
         {entries.map(buildRows)}
+        <tr>
+          <td colSpan={2}></td>
+          <td className="text-right p-2 py-4 text-2xl">Total: ${total.toFixed(2)}</td>
+        </tr>
       </TrackearTable>
 
       <div className="text-center mt-2">

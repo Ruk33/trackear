@@ -7694,6 +7694,11 @@ react-proptype-conditional-require@^1.0.4:
   resolved "https://registry.yarnpkg.com/react-proptype-conditional-require/-/react-proptype-conditional-require-1.0.4.tgz#69c2d5741e6df5e08f230f36bbc2944ee1222555"
   integrity sha1-acLVdB5t9eCPIw82u8KUTuEiJVU=
 
+react-tiny-popover@^6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/react-tiny-popover/-/react-tiny-popover-6.0.4.tgz#6b9d910a347ee84ddefe5f2a5b236d30e6b48c2a"
+  integrity sha512-jF4g4P3rOQ5BDabl4kXHGKqOnxBCfFzBB2/q1n2FO+Xcx5ygcRacJ/KC9HIwkn/i8S7B/V1fZdPLmr6MxL/xlg==
+
 react-toastify@^7.0.3:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/react-toastify/-/react-toastify-7.0.3.tgz#93804c777ecf918872ba3b5be9c654db14547f85"
