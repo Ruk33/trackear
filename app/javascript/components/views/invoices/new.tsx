@@ -7,7 +7,7 @@ import TrackearDateRangePicker from "components/TrackearDateRangePicker"
 import TrackearButton from "components/TrackearButton"
 import TrackearFetching from "components/TrackearFetching"
 import { Client } from "components/service/Client"
-import { calculateTotalFromEntries, Entry } from "components/service/Entry"
+import { calculateTotalFromEntries, Entry, mergeEntries } from "components/service/Entry"
 import { Track, calculateTrackAmount, hoursFromTrack, formatQtyTrack, setHoursAndMinutesFromTrack } from "components/service/Track"
 import TrackearSelectInput, { SelectOption } from "components/TrackearSelectInput"
 import TrackearTable, { TableColumn } from "components/TrackearTable"
@@ -75,15 +75,17 @@ function ProjectSelect({ project, onSelectProject }: ProjectSelectProps) {
   }, [fetchProjects])
 
   return (
-    <TrackearFetching loading={fetching} error={error}>
-      <TrackearSelectInput
-        placeholder="Seleccionar proyecto"
-        options={projectOptions}
-        value={project}
-        onChange={handleSelectProject}
-      />
+    <>
+      <TrackearFetching loading={fetching} error={error}>
+        <TrackearSelectInput
+          placeholder="Seleccionar proyecto"
+          options={projectOptions}
+          value={project}
+          onChange={handleSelectProject}
+        />
+      </TrackearFetching>
       <div className="ml-6 project_select" />
-    </TrackearFetching>
+    </>
   )
 }
 
@@ -295,32 +297,56 @@ function EntryRow(props: EntryRowProps) {
   )
 }
 
-type SelectEntriesProps = {
-  start: Date | undefined,
-  end: Date | undefined,
-  onChangeStart: (date: Date | null) => void,
-  onChangeEnd: (date: Date | null) => void,
-  disabled: boolean,
+type ImportEntriesProps = {
+  project: string,
+  onLoadEntries: (entries: Entry[]) => void
 }
 
-function SelectDates(props: SelectEntriesProps) {
+function ImportEntries({ project, onLoadEntries }: ImportEntriesProps) {
+  const [start, setStart] = useState<Date | null>(null)
+  const [end, setEnd] = useState<Date | null>(null)
+  const { fetchEntries, fetching } = useFetchEntries()
+
+  const fetchEntriesAndResetInput = useCallback(async (project: string, start: Date, end: Date) => {
+    try {
+      const entries = await fetchEntries(project, start, end)
+      onLoadEntries(entries)
+    } catch (e) {}
+
+    setStart(null)
+    setEnd(null)
+  }, [setStart, setEnd, onLoadEntries])
+
+  const onSetEnd = useCallback((end: Date | null) => {
+    setEnd(end)
+
+    if (!project || !start || !end) {
+      return
+    }
+
+    fetchEntriesAndResetInput(project, start, end)
+  }, [project, start, setEnd])
+
   return (
-    <div className="flex items-center">
-      <TrackearDateRangePicker
-        start={props.start || null}
-        end={props.end || null}
-        onChangeStart={props.onChangeStart}
-        onChangeEnd={props.onChangeEnd}
-        disabled={props.disabled}
-      />
-      <div className="ml-6 date_select" />
+    <div className="flex justify-center p-4 border">
+      <div className="text-center">
+        <div>Importar registros de trabajo</div>
+        <div className="flex items-center">
+          <TrackearDateRangePicker
+            start={start}
+            end={end}
+            onChangeStart={setStart}
+            onChangeEnd={onSetEnd}
+            disabled={!project || fetching}
+          />
+          <div className="date_select ml-6" />
+        </div>
+      </div>
     </div>
   )
 }
 
 type EntriesProps = {
-  start: Date | undefined,
-  end: Date | undefined,
   entries: Entry[],
   onUpdateEntries: (entries: Entry[]) => void,
   removedTracks: Map<number, boolean>,
@@ -330,8 +356,6 @@ type EntriesProps = {
 
 function Entries(props: EntriesProps) {
   const {
-    start,
-    end,
     entries,
     onUpdateEntries,
     removedTracks,
@@ -357,10 +381,6 @@ function Entries(props: EntriesProps) {
     () => calculateTotalFromEntries(entries, removedTracks),
     [entries, removedTracks]
   )
-
-  if (!start || !end) {
-    return <div />
-  }
 
   return (
     <table className="w-full border table-fixed">
@@ -414,6 +434,7 @@ type InvoiceFormProps = {
   entries: Entry[],
   fetchingEntries: boolean,
   errorFetchingEntries: string,
+  onImportEntries: (entries: Entry[]) => void,
   onUpdateEntries: (entries: Entry[]) => void,
 
   removedTracks: Map<number, boolean>,
@@ -435,15 +456,10 @@ function InvoiceForm(props: InvoiceFormProps) {
     errorFetchingClients,
     onSetClient,
 
-    startDate,
-    onSetStartDate,
-
-    endDate,
-    onSetEndDate,
-
     entries,
     fetchingEntries,
     errorFetchingEntries,
+    onImportEntries,
     onUpdateEntries,
 
     removedTracks,
@@ -472,23 +488,15 @@ function InvoiceForm(props: InvoiceFormProps) {
           disabled={!project}
         />
       </div>
-      <div className="flex items-center mb-4">
-        <div className="font-bold w-48">Fecha</div>
-        <SelectDates
-          disabled={!project || !client}
-          start={startDate}
-          end={endDate}
-          onChangeStart={onSetStartDate}
-          onChangeEnd={onSetEndDate}
-        />
-      </div>
+      <ImportEntries
+        project={project}
+        onLoadEntries={onImportEntries}
+      />
       <TrackearFetching
         loading={fetchingEntries}
         error={errorFetchingEntries}
       >
         <Entries
-          start={startDate}
-          end={endDate}
           entries={entries}
           onUpdateEntries={onUpdateEntries}
           removedTracks={removedTracks}
@@ -596,7 +604,7 @@ type InvoicesNewProps = {
   onCloseCreateClientModal: () => void,
   onProjectSelected: () => void,
   onClientSelected: () => void,
-  onFirstInvoiceSave: () => void,
+  onImportEntries: () => void,
 }
 
 function InvoicesNew(props: InvoicesNewProps) {
@@ -605,7 +613,7 @@ function InvoicesNew(props: InvoicesNewProps) {
     onCloseCreateClientModal,
     onProjectSelected,
     onClientSelected,
-    onFirstInvoiceSave,
+    onImportEntries,
   } = props
 
   const [invoicePersisted, setInvoicePersisted] = useState(false)
@@ -641,7 +649,13 @@ function InvoicesNew(props: InvoicesNewProps) {
     setRemovedTracks(new Map(removedTracks).set(track.id, false))
   }, [setRemovedTracks, removedTracks])
 
-  const onSetEntries = useCallback((entries: Entry[]) => {
+  const onAddEntries = useCallback((entries: Entry[]) => {
+    const merged = mergeEntries(displayedEntries, entries)
+    setDisplayedEntries(merged)
+    onImportEntries()
+  }, [displayedEntries, setDisplayedEntries, onImportEntries])
+
+  const onUpdateEntries = useCallback((entries: Entry[]) => {
     setDisplayedEntries(entries)
   }, [setDisplayedEntries])
 
@@ -660,17 +674,6 @@ function InvoicesNew(props: InvoicesNewProps) {
 
     onClientSelected()
   }, [client, onClientSelected])
-
-  const fetchEntriesWhenProjectAndDatesSelected = useCallback(async () => {
-    if (!project || !start || !end) {
-      return
-    }
-
-    const entries = await fetchEntries(project, start, end)
-
-    setDisplayedEntries(entries)
-    onFirstInvoiceSave()
-  }, [project, start, end, fetchEntries, setDisplayedEntries, onFirstInvoiceSave])
 
   const closeAndSelectCreatedClient = useCallback(async () => {
     try {
@@ -693,10 +696,6 @@ function InvoicesNew(props: InvoicesNewProps) {
     fetchClients()
     closeUpdateClientModal()
   }, [closeUpdateClientModal])
-
-  useEffect(() => {
-    fetchEntriesWhenProjectAndDatesSelected()
-  }, [fetchEntriesWhenProjectAndDatesSelected])
 
   useEffect(() => {
     fetchClients()
@@ -732,7 +731,8 @@ function InvoicesNew(props: InvoicesNewProps) {
           entries={displayedEntries}
           fetchingEntries={fetchingEntries}
           errorFetchingEntries={entriesError}
-          onUpdateEntries={onSetEntries}
+          onImportEntries={onAddEntries}
+          onUpdateEntries={onUpdateEntries}
           onPreviewInvoice={onPreview}
           removedTracks={removedTracks}
           onRemoveTrack={removeTrack}
@@ -806,7 +806,7 @@ function TourInvoicesNew() {
       },
       {
         target: ".date_select",
-        content: <div className="text-left">Seleccioná el período para cargar los registros de tiempo.</div>,
+        content: <div className="text-left">Importá los registros de tiempo registrados en un período de tiempo.</div>,
         placement: placement
       }
     ]
@@ -824,7 +824,6 @@ function TourInvoicesNew() {
         disableOverlay={true}
         stepIndex={tourStep}
         steps={steps}
-        spotlightPadding={0}
         floaterProps={floaterProps}
         styles={tourStyles}
         locale={tourLocale}
@@ -834,7 +833,7 @@ function TourInvoicesNew() {
         onCloseCreateClientModal={closeCreateClientModal}
         onProjectSelected={showClientTip}
         onClientSelected={showDateTip}
-        onFirstInvoiceSave={hideTour}
+        onImportEntries={hideTour}
       />
       <TrackearToast />
     </div>

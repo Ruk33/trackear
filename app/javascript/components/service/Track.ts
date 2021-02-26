@@ -30,6 +30,9 @@ export function hoursAndMinutesFromTrack(track: Track) {
   .toObject()
 }
 
+/**
+ * Calculate track's total amount in cash.
+ */
 export function calculateTrackAmount(track: Track) {
   const hours = hoursFromTrack(track)
   const rate = Number(track.project_rate) || 0
