@@ -5,6 +5,9 @@ Rails.application.routes.draw do
   # match '/422', to: 'error#unacceptable', via: :all
   # match '/500', to: 'error#internal_error', via: :all
 
+  # Get the information of the current logged user
+  get '/me', to: 'users#me'
+
   resources :clients, except: [:show]
   resources :invoices, only: [:index, :new, :create]
 

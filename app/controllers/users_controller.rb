@@ -5,6 +5,13 @@ class UsersController < ApplicationController
   before_action :set_user, only: %i[become show edit update destroy]
   load_and_authorize_resource
 
+  # GET /me.json
+  def me
+    respond_to do |format|
+      format.json { render json: @current_user }
+    end
+  end
+
   # GET /users
   # GET /users.json
   def index
