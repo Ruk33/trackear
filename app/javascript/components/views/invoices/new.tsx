@@ -281,24 +281,18 @@ function EntryRow(props: EntryRowProps) {
         <tr key={track.id}>
           <td className="p-2">
             <textarea
-              className={`border p-2 w-full ${removedTracks.get(track.id) && "opacity-50"}`}
+              className="border p-2 w-full"
               value={track.description}
               onChange={(e) => onUpdateDescription(e, track)}
               rows={1}
+              disabled={removedTracks.get(track.id)}
             />
           </td>
           <td className="text-right p-2">
-            {/*
-            <TrackerMaskInput
-              className={`border p-2 w-full text-right ${removedTracks.get(track.id) && "opacity-50"}`}
-              maskChar="0"
-              mask="00:00"
-              value={formatQtyTrack(track)}
-              onChange={(e) => onUpdateQty(e, track)}
-            />*/}
             <TrackearQtyInput
               value={formatQtyTrack(track)}
               onChange={(value) => onUpdateQty(value, track)}
+              disabled={removedTracks.get(track.id)}
             />
           </td>
           <td className="text-right p-2">
@@ -327,11 +321,12 @@ function EntryRow(props: EntryRowProps) {
               )}
             >
               <CurrencyInput
-                className={`border p-2 w-full text-right ${removedTracks.get(track.id) && "opacity-50"}`}
+                className="border p-2 w-full text-right"
                 value={track.project_rate}
                 onValueChange={(value) => onUpdateRate(value, track)}
                 intlConfig={intlConfig}
                 placeholder="$00.00"
+                disabled={removedTracks.get(track.id)}
               />
             </Popover>
           </td>

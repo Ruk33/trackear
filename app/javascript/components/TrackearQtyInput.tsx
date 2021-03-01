@@ -1,8 +1,30 @@
 import React, { memo, useCallback, useRef } from "react"
 
+/*
+ * This component is used for quantities using
+ * the format hh:mm where h represent hours (many, more than 2
+ * if required) and minutes (just 2 digits)
+ * The component may look huge but it's because
+ * it makes a lot of checks to provide a better user experience
+ * such as, not losing the cursor position, replacing characters
+ * when needed, pad numbers with zeros if required, etc.
+ * Using a <insert common mask react component> is not a
+ * good option, they provide an AWFUL user experience
+ */
+
 type Props = {
+  /*
+   * Quantity value representation
+   * in format hh:mm
+   */
   value: string,
+  /*
+   * Callback to be executed when either
+   * hours or minutes change. The value
+   * will contain the format hh:mm
+   */
   onChange: (value: string) => void,
+  disabled?: boolean,
 }
 
 function onlyNumbers(value: string) {
@@ -20,7 +42,7 @@ function padWithZeros(value: string) {
   }
 }
 
-function TrackearQtyInput({ value, onChange }: Props) {
+function TrackearQtyInput({ value, onChange, disabled }: Props) {
   const [hours, minutes] = value.split(":")
   const hoursRef = useRef<HTMLInputElement>(null)
   const minutesRef = useRef<HTMLInputElement>(null)
@@ -117,6 +139,11 @@ function TrackearQtyInput({ value, onChange }: Props) {
       return
     }
 
+    /*
+     * Give a little bit of time so we can properly
+     * update the cursor to the end of the input,
+     * otherwise, the action gets ignored
+     */
     setTimeout(() => {
       const endOfInput = padWithZeros(hours).length
       e.target.selectionStart = endOfInput
@@ -170,6 +197,7 @@ function TrackearQtyInput({ value, onChange }: Props) {
         className="w-full p-2 text-center"
         ref={hoursRef}
         value={hours || ""}
+        disabled={disabled}
         onKeyDown={focusMinutesIfRequired}
         onChange={onChangeHours}
         onFocus={goToLowestHourUnit}
@@ -180,6 +208,7 @@ function TrackearQtyInput({ value, onChange }: Props) {
         className="w-full p-2 text-center"
         ref={minutesRef}
         value={minutes || ""}
+        disabled={disabled}
         onKeyDown={focusHoursIfRequired}
         onChange={onChangeMinutes}
       />
