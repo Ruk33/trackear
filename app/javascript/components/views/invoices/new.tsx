@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState, ChangeEvent, useMemo } from "r
 import Joyride, { Placement } from "react-joyride"
 import { Popover } from "react-tiny-popover"
 import CurrencyInput from "react-currency-input-field"
-import TrackerMaskInput from "components/TrackearMaskInput"
 import TrackearDateRangePicker from "components/TrackearDateRangePicker"
 import TrackearButton from "components/TrackearButton"
 import TrackearFetching from "components/TrackearFetching"
@@ -18,6 +17,7 @@ import { useFetchClients } from "components/hook/ClientHook"
 import { useFetchProjects } from "components/hook/ProjectHook"
 import { useFetchEntries } from "components/hook/EntryHook"
 import TrackearToast, { toast } from "components/TrackearToast"
+import TrackearQtyInput from "components/TrackearQtyInput"
 
 const intlConfig = {
   locale: "en-US",
@@ -227,8 +227,8 @@ function EntryRow(props: EntryRowProps) {
     })
   }, [onUpdate])
 
-  const onUpdateQty = useCallback((e: ChangeEvent<HTMLInputElement>, track: Track) => {
-    const [hours, minutes] = e.target.value.split(":")
+  const onUpdateQty = useCallback((value: string, track: Track) => {
+    const [hours, minutes] = value.split(":")
     const updatedTrack = { ...track }
 
     setHoursAndMinutesFromTrack(
@@ -288,12 +288,17 @@ function EntryRow(props: EntryRowProps) {
             />
           </td>
           <td className="text-right p-2">
+            {/*
             <TrackerMaskInput
               className={`border p-2 w-full text-right ${removedTracks.get(track.id) && "opacity-50"}`}
               maskChar="0"
               mask="00:00"
               value={formatQtyTrack(track)}
               onChange={(e) => onUpdateQty(e, track)}
+            />*/}
+            <TrackearQtyInput
+              value={formatQtyTrack(track)}
+              onChange={(value) => onUpdateQty(value, track)}
             />
           </td>
           <td className="text-right p-2">
