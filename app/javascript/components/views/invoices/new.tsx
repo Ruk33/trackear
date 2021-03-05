@@ -3,21 +3,21 @@ import React, { useCallback, useEffect, useState, ChangeEvent, useMemo } from "r
 import Joyride, { Placement } from "react-joyride"
 import { Popover } from "react-tiny-popover"
 import CurrencyInput from "react-currency-input-field"
-import TrackearDateRangePicker from "components/TrackearDateRangePicker"
-import TrackearButton from "components/TrackearButton"
-import TrackearFetching from "components/TrackearFetching"
+import { createInvoice, entriesToInvoiceEntries } from "components/service/Invoice"
 import { Client } from "components/service/Client"
 import { calculateTotalFromEntries, Entry, mergeEntries } from "components/service/Entry"
 import { Track, calculateTrackAmount, hoursFromTrack, formatQtyTrack, setHoursAndMinutesFromTrack } from "components/service/Track"
-import TrackearSelectInput, { SelectOption } from "components/TrackearSelectInput"
-import TrackearTable, { TableColumn } from "components/TrackearTable"
+import { useFetchClients } from "components/hook/ClientHook"
 import NewClientModal from "components/modal/clients/NewClientModal"
 import UpdateClientModal from "components/modal/clients/UpdateClientModal"
-import { useFetchClients } from "components/hook/ClientHook"
-import { useFetchProjects } from "components/hook/ProjectHook"
-import { useFetchEntries } from "components/hook/EntryHook"
+import TrackearButton from "components/TrackearButton"
+import TrackearFetching from "components/TrackearFetching"
+import TrackearSelectInput, { SelectOption } from "components/TrackearSelectInput"
+import TrackearTable, { TableColumn } from "components/TrackearTable"
 import TrackearToast, { toast } from "components/TrackearToast"
 import TrackearQtyInput from "components/TrackearQtyInput"
+import ProjectSelect from "components/TrackearProjectSelectInput"
+import TrackearEntriesInput from "components/TrackearEntriesInput"
 
 const intlConfig = {
   locale: "en-US",
@@ -45,54 +45,6 @@ const tourLocale = {
   last: "Último",
   next: "Siguiente",
   skip: "Saltar"
-}
-
-type ProjectSelectProps = {
-  /*
-   * Selected project id.
-   */
-  project: string,
-  onProjectsLoaded: () => void,
-  onSelectProject: (project: string) => void,
-}
-
-function ProjectSelect({ project, onProjectsLoaded, onSelectProject }: ProjectSelectProps) {
-  const { projects, fetchProjects, fetching, error } = useFetchProjects()
-
-  const handleSelectProject = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-    onSelectProject(e.target.value)
-  }, [onSelectProject])
-
-  const projectOptions: SelectOption[] = useMemo(() => {
-    return projects.map((project) => ({
-      id: project.id,
-      label: project.name,
-      value: project.id,
-    }))
-  }, [projects])
-
-  const onFetchProjects = useCallback(async () => {
-    await fetchProjects()
-    onProjectsLoaded()
-  }, [fetchProjects, onProjectsLoaded])
-
-  useEffect(() => {
-    onFetchProjects()
-  }, [onFetchProjects])
-
-  return (
-    <>
-      <TrackearFetching loading={fetching} error={error}>
-        <TrackearSelectInput
-          placeholder="Seleccionar proyecto"
-          options={projectOptions}
-          value={project}
-          onChange={handleSelectProject}
-        />
-      </TrackearFetching>
-      <div className="ml-6 project_select" />
-    </>
-  )
 }
 
 type ClientSelectProps = {
@@ -366,39 +318,25 @@ type ImportEntriesProps = {
 function ImportEntries({ project, onLoadEntries }: ImportEntriesProps) {
   const [start, setStart] = useState<Date | null>(null)
   const [end, setEnd] = useState<Date | null>(null)
-  const { fetchEntries, fetching } = useFetchEntries()
 
-  const fetchEntriesAndResetInput = useCallback(async (project: string, start: Date, end: Date) => {
-    try {
-      const entries = await fetchEntries(project, start, end)
-      onLoadEntries(entries)
-    } catch (e) {}
-
+  const resetInput = useCallback((entries: Entry[]) => {
+    onLoadEntries(entries)
     setStart(null)
     setEnd(null)
   }, [setStart, setEnd, onLoadEntries])
-
-  const onSetEnd = useCallback((end: Date | null) => {
-    setEnd(end)
-
-    if (!project || !start || !end) {
-      return
-    }
-
-    fetchEntriesAndResetInput(project, start, end)
-  }, [project, start, setEnd])
 
   return (
     <div className="flex justify-center p-4 border">
       <div className="text-center">
         <div>Importar registros de trabajo</div>
         <div className="flex items-center">
-          <TrackearDateRangePicker
+          <TrackearEntriesInput
+            project={project}
             start={start}
             end={end}
-            onChangeStart={setStart}
-            onChangeEnd={onSetEnd}
-            disabled={!project || fetching}
+            onSetStart={setStart}
+            onSetEnd={setEnd}
+            onLoadEntries={resetInput}
           />
           <div className="date_select ml-6" />
         </div>
@@ -584,6 +522,7 @@ function InvoiceForm(props: InvoiceFormProps) {
           onSelectProject={onSetProject}
           onProjectsLoaded={onProjectsLoaded}
         />
+        <div className="ml-6 project_select" />
       </div>
       <div className="flex items-center mb-2">
         <div className="font-bold w-48">Cliente</div>
@@ -739,6 +678,7 @@ function InvoicesNew(props: InvoicesNewProps) {
     onImportEntries,
   } = props
 
+  const [persisted, setPersisted] = useState(false)
   const [showUpdateClientModal, setShowUpdateClientModal] = useState(false)
   const [project, setProject] = useState("")
   const [client, setClient] = useState<Client | undefined>(undefined)
@@ -763,11 +703,27 @@ function InvoicesNew(props: InvoicesNewProps) {
     setRemovedTracks(new Map(removedTracks).set(track.id, false))
   }, [setRemovedTracks, removedTracks])
 
-  const onAddEntries = useCallback((importedEntries: Entry[]) => {
+  const onAddEntries = useCallback(async (importedEntries: Entry[]) => {
     const merged = mergeEntries(entries, importedEntries)
+
     setEntries(merged)
     onImportEntries()
-  }, [entries, setEntries, onImportEntries])
+
+    try {
+      if (persisted) {
+
+        return
+      }
+
+      const response = await createInvoice({
+        project,
+        client: client ? String(client.id) : "",
+        entries: entriesToInvoiceEntries(merged),
+      })
+      setPersisted(true)
+      toast("Vamos a ir guardando tu factura para que no pierdas ningún cambio.")
+    } catch (e) {}
+  }, [persisted, setPersisted, entries, setEntries, onImportEntries, project, client])
 
   const onUpdateEntries = useCallback((entries: Entry[]) => {
     setEntries(entries)
@@ -902,7 +858,7 @@ function TourInvoicesNew() {
       {
         target: ".project_select",
         content: <div className="text-left">Seleccioná el proyecto para el que querés hacer la factura.</div>,
-        placement: placement
+        placement: placement,
       },
       {
         target: ".client_select",
