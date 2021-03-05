@@ -13,15 +13,27 @@ class InvoicesController < ApplicationController
     @clients = current_user.clients
   end
 
+  def show
+    @invoice = current_user.invoices.first
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render :show }
+    end
+  end
+
   def create
     @invoice = current_user.invoices.for_client.new(invoice_params)
 
-    if @invoice.save
-      redirect_to [@invoice.project, @invoice], notice: "Factura creada exitosamente"
-    else
-      @projects = current_user.projects
-      @clients = current_user.clients
-      render :new
+    respond_to do |format|
+      if @invoice.save
+        format.html { redirect_to [@invoice.project, @invoice], notice: "Factura creada exitosamente" }
+        format.json { render :show, status: :created, location: @invoice }
+      else
+        @projects = current_user.projects
+        @clients = current_user.clients
+        format.html { render :new }
+        format.json { render json: @invoice.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -33,6 +45,7 @@ class InvoicesController < ApplicationController
       :client_id,
       :from,
       :to,
+      invoice_entries_attributes: [:id, :description, :rate, :from, :to, :activity_track_id, :_destroy],
     )
   end
 end

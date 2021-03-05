@@ -15,7 +15,7 @@ class Invoice < ApplicationRecord
   has_one :invoice_status
   has_many :invoice_entries
 
-  accepts_nested_attributes_for :invoice_entries
+  accepts_nested_attributes_for :invoice_entries, allow_destroy: true
 
   after_create :create_entries_for_member_invoice, unless: :is_client_visible?
 
