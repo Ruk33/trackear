@@ -37,6 +37,24 @@ class InvoicesController < ApplicationController
     end
   end
 
+  def update
+    @invoice = current_user.invoices.find(params[:id])
+
+    # Restore all entries to update doesn't fail
+    # in case there are deleted invoice entries
+    @invoice.invoice_entries.only_deleted.update(deleted_at: nil)
+
+    respond_to do |format|
+      if @invoice.update(invoice_params)
+        format.html { redirect_to [@invoice.project, @invoice], notice: "Factura actualizada exitosamente" }
+        format.json { render :show, status: :ok, location: @invoice }
+      else
+        format.html { render :edit }
+        format.json { render json: @invoice.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
 
   def invoice_params

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_23_224022) do
+ActiveRecord::Schema.define(version: 2021_03_05_171730) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,8 +40,6 @@ ActiveRecord::Schema.define(version: 2020_12_23_224022) do
     t.datetime "deleted_at"
     t.decimal "user_rate"
     t.decimal "project_rate"
-    t.integer "billable_cents", default: 0, null: false
-    t.string "billable_currency", default: "USD", null: false
     t.index ["deleted_at"], name: "index_activity_tracks_on_deleted_at"
     t.index ["project_contract_id"], name: "index_activity_tracks_on_project_contract_id"
   end
@@ -60,6 +58,17 @@ ActiveRecord::Schema.define(version: 2020_12_23_224022) do
     t.string "utm_source"
     t.string "utm_campaign"
     t.string "utm_medium"
+  end
+
+  create_table "clients", force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.string "email"
+    t.string "address"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_clients_on_user_id"
   end
 
   create_table "feedback_options", force: :cascade do |t|
@@ -89,7 +98,9 @@ ActiveRecord::Schema.define(version: 2020_12_23_224022) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "activity_track_id"
+    t.datetime "deleted_at"
     t.index ["activity_track_id"], name: "index_invoice_entries_on_activity_track_id"
+    t.index ["deleted_at"], name: "index_invoice_entries_on_deleted_at"
     t.index ["invoice_id"], name: "index_invoice_entries_on_invoice_id"
   end
 
@@ -108,7 +119,7 @@ ActiveRecord::Schema.define(version: 2020_12_23_224022) do
 
   create_table "invoices", force: :cascade do |t|
     t.bigint "project_id"
-    t.decimal "discount_percentage"
+    t.decimal "discount_percentage", default: "0.0"
     t.string "currency"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -124,6 +135,8 @@ ActiveRecord::Schema.define(version: 2020_12_23_224022) do
     t.string "afip_price_currency", default: "USD", null: false
     t.integer "exchange_cents", default: 0, null: false
     t.string "exchange_currency", default: "USD", null: false
+    t.bigint "client_id"
+    t.index ["client_id"], name: "index_invoices_on_client_id"
     t.index ["deleted_at"], name: "index_invoices_on_deleted_at"
     t.index ["project_id"], name: "index_invoices_on_project_id"
     t.index ["user_id"], name: "index_invoices_on_user_id"
@@ -170,17 +183,6 @@ ActiveRecord::Schema.define(version: 2020_12_23_224022) do
     t.string "cancel_url"
   end
 
-  create_table "payments", force: :cascade do |t|
-    t.string "payment_type"
-    t.integer "billed_cents", default: 0, null: false
-    t.string "billed_currency", default: "USD", null: false
-    t.datetime "valid_until"
-    t.bigint "user_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_payments_on_user_id"
-  end
-
   create_table "project_contracts", force: :cascade do |t|
     t.bigint "project_id"
     t.bigint "user_id"
@@ -223,6 +225,15 @@ ActiveRecord::Schema.define(version: 2020_12_23_224022) do
     t.string "client_address"
     t.string "client_email"
     t.index ["slug"], name: "index_projects_on_slug", unique: true
+  end
+
+  create_table "sessions", force: :cascade do |t|
+    t.string "token"
+    t.bigint "user_id", null: false
+    t.boolean "used", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
   create_table "submissions", force: :cascade do |t|
@@ -274,6 +285,7 @@ ActiveRecord::Schema.define(version: 2020_12_23_224022) do
     t.string "card_exp_month"
     t.string "card_exp_year"
     t.text "extra_billing_info"
+    t.text "user_avatar_data"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -284,17 +296,19 @@ ActiveRecord::Schema.define(version: 2020_12_23_224022) do
   add_foreign_key "activity_stop_watches", "activity_tracks"
   add_foreign_key "activity_stop_watches", "projects"
   add_foreign_key "activity_stop_watches", "users"
+  add_foreign_key "clients", "users"
   add_foreign_key "invoice_entries", "invoices"
   add_foreign_key "invoice_statuses", "invoice_statuses"
   add_foreign_key "invoice_statuses", "invoices"
   add_foreign_key "invoice_statuses", "users"
+  add_foreign_key "invoices", "clients"
   add_foreign_key "invoices", "projects"
   add_foreign_key "other_submissions", "users"
-  add_foreign_key "payments", "users"
   add_foreign_key "project_contracts", "projects"
   add_foreign_key "project_contracts", "users"
   add_foreign_key "project_invitations", "projects"
   add_foreign_key "project_invitations", "users"
+  add_foreign_key "sessions", "users"
   add_foreign_key "submissions", "feedback_options"
   add_foreign_key "submissions", "users"
 end

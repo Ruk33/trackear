@@ -3,10 +3,10 @@ import React, { useCallback, useEffect, useState, ChangeEvent, useMemo } from "r
 import Joyride, { Placement } from "react-joyride"
 import { Popover } from "react-tiny-popover"
 import CurrencyInput from "react-currency-input-field"
-import { createInvoice, entriesToInvoiceEntries } from "components/service/Invoice"
+import { calculateTotalFromEntries, calculateEntryAmount, createInvoice, formatQtyEntry, InvoiceEntry, setHoursAndMinutesFromEntry, hoursFromEntry, mergeEntriesToInvoiceEntries, updateInvoice, entriesFromInvoiceResponse } from "components/service/Invoice"
 import { Client } from "components/service/Client"
-import { calculateTotalFromEntries, Entry, mergeEntries } from "components/service/Entry"
-import { Track, calculateTrackAmount, hoursFromTrack, formatQtyTrack, setHoursAndMinutesFromTrack } from "components/service/Track"
+import { User } from "components/service/User"
+import { Entry } from "components/service/Entry"
 import { useFetchClients } from "components/hook/ClientHook"
 import NewClientModal from "components/modal/clients/NewClientModal"
 import UpdateClientModal from "components/modal/clients/UpdateClientModal"
@@ -112,13 +112,13 @@ function ClientSelect(props: ClientSelectProps) {
 }
 
 type QtyCashAmountProps = {
-  track: Track,
+  entry: InvoiceEntry,
   isRemoved: boolean,
 }
 
 function QtyCashAmount(props: QtyCashAmountProps) {
-  const { track, isRemoved } = props
-  const amount = useMemo(() => calculateTrackAmount(track), [track])
+  const { entry, isRemoved } = props
+  const amount = useMemo(() => calculateEntryAmount(entry), [entry])
 
   return (
     <div className={`text-right ${isRemoved && "opacity-50"}`}>
@@ -128,7 +128,12 @@ function QtyCashAmount(props: QtyCashAmountProps) {
 }
 
 type EntryRowProps = {
-  entry: Entry,
+  /**
+   * Author of tracks
+   */
+  user: User,
+
+  entries: InvoiceEntry[],
 
   /**
    * Callback to be executed when the
@@ -138,81 +143,72 @@ type EntryRowProps = {
    * calculations such as subtotal,
    * total, etc.
    */
-  onRemove: (track: Track) => void,
+  onRemove: (entry: InvoiceEntry) => void,
 
   /**
    * Callback to be executed
    * when entry gets restored.
    */
-  onRestore: (track: Track) => void,
+  onRestore: (entry: InvoiceEntry) => void,
 
   /**
    * Callback to be executed when the
    * entry gets updated (description changed,
    * qty changed, etc.)
    */
-  onUpdate: (track: Track) => void,
+  onUpdate: (entry: InvoiceEntry) => void,
 
   /**
    * Callback executed when the user
    * wants to update all tracks rate from
    * a user entries
    */
-  onUpdateAllTracksRate: (user: number, rate: string) => void,
-
-  /**
-   * Map of removed/discarded entries
-   * by entry id.
-   */
-  removedTracks: Map<number, boolean>,
+  onUpdateAllTracksRate: (user: string, rate: string) => void,
 }
 
 function EntryRow(props: EntryRowProps) {
-  const [focusedTrack, setFocusedTrack] = useState(-1)
-  const { entry, onRemove, onRestore, onUpdate, onUpdateAllTracksRate, removedTracks } = props
-  const { user, tracks } = entry
+  const [focusedEntry, setFocusedEntry] = useState<number | undefined>(undefined)
+  const { user, entries, onRemove, onRestore, onUpdate, onUpdateAllTracksRate } = props
 
-  const onUpdateDescription = useCallback((e: ChangeEvent<HTMLTextAreaElement>, track: Track) => {
+  const onUpdateDescription = useCallback((e: ChangeEvent<HTMLTextAreaElement>, entry: InvoiceEntry) => {
     onUpdate({
-      ...track,
+      ...entry,
       description: e.target.value
     })
   }, [onUpdate])
 
-  const onUpdateQty = useCallback((value: string, track: Track) => {
+  const onUpdateQty = useCallback((value: string, entry: InvoiceEntry) => {
     const [hours, minutes] = value.split(":")
-    const updatedTrack = { ...track }
-
-    setHoursAndMinutesFromTrack(
-      updatedTrack,
+    const updatedEntry = setHoursAndMinutesFromEntry(
+      entry,
       Number(hours) || 0,
       Number(minutes) || 0,
     )
 
-    onUpdate(updatedTrack)
+    onUpdate(updatedEntry)
   }, [onUpdate])
 
   const loseFocusFromTrack = useCallback(() => {
-    setFocusedTrack(-1)
-  }, [setFocusedTrack])
+    setFocusedEntry(undefined)
+  }, [setFocusedEntry])
 
   const updateAllTracksRate = useCallback((value: string) => {
-    onUpdateAllTracksRate(entry.user.id, value)
+    onUpdateAllTracksRate(String(user.id), value)
     loseFocusFromTrack()
-  }, [onUpdateAllTracksRate, loseFocusFromTrack])
+  }, [user, onUpdateAllTracksRate, loseFocusFromTrack])
 
-  const onUpdateRate = useCallback((value: string | undefined, track: Track) => {
+  const onUpdateRate = useCallback((value: string | undefined, entry: InvoiceEntry) => {
     // For some reason the currency inputs
     // executes the callback even if the
     // user doesn't type anything...
-    if (value === track.project_rate) {
+    if (value === entry.rate) {
       return
     }
 
-    setFocusedTrack(track.id)
+    setFocusedEntry(entry.id)
     onUpdate({
-      ...track,
-      project_rate: value || ""
+      ...entry,
+      rate: value || ""
     })
   }, [onUpdate])
 
@@ -229,32 +225,32 @@ function EntryRow(props: EntryRowProps) {
           </div>
         </td>
       </tr>
-      {tracks.map((track) => (
-        <tr key={track.id}>
+      {entries.map((entry) => (
+        <tr key={entry.id}>
           <td className="p-2">
             <textarea
               className="border p-2 w-full"
-              value={track.description}
-              onChange={(e) => onUpdateDescription(e, track)}
+              value={entry.description}
+              onChange={(e) => onUpdateDescription(e, entry)}
               rows={1}
-              disabled={removedTracks.get(track.id)}
+              disabled={entry.destroyed}
             />
           </td>
           <td className="text-right p-2">
             <TrackearQtyInput
-              value={formatQtyTrack(track)}
-              onChange={(value) => onUpdateQty(value, track)}
-              disabled={removedTracks.get(track.id)}
+              value={formatQtyEntry(entry)}
+              onChange={(value) => onUpdateQty(value, entry)}
+              disabled={entry.destroyed}
             />
           </td>
           <td className="text-right p-2">
             <Popover
-              isOpen={!!track.project_rate && focusedTrack === track.id}
+              isOpen={!!entry.rate && focusedEntry === entry.id}
               positions={['top']}
               padding={10}
               content={(
                 <div className="w-64 bg-gray-800 text-white p-6 shadow-md rounded">
-                  <p>¿Querés cambiar la tarifa de todos los registros de <span className="text-pink-500">{entry.user.first_name}</span> a <span className="text-pink-500">${track.project_rate}?</span></p>
+                  <p>¿Querés cambiar la tarifa de todos los registros de <span className="text-pink-500">{user.first_name}</span> a <span className="text-pink-500">${entry.rate}?</span></p>
                   <div className="mt-3 flex justify-center items-center">
                     <button
                       onClick={loseFocusFromTrack}
@@ -263,7 +259,7 @@ function EntryRow(props: EntryRowProps) {
                       No
                     </button>
                     <button
-                      onClick={() => updateAllTracksRate(track.project_rate)}
+                      onClick={() => updateAllTracksRate(entry.rate)}
                       className="btn btn-sm btn-primary mx-1"
                     >
                       Si, actualizar
@@ -274,32 +270,32 @@ function EntryRow(props: EntryRowProps) {
             >
               <CurrencyInput
                 className="border p-2 w-full text-right"
-                value={track.project_rate}
-                onValueChange={(value) => onUpdateRate(value, track)}
+                value={entry.rate}
+                onValueChange={(value) => onUpdateRate(value, entry)}
                 intlConfig={intlConfig}
                 placeholder="$00.00"
-                disabled={removedTracks.get(track.id)}
+                disabled={entry.destroyed}
               />
             </Popover>
           </td>
           <td className="text-right p-2">
             <QtyCashAmount
-              isRemoved={!!removedTracks.get(track.id)}
-              track={track}
+              isRemoved={!!entry.destroyed}
+              entry={entry}
             />
           </td>
           <td className="text-center p-2">
-            {!removedTracks.get(track.id) && <button
+            {!entry.destroyed && <button
               type="button"
               className="rounded shadow px-4 py-2 text-red-500"
-              onClick={() => onRemove(track)}
+              onClick={() => onRemove(entry)}
             >
               Remover
             </button>}
-            {removedTracks.get(track.id) && <button
+            {entry.destroyed && <button
               type="button"
               className="rounded shadow px-4 py-2 text-blue-500"
-              onClick={() => onRestore(track)}
+              onClick={() => onRestore(entry)}
             >
               Restaurar
             </button>}
@@ -346,59 +342,45 @@ function ImportEntries({ project, onLoadEntries }: ImportEntriesProps) {
 }
 
 type EntriesProps = {
-  entries: Entry[],
-  onUpdateEntries: (entries: Entry[]) => void,
-  removedTracks: Map<number, boolean>,
-  onRemoveTrack: (track: Track) => void,
-  onRestoreTrack: (track: Track) => void,
+  user: User,
+  entries: InvoiceEntry[],
+  onUpdateEntries: (entries: InvoiceEntry[]) => void,
+  onRemoveTrack: (entry: InvoiceEntry) => void,
+  onRestoreTrack: (entry: InvoiceEntry) => void,
 }
 
 function Entries(props: EntriesProps) {
   const {
+    user,
     entries,
     onUpdateEntries,
-    removedTracks,
     onRemoveTrack,
     onRestoreTrack,
   } = props
 
-  const handleUpdate = useCallback((newTrack: Track) => {
+  const handleUpdate = useCallback((updatedEntry: InvoiceEntry) => {
     const updated = entries.map((entry) => {
-      const tracks = entry.tracks.map((track) => {
-        if (track.id === newTrack.id) {
-          return newTrack
-        }
-        return track
-      })
-      return { ...entry, tracks }
+      if (entry.id === updatedEntry.id) {
+        return updatedEntry
+      }
+      return entry
     })
 
     onUpdateEntries(updated)
   }, [entries, onUpdateEntries])
 
-  const updateAllTracksRate = useCallback((fromUser: number, rate: string) => {
-    const updated = entries.map((entry) => {
-      if (entry.user.id !== fromUser) {
-        return entry
-      }
-
-      const tracksWithUpdatedRate = entry.tracks.map((track) => ({
-        ...track,
-        project_rate: rate
-      }))
-
-      return {
-        ...entry,
-        tracks: tracksWithUpdatedRate,
-      }
-    })
+  const updateAllTracksRate = useCallback((fromUser: string, rate: string) => {
+    const updated = entries.map((entry) => ({
+      ...entry,
+      rate,
+    }))
 
     onUpdateEntries(updated)
   }, [entries, onUpdateEntries])
 
   const total = useMemo(
-    () => calculateTotalFromEntries(entries, removedTracks),
-    [entries, removedTracks]
+    () => calculateTotalFromEntries(entries),
+    [entries]
   )
 
   return (
@@ -413,17 +395,15 @@ function Entries(props: EntriesProps) {
         </tr>
       </thead>
       <tbody>
-        {entries.map((entry) => (
-          <EntryRow
-            key={entry.user.id}
-            entry={entry}
-            onRemove={onRemoveTrack}
-            onRestore={onRestoreTrack}
-            onUpdateAllTracksRate={updateAllTracksRate}
-            onUpdate={handleUpdate}
-            removedTracks={removedTracks}
-          />
-        ))}
+        {/* We should be passing the entries by user */}
+        <EntryRow
+          user={user}
+          entries={entries}
+          onRemove={onRemoveTrack}
+          onRestore={onRestoreTrack}
+          onUpdateAllTracksRate={updateAllTracksRate}
+          onUpdate={handleUpdate}
+        />
         <tr>
           <td colSpan={3}></td>
           <td className="text-right p-2 py-4 text-2xl">Total: ${total.toFixed(2)}</td>
@@ -464,7 +444,7 @@ type InvoiceFormProps = {
    */
   onSetClient: (client: Client) => void,
 
-  entries: Entry[],
+  entries: InvoiceEntry[],
   /**
    * Callback to be executed when the user
    * imports entries fetched from selecting
@@ -475,19 +455,15 @@ type InvoiceFormProps = {
    * Callback to be executed when the user
    * updates an entry (changes rate, qty, etc.)
    */
-  onUpdateEntries: (entries: Entry[]) => void,
-  /**
-   * Map containing all removed tracks by id
-   */
-  removedTracks: Map<number, boolean>,
+  onUpdateEntries: (entries: InvoiceEntry[]) => void,
   /**
    * Callback to be executed when a track is "removed"
    */
-  onRemoveTrack: (track: Track) => void,
+  onRemoveTrack: (entry: InvoiceEntry) => void,
   /**
    * Callback to be executed when a track gets restored
    */
-  onRestoreTrack: (track: Track) => void,
+  onRestoreTrack: (entry: InvoiceEntry) => void,
   /**
    * Callback to be executed when clicking on preview button
    */
@@ -508,7 +484,6 @@ function InvoiceForm(props: InvoiceFormProps) {
     entries,
     onImportEntries,
     onUpdateEntries,
-    removedTracks,
     onRemoveTrack,
     onRestoreTrack,
   } = props
@@ -541,9 +516,9 @@ function InvoiceForm(props: InvoiceFormProps) {
         onLoadEntries={onImportEntries}
       />
       <Entries
+        user={{}}
         entries={entries}
         onUpdateEntries={onUpdateEntries}
-        removedTracks={removedTracks}
         onRemoveTrack={onRemoveTrack}
         onRestoreTrack={onRestoreTrack}
       />
@@ -565,8 +540,7 @@ function InvoiceForm(props: InvoiceFormProps) {
 }
 
 type PreviewInvoiceProps = {
-  entries: Entry[],
-  removedTracks: Map<number, boolean>,
+  entries: InvoiceEntry[],
   onClosePreview: () => void,
   client: Client | undefined,
   onCreateInvoice: () => void,
@@ -575,7 +549,6 @@ type PreviewInvoiceProps = {
 function PreviewInvoice(props: PreviewInvoiceProps) {
   const {
     entries,
-    removedTracks,
     onClosePreview,
     client,
     onCreateInvoice,
@@ -601,21 +574,18 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
     ]
   }, [])
 
-  const total = useMemo(
-    () => calculateTotalFromEntries(entries, removedTracks),
-    [entries, removedTracks]
-  )
+  const total = useMemo(() => calculateTotalFromEntries(entries), [entries])
 
-  const buildRows = useCallback((entry: Entry) => {
-    const tracks = entry.tracks.filter((track) => !removedTracks.get(track.id))
-    return tracks.map((track) => (
-      <tr key={track.id}>
-        <td className="text-left p-2">{track.description}</td>
-        <td className="text-right p-2">{hoursFromTrack(track).toFixed(2)}</td>
-        <td className="text-right p-2">${calculateTrackAmount(track)}</td>
+  const buildRows = useCallback(() => {
+    const nonRemovedEntries = entries.filter((entry) => !entry.destroyed)
+    return nonRemovedEntries.map((entry) => (
+      <tr key={entry.id}>
+        <td className="text-left p-2">{entry.description}</td>
+        <td className="text-right p-2">{hoursFromEntry(entry).toFixed(2)}</td>
+        <td className="text-right p-2">${calculateEntryAmount(entry)}</td>
       </tr>
     ))
-  }, [removedTracks])
+  }, [entries])
 
   return (
     <>
@@ -633,7 +603,7 @@ function PreviewInvoice(props: PreviewInvoiceProps) {
       </div>
 
       <TrackearTable columns={columns}>
-        {entries.map(buildRows)}
+        {buildRows()}
         <tr>
           <td colSpan={2}></td>
           <td className="text-right p-2 py-4 text-2xl">Total: ${total.toFixed(2)}</td>
@@ -678,12 +648,11 @@ function InvoicesNew(props: InvoicesNewProps) {
     onImportEntries,
   } = props
 
-  const [persisted, setPersisted] = useState(false)
+  const [invoiceId, setInvoiceId] = useState<number | undefined>(undefined)
   const [showUpdateClientModal, setShowUpdateClientModal] = useState(false)
   const [project, setProject] = useState("")
   const [client, setClient] = useState<Client | undefined>(undefined)
-  const [entries, setEntries] = useState<Entry[]>([])
-  const [removedTracks, setRemovedTracks] = useState(new Map<number, boolean>())
+  const [entries, setEntries] = useState<InvoiceEntry[]>([])
   const [preview, setPreview] = useState(false)
   const { clients, fetchClients, error: clientsError, fetching: fetchingClients } = useFetchClients()
 
@@ -695,37 +664,54 @@ function InvoicesNew(props: InvoicesNewProps) {
     setPreview(false)
   }, [setPreview])
 
-  const removeTrack = useCallback((track: Track) => {
-    setRemovedTracks(new Map(removedTracks).set(track.id, true))
-  }, [setRemovedTracks, removedTracks])
+  const removeTrack = useCallback((removedEntry: InvoiceEntry) => {
+    const updated = entries.map((entry) => ({
+      ...entry,
+      destroyed: entry.id === removedEntry.id ? true : entry.destroyed,
+    }))
+    setEntries(updated)
+  }, [entries, setEntries])
 
-  const restoreTrack = useCallback((track: Track) => {
-    setRemovedTracks(new Map(removedTracks).set(track.id, false))
-  }, [setRemovedTracks, removedTracks])
+  const restoreTrack = useCallback((restoredEntry: InvoiceEntry) => {
+    const updated = entries.map((entry) => ({
+      ...entry,
+      destroyed: entry.id === restoredEntry.id ? false : entry.destroyed,
+    }))
+    setEntries(updated)
+  }, [entries, setEntries])
 
   const onAddEntries = useCallback(async (importedEntries: Entry[]) => {
-    const merged = mergeEntries(entries, importedEntries)
-
-    setEntries(merged)
-    onImportEntries()
+    const merged = mergeEntriesToInvoiceEntries(entries, importedEntries)
 
     try {
-      if (persisted) {
-
+      if (invoiceId) {
+        const updatedInvoice = await updateInvoice({
+          id: invoiceId,
+          project,
+          client: client ? String(client.id) : "",
+          entries: merged,
+        })
+        setEntries(entriesFromInvoiceResponse(updatedInvoice))
         return
       }
 
-      const response = await createInvoice({
+      const createdInvoice = await createInvoice({
         project,
         client: client ? String(client.id) : "",
-        entries: entriesToInvoiceEntries(merged),
+        entries: merged,
       })
-      setPersisted(true)
+
+      setInvoiceId(createdInvoice.invoice.id)
+      setEntries(entriesFromInvoiceResponse(createdInvoice))
+
+      window.history.pushState({}, "", `/invoices/${createdInvoice.invoice.id}/edit`)
       toast("Vamos a ir guardando tu factura para que no pierdas ningún cambio.")
     } catch (e) {}
-  }, [persisted, setPersisted, entries, setEntries, onImportEntries, project, client])
 
-  const onUpdateEntries = useCallback((entries: Entry[]) => {
+    onImportEntries()
+  }, [invoiceId, setInvoiceId, entries, setEntries, onImportEntries, project, client])
+
+  const onUpdateEntries = useCallback((entries: InvoiceEntry[]) => {
     setEntries(entries)
   }, [setEntries])
 
@@ -803,7 +789,6 @@ function InvoicesNew(props: InvoicesNewProps) {
           onImportEntries={onAddEntries}
           onUpdateEntries={onUpdateEntries}
           onPreviewInvoice={onPreview}
-          removedTracks={removedTracks}
           onRemoveTrack={removeTrack}
           onRestoreTrack={restoreTrack}
         />
@@ -812,7 +797,6 @@ function InvoicesNew(props: InvoicesNewProps) {
         <PreviewInvoice
           client={client}
           entries={entries}
-          removedTracks={removedTracks}
           onClosePreview={onClosePreview}
           onCreateInvoice={onCreateInvoice}
         />

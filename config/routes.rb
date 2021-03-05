@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   get '/me', to: 'users#me'
 
   resources :clients, except: [:show]
-  resources :invoices, only: [:index, :show, :new, :create]
+  resources :invoices, only: [:index, :show, :new, :create, :update]
 
   resources :users do
     post :become, on: :member

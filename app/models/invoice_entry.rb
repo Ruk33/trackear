@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class InvoiceEntry < ApplicationRecord
+  acts_as_paranoid
+
   belongs_to :invoice
   belongs_to :activity_track, with_deleted: true
 
