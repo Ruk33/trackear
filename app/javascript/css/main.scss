@@ -68,6 +68,11 @@ body {
   }
 }
 
+.btn[disabled] {
+  @apply opacity-75;
+  @apply cursor-wait;
+}
+
 .btn.btn-link, a {
   color: #1ea7fd;
   @apply transition;
@@ -76,6 +81,7 @@ body {
 
   &:hover {
     @apply text-blue-500;
+    @apply shadow-none;
   }
 }
 
@@ -143,7 +149,9 @@ body {
   @apply text-gray-800;
   @apply p-3;
   @apply rounded;
-  background: linear-gradient(45deg, #f3f7fa, #f7fafc);
+  /// background: linear-gradient(45deg, #f3f7fa, #f7fafc);
+  background: linear-gradient(45deg, #ecf2f7, #f6fbff);
+  box-shadow: inset 0 0 2px white;
   @apply border;
 
   &:hover {
@@ -152,13 +160,14 @@ body {
 }
 
 .btn.btn-primary {
-  background: linear-gradient(45deg, #79cc4e, #92e283);
+  /// background: linear-gradient(45deg, #79cc4e, #92e283);
+  background: linear-gradient(45deg, #70adea, #89e2ce);
   @apply text-white;
   @apply p-3;
   @apply rounded;
 
   &:hover {
-    background-color: #50e06f;
+    background: linear-gradient(45deg, #609dda, #66e8d6);
   }
 }
 
@@ -209,4 +218,16 @@ a.sidebar {
   svg {
     @apply text-pink-500;
   }
+}
+
+.react-joyride__beacon {
+  outline: none !important;
+}
+
+button.btn:focus,
+textarea:focus,
+input:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0px 3px #b9e2ff80, 0 0 3px #1eb9fd;
 }

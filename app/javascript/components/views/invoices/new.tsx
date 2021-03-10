@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState, ChangeEvent, useMemo } from "r
 import Joyride, { Placement } from "react-joyride"
 import { Popover } from "react-tiny-popover"
 import CurrencyInput from "react-currency-input-field"
-import { calculateTotalFromEntries, calculateEntryAmount, createInvoice, formatQtyEntry, InvoiceEntry, setHoursAndMinutesFromEntry, hoursFromEntry, mergeEntriesToInvoiceEntries, updateInvoice, entriesFromInvoiceResponse } from "components/service/Invoice"
+import { calculateTotalFromEntries, calculateEntryAmount, createInvoice, formatQtyEntry, InvoiceEntry, setHoursAndMinutesFromEntry, hoursFromEntry, mergeEntriesToInvoiceEntries, updateInvoice, entriesFromInvoiceResponse, makeInvoiceVisible } from "components/service/Invoice"
 import { Client } from "components/service/Client"
 import { User } from "components/service/User"
 import { Entry } from "components/service/Entry"
@@ -13,11 +13,14 @@ import UpdateClientModal from "components/modal/clients/UpdateClientModal"
 import TrackearButton from "components/TrackearButton"
 import TrackearFetching from "components/TrackearFetching"
 import TrackearSelectInput, { SelectOption } from "components/TrackearSelectInput"
-import TrackearTable, { TableColumn } from "components/TrackearTable"
+import ShowInvoice from "components/views/invoices/show"
 import TrackearToast, { toast } from "components/TrackearToast"
 import TrackearQtyInput from "components/TrackearQtyInput"
 import ProjectSelect from "components/TrackearProjectSelectInput"
 import TrackearEntriesInput from "components/TrackearEntriesInput"
+import TrackearDateRangePicker from "components/TrackearDateRangePicker"
+import InvoiceCreatedModal from "components/modal/invoices/InvoiceCreatedModal"
+import NoTracksIcon from "../../../../assets/images/empty-invoice-tracks-icon.svg"
 
 const intlConfig = {
   locale: "en-US",
@@ -105,7 +108,7 @@ function ClientSelect(props: ClientSelectProps) {
         onChange={handleSelectClient}
         options={clientOptions}
       />
-      {client && <button className="text-blue-400 p-2" onClick={onUpdateClient}>Actualizar cliente</button>}
+      {client && <button className="text-blue-400 ml-2 p-2" onClick={onUpdateClient}>Actualizar datos del cliente</button>}
       <div className="ml-6 client_select" />
     </TrackearFetching>
   )
@@ -308,10 +311,12 @@ function EntryRow(props: EntryRowProps) {
 
 type ImportEntriesProps = {
   project: string,
-  onLoadEntries: (entries: Entry[]) => void
+  onLoadEntries: (entries: Entry[]) => void,
+  invoiceFrom: Date | null,
+  invoiceTo: Date | null,
 }
 
-function ImportEntries({ project, onLoadEntries }: ImportEntriesProps) {
+function ImportEntries({ project, onLoadEntries, invoiceFrom, invoiceTo }: ImportEntriesProps) {
   const [start, setStart] = useState<Date | null>(null)
   const [end, setEnd] = useState<Date | null>(null)
 
@@ -322,9 +327,9 @@ function ImportEntries({ project, onLoadEntries }: ImportEntriesProps) {
   }, [setStart, setEnd, onLoadEntries])
 
   return (
-    <div className="flex justify-center p-4 border">
+    <div className="bg-gray-200 flex justify-center p-4">
       <div className="text-center">
-        <div>Importar registros de trabajo</div>
+        <h4 className="font-bold">Importar registros de trabajo</h4>
         <div className="flex items-center">
           <TrackearEntriesInput
             project={project}
@@ -333,6 +338,7 @@ function ImportEntries({ project, onLoadEntries }: ImportEntriesProps) {
             onSetStart={setStart}
             onSetEnd={setEnd}
             onLoadEntries={resetInput}
+            disabled={!invoiceFrom || !invoiceTo}
           />
           <div className="date_select ml-6" />
         </div>
@@ -385,16 +391,33 @@ function Entries(props: EntriesProps) {
 
   return (
     <table className="w-full border table-fixed">
-      <thead className="border">
+      <thead>
         <tr>
-          <th className="p-2 py-4 bg-gray-100 w-1/2 text-left border">Descripción</th>
-          <th className="p-2 py-4 bg-gray-100 w-1/8 text-right border">Tiempo registrado</th>
-          <th className="p-2 py-4 bg-gray-100 w-1/8 text-right border">Tarifa</th>
-          <th className="p-2 py-4 bg-gray-100 w-1/8 text-right border">Total</th>
-          <th className="p-2 py-4 bg-gray-100 w-1/8 text-center border">-</th>
+          <th className="p-2 text-white bg-gray-900 w-1/2 text-left">Descripción</th>
+          <th className="p-2 text-white bg-gray-900 w-1/8 text-right">Tiempo registrado</th>
+          <th className="p-2 text-white bg-gray-900 w-1/8 text-right">Tarifa</th>
+          <th className="p-2 text-white bg-gray-900 w-1/8 text-right">Total</th>
+          <th className="p-2 text-white bg-gray-900 w-1/8 text-center">-</th>
         </tr>
       </thead>
       <tbody>
+        {entries.length === 0 && <tr>
+          <td colSpan={5}>
+            <div className="text-gray-500 p-6 mx-auto flex items-center" style={{ width: "1000px" }}>
+              <div className="mr-8" style={{width: "300px"}}>
+                <NoTracksIcon />
+              </div>
+              <div style={{ width: "500px" }}>
+                <h3 className="text-3xl text-pink-400">
+                  Sin registros importados.
+                </h3>
+                <p className="text-xl">
+                  Una vez que seleccciones el proyecto, el cliente y el período de facturación, vas a poder importar los registros de actividad desde "Importar registros de trabajo".
+                </p>
+              </div>
+            </div>
+          </td>
+        </tr>}
         {/* We should be passing the entries by user */}
         <EntryRow
           user={user}
@@ -404,11 +427,11 @@ function Entries(props: EntriesProps) {
           onUpdateAllTracksRate={updateAllTracksRate}
           onUpdate={handleUpdate}
         />
-        <tr>
+        {entries.length > 0 && <tr>
           <td colSpan={3}></td>
           <td className="text-right p-2 py-4 text-2xl">Total: ${total.toFixed(2)}</td>
           <td></td>
-        </tr>
+        </tr>}
       </tbody>
     </table>
   )
@@ -443,6 +466,11 @@ type InvoiceFormProps = {
    * Callback to be executed when a client is selected
    */
   onSetClient: (client: Client) => void,
+
+  from: Date | null,
+  onSetFrom: (value: Date | null) => void,
+  to: Date | null,
+  onSetTo: (value: Date | null) => void,
 
   entries: InvoiceEntry[],
   /**
@@ -481,6 +509,10 @@ function InvoiceForm(props: InvoiceFormProps) {
     fetchingClients,
     errorFetchingClients,
     onSetClient,
+    from,
+    to,
+    onSetFrom,
+    onSetTo,
     entries,
     onImportEntries,
     onUpdateEntries,
@@ -511,9 +543,21 @@ function InvoiceForm(props: InvoiceFormProps) {
           disabled={!project}
         />
       </div>
+      <div className="flex items-center mb-6">
+        <div className="font-bold w-48">Período de facturación</div>
+        <TrackearDateRangePicker
+          start={from}
+          end={to}
+          onChangeStart={onSetFrom}
+          onChangeEnd={onSetTo}
+        />
+        <div className="ml-6 period_select" />
+      </div>
       <ImportEntries
         project={project}
         onLoadEntries={onImportEntries}
+        invoiceFrom={from}
+        invoiceTo={to}
       />
       <Entries
         user={{}}
@@ -539,102 +583,13 @@ function InvoiceForm(props: InvoiceFormProps) {
   )
 }
 
-type PreviewInvoiceProps = {
-  entries: InvoiceEntry[],
-  onClosePreview: () => void,
-  client: Client | undefined,
-  onCreateInvoice: () => void,
-}
-
-function PreviewInvoice(props: PreviewInvoiceProps) {
-  const {
-    entries,
-    onClosePreview,
-    client,
-    onCreateInvoice,
-  } = props
-
-  const columns: TableColumn[] = useMemo(() => {
-    return [
-      {
-        id: "description",
-        component: "Description",
-        props: { className: "p-2 bg-gray-100 border text-left" },
-      },
-      {
-        id: "qty",
-        component: "Qty",
-        props: { className: "p-2 bg-gray-100 border text-right" },
-      },
-      {
-        id: "amount",
-        component: "Total",
-        props: { className: "p-2 bg-gray-100 border text-right" },
-      },
-    ]
-  }, [])
-
-  const total = useMemo(() => calculateTotalFromEntries(entries), [entries])
-
-  const buildRows = useCallback(() => {
-    const nonRemovedEntries = entries.filter((entry) => !entry.destroyed)
-    return nonRemovedEntries.map((entry) => (
-      <tr key={entry.id}>
-        <td className="text-left p-2">{entry.description}</td>
-        <td className="text-right p-2">{hoursFromEntry(entry).toFixed(2)}</td>
-        <td className="text-right p-2">${calculateEntryAmount(entry)}</td>
-      </tr>
-    ))
-  }, [entries])
-
-  return (
-    <>
-      <h1 className="text-2xl">Invoice</h1>
-      <div className="grid grid-cols-2 gap-4 py-4">
-        <div className="text-left">
-          <h2 className="font-bold">Bill to</h2>
-          <p>Name: {client && `${client.first_name} ${client.last_name}`}</p>
-          <p>Address: {client && client.address}</p>
-        </div>
-        <div className="text-right">
-          <h2 className="font-bold">Company name</h2>
-          <p>Address: HARDCODED - Street</p>
-        </div>
-      </div>
-
-      <TrackearTable columns={columns}>
-        {buildRows()}
-        <tr>
-          <td colSpan={2}></td>
-          <td className="text-right p-2 py-4 text-2xl">Total: ${total.toFixed(2)}</td>
-        </tr>
-      </TrackearTable>
-
-      <div className="text-center mt-2">
-        <TrackearButton
-          className="btn btn-secondary mr-2"
-          type="button"
-          onClick={onClosePreview}
-        >
-          Continuar editando
-        </TrackearButton>
-        <TrackearButton
-          className="btn btn-primary"
-          onClick={onCreateInvoice}
-        >
-          Finalizar
-        </TrackearButton>
-      </div>
-    </>
-  )
-}
-
 type InvoicesNewProps = {
   showCreateClientModal: boolean,
   onCloseCreateClientModal: () => void,
   onProjectsLoaded: () => void,
   onProjectSelected: () => void,
   onClientSelected: () => void,
+  onPeriodSelected: () => void,
   onImportEntries: () => void,
 }
 
@@ -645,13 +600,18 @@ function InvoicesNew(props: InvoicesNewProps) {
     onProjectsLoaded,
     onProjectSelected,
     onClientSelected,
+    onPeriodSelected,
     onImportEntries,
   } = props
 
+  const [finishingInvoice, setFinishingInvoice] = useState(false)
+  const [finished, setFinished] = useState(false)
   const [invoiceId, setInvoiceId] = useState<number | undefined>(undefined)
   const [showUpdateClientModal, setShowUpdateClientModal] = useState(false)
   const [project, setProject] = useState("")
   const [client, setClient] = useState<Client | undefined>(undefined)
+  const [from, setFrom] = useState<Date | null>(null)
+  const [to, setTo] = useState<Date | null>(null)
   const [entries, setEntries] = useState<InvoiceEntry[]>([])
   const [preview, setPreview] = useState(false)
   const { clients, fetchClients, error: clientsError, fetching: fetchingClients } = useFetchClients()
@@ -683,12 +643,19 @@ function InvoicesNew(props: InvoicesNewProps) {
   const onAddEntries = useCallback(async (importedEntries: Entry[]) => {
     const merged = mergeEntriesToInvoiceEntries(entries, importedEntries)
 
+    if (merged.length === 0) {
+      toast("No se encontraron registros de trabajo en ese período.")
+      return
+    }
+
     try {
       if (invoiceId) {
         const updatedInvoice = await updateInvoice({
           id: invoiceId,
           project,
           client: client ? String(client.id) : "",
+          from,
+          to,
           entries: merged,
         })
         setEntries(entriesFromInvoiceResponse(updatedInvoice))
@@ -698,6 +665,8 @@ function InvoicesNew(props: InvoicesNewProps) {
       const createdInvoice = await createInvoice({
         project,
         client: client ? String(client.id) : "",
+        from,
+        to,
         entries: merged,
       })
 
@@ -705,11 +674,11 @@ function InvoicesNew(props: InvoicesNewProps) {
       setEntries(entriesFromInvoiceResponse(createdInvoice))
 
       window.history.pushState({}, "", `/invoices/${createdInvoice.invoice.id}/edit`)
-      toast("Vamos a ir guardando tu factura para que no pierdas ningún cambio.")
+      toast("Vamos a ir guardando tu factura para que no pierdas ningún cambio 👍")
     } catch (e) {}
 
     onImportEntries()
-  }, [invoiceId, setInvoiceId, entries, setEntries, onImportEntries, project, client])
+  }, [invoiceId, setInvoiceId, entries, setEntries, onImportEntries, project, client, from, to])
 
   const onUpdateEntries = useCallback((entries: InvoiceEntry[]) => {
     setEntries(entries)
@@ -737,8 +706,23 @@ function InvoicesNew(props: InvoicesNewProps) {
     closeUpdateClientModal()
   }, [closeUpdateClientModal])
 
-  const onCreateInvoice = useCallback(() => {
+  const onClickFinish = useCallback(async () => {
+    if (!invoiceId) {
+      return
+    }
 
+    setFinishingInvoice(true)
+
+    try {
+      await makeInvoiceVisible(invoiceId)
+      setFinished(true)
+    } catch (e) {}
+
+    setFinishingInvoice(false)
+  }, [setFinishingInvoice, invoiceId, setFinished])
+
+  const redirectToInvoice = useCallback(() => {
+    console.log(252)
   }, [])
 
   useEffect(() => {
@@ -758,11 +742,19 @@ function InvoicesNew(props: InvoicesNewProps) {
   }, [client, onClientSelected])
 
   useEffect(() => {
+    if (!from || !to) {
+      return
+    }
+
+    onPeriodSelected()
+  }, [from, to, onPeriodSelected])
+
+  useEffect(() => {
     fetchClients()
   }, [fetchClients])
 
   return (
-    <div className="bg-white p-4 rounded border">
+    <>
       <NewClientModal
         isOpen={showCreateClientModal}
         onClose={onCloseCreateClientModal}
@@ -774,34 +766,61 @@ function InvoicesNew(props: InvoicesNewProps) {
         onSuccess={closeUpdateModalAndRefetchClients}
         client={client}
       />
+      <InvoiceCreatedModal
+        isOpen={finished}
+        onClose={redirectToInvoice}
+        invoice={String(invoiceId)}
+        project={project}
+      />
       <div className={`${!preview ? "visible" : "hidden"}`}>
-        <InvoiceForm
-          project={project}
-          onProjectsLoaded={onProjectsLoaded}
-          onSetProject={setProject}
-          onUpdateClient={openUpdateClientModal}
-          client={client}
-          clients={clients}
-          fetchingClients={fetchingClients}
-          errorFetchingClients={clientsError}
-          onSetClient={setClient}
-          entries={entries}
-          onImportEntries={onAddEntries}
-          onUpdateEntries={onUpdateEntries}
-          onPreviewInvoice={onPreview}
-          onRemoveTrack={removeTrack}
-          onRestoreTrack={restoreTrack}
-        />
+        <h1 className="text-4xl my-2">Crear factura</h1>
+        <div className="bg-white p-4 rounded border">
+          <InvoiceForm
+            project={project}
+            onProjectsLoaded={onProjectsLoaded}
+            onSetProject={setProject}
+            onUpdateClient={openUpdateClientModal}
+            client={client}
+            clients={clients}
+            fetchingClients={fetchingClients}
+            errorFetchingClients={clientsError}
+            onSetClient={setClient}
+            from={from}
+            onSetFrom={setFrom}
+            to={to}
+            onSetTo={setTo}
+            entries={entries}
+            onImportEntries={onAddEntries}
+            onUpdateEntries={onUpdateEntries}
+            onPreviewInvoice={onPreview}
+            onRemoveTrack={removeTrack}
+            onRestoreTrack={restoreTrack}
+          />
+        </div>
       </div>
       <div className={`${preview ? "visible" : "hidden"}`}>
-        <PreviewInvoice
+        <ShowInvoice
           client={client}
           entries={entries}
-          onClosePreview={onClosePreview}
-          onCreateInvoice={onCreateInvoice}
         />
+        <div className="text-center mt-2">
+          {!finished && <TrackearButton
+            className="btn btn-secondary mr-2"
+            type="button"
+            onClick={onClosePreview}
+          >
+            Continuar editando
+          </TrackearButton>}
+          {!finished && <TrackearButton
+            className="btn btn-primary"
+            onClick={onClickFinish}
+            loading={finishingInvoice}
+          >
+            Finalizar
+          </TrackearButton>}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
@@ -816,6 +835,10 @@ function TourInvoicesNew() {
 
   const showDateTip = useCallback(() => {
     setTourStep(2)
+  }, [setTourStep])
+
+  const showImportEntriesTip = useCallback(() => {
+    setTourStep(3)
   }, [setTourStep])
 
   const showTour = useCallback(() => {
@@ -856,12 +879,17 @@ function TourInvoicesNew() {
             </p>
           </div>
         ),
-        placement: placement
+        placement: placement,
+      },
+      {
+        target: ".period_select",
+        content: <div className="text-left">Seleccioná el período de facturación.</div>,
+        placement: placement,
       },
       {
         target: ".date_select",
         content: <div className="text-left">Importá los registros de tiempo registrados en un período de tiempo.</div>,
-        placement: placement
+        placement: placement,
       }
     ]
   }, [])
@@ -884,6 +912,7 @@ function TourInvoicesNew() {
         onProjectsLoaded={showTour}
         onProjectSelected={showClientTip}
         onClientSelected={showDateTip}
+        onPeriodSelected={showImportEntriesTip}
         onImportEntries={hideTour}
       />
       <TrackearToast />

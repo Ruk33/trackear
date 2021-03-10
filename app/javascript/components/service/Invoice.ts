@@ -18,6 +18,8 @@ export type Invoice = {
   project: string,
   client: string,
   entries: InvoiceEntry[],
+  from: Date | null,
+  to: Date | null,
 }
 
 type InvoiceShowResponse = {
@@ -103,6 +105,16 @@ function invoiceToFormData(invoice: Invoice): FormData {
   data.append("invoice[project_id]", invoice.project)
   data.append("invoice[client_id]", invoice.client)
 
+  if (invoice.from) {
+    const isoFrom = DateTime.fromJSDate(invoice.from).toISO()
+    data.append("invoice[from]", isoFrom)
+  }
+
+  if (invoice.to) {
+    const isoTo = DateTime.fromJSDate(invoice.to).toISO()
+    data.append("invoice[to]", isoTo)
+  }
+
   invoice.entries.forEach((entry, i) => {
     if (entry.id) {
       data.append(`invoice[invoice_entries_attributes][${i}][id]`, String(entry.id))
@@ -116,6 +128,36 @@ function invoiceToFormData(invoice: Invoice): FormData {
   })
 
   return data
+}
+
+export async function notifyClient(project: string, invoice: string): Promise<any> {
+  const response = await fetch(`/projects/${project}/invoices/${invoice}/email_notify.json`, {
+    method: "POST",
+    headers: {
+      "Accept": "application/json",
+      ...getCsrfAsHeader()
+    },
+  })
+
+  return response.json()
+}
+
+export async function makeInvoiceVisible(id: number): Promise<InvoiceShowResponse> {
+  const data = new FormData()
+
+  data.append("invoice[is_visible]", "true")
+  data.append("invoice[is_client_visible]", "true")
+
+  const response = await fetch(`/invoices/${id}.json`, {
+    method: "PUT",
+    headers: {
+      "Accept": "application/json",
+      ...getCsrfAsHeader()
+    },
+    body: data,
+  })
+
+  return response.json()
 }
 
 export async function updateInvoice(invoice: Invoice): Promise<InvoiceShowResponse> {
