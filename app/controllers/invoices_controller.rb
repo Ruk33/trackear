@@ -63,6 +63,8 @@ class InvoicesController < ApplicationController
       :client_id,
       :from,
       :to,
+      :is_visible,
+      :is_client_visible,
       invoice_entries_attributes: [:id, :description, :rate, :from, :to, :activity_track_id, :_destroy],
     )
   end

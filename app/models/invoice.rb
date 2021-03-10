@@ -93,9 +93,7 @@ class Invoice < ApplicationRecord
 
   def notify_client
     return unless is_client_visible?
-
     update(is_visible: true)
-    invoice_status.admin_client_notification_sent
   end
 
   def self.new_team_member_invoice(client_invoice)

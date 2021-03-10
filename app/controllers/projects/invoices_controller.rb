@@ -137,7 +137,7 @@ class Projects::InvoicesController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to status_project_invoice_url(@project, @invoice), notice: 'Email notification sent.' }
-      format.json { render :show, status: :ok, location: status_project_invoice_url(@project, @invoice) }
+      format.json { render json: :ok, status: :ok, location: status_project_invoice_url(@project, @invoice) }
     end
   end
 
