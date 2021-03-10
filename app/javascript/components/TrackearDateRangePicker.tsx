@@ -28,13 +28,14 @@ function TrackearDateRangePicker(props: Props) {
       {({ startDateInputProps, endDateInputProps }) => (
         <div>
           <input
-            className="text-center rounded-l p-2 shadow cursor-pointer"
+            className="text-center rounded-l p-3 shadow cursor-pointer"
+            style={{ marginRight: "3px" }}
             {...startDateInputProps}
             disabled={props.disabled}
             placeholder="Desde"
           />
           <input
-            className="text-center rounded-r p-2 shadow cursor-pointer"
+            className="text-center rounded-r p-3 shadow cursor-pointer"
             {...endDateInputProps}
             disabled={props.disabled}
             placeholder="Hasta"
