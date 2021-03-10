@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from "react"
+import React, { memo, useCallback, useEffect } from "react"
 import { useFetchEntries } from "./hook/EntryHook"
 import { Entry } from "./service/Entry"
 import TrackearDateRangePicker from "./TrackearDateRangePicker"
@@ -10,9 +10,10 @@ type Props = {
   onSetStart: (value: Date | null) => void,
   onSetEnd: (value: Date | null) => void,
   onLoadEntries: (entries: Entry[]) => void,
+  disabled?: boolean,
 }
 
-function TrackearEntriesInput({ start, end, onSetStart, onSetEnd, project, onLoadEntries }: Props) {
+function TrackearEntriesInput({ start, end, onSetStart, onSetEnd, project, onLoadEntries, disabled }: Props) {
   const { fetchEntries, fetching } = useFetchEntries()
 
   const loadEntries = useCallback(async (project: string, start: Date, end: Date) => {
@@ -22,23 +23,21 @@ function TrackearEntriesInput({ start, end, onSetStart, onSetEnd, project, onLoa
     } catch (e) {}
   }, [onLoadEntries])
 
-  const onChangeEnd = useCallback((end: Date | null) => {
-    onSetEnd(end)
-
+  useEffect(() => {
     if (!project || !start || !end) {
       return
     }
 
     loadEntries(project, start, end)
-  }, [onSetEnd, project, start, loadEntries])
+  }, [project, start, end, loadEntries])
 
   return (
     <TrackearDateRangePicker
       start={start}
       end={end}
       onChangeStart={onSetStart}
-      onChangeEnd={onChangeEnd}
-      disabled={!project || fetching}
+      onChangeEnd={onSetEnd}
+      disabled={!project || fetching || disabled}
     />
   )
 }

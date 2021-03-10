@@ -36,7 +36,7 @@ function TrackearSelectInput(props: Props) {
       disabled={disabled}
       value={value}
       onChange={onChange}
-      className="p-2 rounded shadow bg-white cursor-pointer"
+      className="p-3 rounded shadow bg-white cursor-pointer focus:ring-2 focus:ring-blue-600"
     >
       <option value="" selected disabled>{placeholder || "Seleccionar"}</option>
       {builtOptions}

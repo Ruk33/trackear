@@ -18,7 +18,6 @@ function TrackearTable(props: Props) {
   const css = useMemo(() => {
     return [
       "w-full",
-      "border",
       "table-fixed",
       ...(className || "").split(" ")
     ].join(" ")
@@ -34,7 +33,7 @@ function TrackearTable(props: Props) {
 
   return (
     <table className={css}>
-      <thead className="border">
+      <thead>
         <tr>
           {tableHeaders}
         </tr>
