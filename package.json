@@ -32,6 +32,7 @@
     "esbuild": "^0.8.49",
     "esbuild-plugin-alias": "^0.1.2",
     "esbuild-plugin-sass": "^0.3.3",
+    "esbuild-plugin-svgr": "^0.0.1",
     "jquery": "^3.5.1",
     "luxon": "^1.25.0",
     "moment": "^2.29.1",

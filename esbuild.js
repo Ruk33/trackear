@@ -1,5 +1,6 @@
 const esbuild = require("esbuild")
 const tailwindcss = require("tailwindcss")
+const svg = require("esbuild-plugin-svgr")
 const autoprefixer = require("autoprefixer")
 const postcss = require("esbuild-plugin-postcss2").default
 const alias = require("esbuild-plugin-alias")
@@ -14,6 +15,7 @@ esbuild.build({
   bundle: true,
   outdir: "app/assets/javascripts",
   plugins: [
+    svg(),
     postcss({
       plugins: [
         tailwindcss("./tailwind.config.js"),
