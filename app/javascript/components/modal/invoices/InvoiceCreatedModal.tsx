@@ -45,6 +45,13 @@ function InvoiceCreatedModal({ project, invoice, isOpen, onClose }: Props) {
           <div className="mt-4 py-2">
             {notified && <div className="p-4 rounded bg-green-200 text-green-800">
               ¡Cliente notificado exitosamente!
+              {" "}
+              <a
+                className="btn btn-link"
+                href={`/projects/${project}/invoices/${invoice}`}
+              >
+                Ver factura
+              </a>
             </div>}
             {!notified && <TrackearButton
               className="btn btn-primary"

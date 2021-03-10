@@ -722,8 +722,8 @@ function InvoicesNew(props: InvoicesNewProps) {
   }, [setFinishingInvoice, invoiceId, setFinished])
 
   const redirectToInvoice = useCallback(() => {
-    console.log(252)
-  }, [])
+    window.location.href = `/projects/${project}/invoices/${invoiceId}`;
+  }, [project, invoiceId])
 
   useEffect(() => {
     if (!project) {
@@ -752,6 +752,21 @@ function InvoicesNew(props: InvoicesNewProps) {
   useEffect(() => {
     fetchClients()
   }, [fetchClients])
+
+  useEffect(() => {
+    if (!invoiceId) {
+      return
+    }
+
+    updateInvoice({
+      id: invoiceId,
+      project,
+      client: client ? String(client.id) : "",
+      from,
+      to,
+      entries: entries,
+    })
+  }, [invoiceId, project, client, from, to, entries])
 
   return (
     <>

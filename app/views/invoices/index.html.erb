@@ -16,7 +16,7 @@
       <div class="grid grid-cols-5 gap-4">
         <div class="flex items-center">
           <div class="text-gray-600">
-            <%= link_to humanized_invoice_period(invoice), status_project_invoice_path(invoice.project, invoice), class: "text-lg" %>
+            <%= link_to humanized_invoice_period(invoice), [invoice.project, invoice], class: "text-lg" %>
             <br />
             <%= invoice.user.first_name %> <%= invoice.user.last_name %> en <%= link_to invoice.project.name, invoice.project %>
           </div>
