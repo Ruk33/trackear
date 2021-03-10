@@ -55,6 +55,18 @@ class InvoicesController < ApplicationController
     end
   end
 
+  def make_visible
+    @invoice = current_user.invoices.find(params[:id])
+
+    respond_to do |format|
+      if @invoice.make_visible
+        format.json { render :show, status: :ok, location: @invoice }
+      else
+        format.json { render json: @invoice.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
 
   def invoice_params
@@ -63,8 +75,6 @@ class InvoicesController < ApplicationController
       :client_id,
       :from,
       :to,
-      :is_visible,
-      :is_client_visible,
       invoice_entries_attributes: [:id, :description, :rate, :from, :to, :activity_track_id, :_destroy],
     )
   end

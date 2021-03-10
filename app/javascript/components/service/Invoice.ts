@@ -143,18 +143,12 @@ export async function notifyClient(project: string, invoice: string): Promise<an
 }
 
 export async function makeInvoiceVisible(id: number): Promise<InvoiceShowResponse> {
-  const data = new FormData()
-
-  data.append("invoice[is_visible]", "true")
-  data.append("invoice[is_client_visible]", "true")
-
-  const response = await fetch(`/invoices/${id}.json`, {
-    method: "PUT",
+  const response = await fetch(`/invoices/${id}/make_visible.json`, {
+    method: "POST",
     headers: {
       "Accept": "application/json",
       ...getCsrfAsHeader()
     },
-    body: data,
   })
 
   return response.json()

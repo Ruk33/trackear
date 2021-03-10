@@ -151,6 +151,10 @@ class Invoice < ApplicationRecord
     end
   end
 
+  def make_visible
+    update(is_visible: true, is_client_visible: true)
+  end
+
   private
 
   def create_admin_invoice_status
