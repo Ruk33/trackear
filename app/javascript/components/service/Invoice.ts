@@ -135,7 +135,7 @@ export async function notifyClient(project: string, invoice: string): Promise<an
     method: "POST",
     headers: {
       "Accept": "application/json",
-      ...getCsrfAsHeader()
+      ...getCsrfAsHeader(),
     },
   })
 
@@ -147,7 +147,7 @@ export async function makeInvoiceVisible(id: number): Promise<InvoiceShowRespons
     method: "POST",
     headers: {
       "Accept": "application/json",
-      ...getCsrfAsHeader()
+      ...getCsrfAsHeader(),
     },
   })
 
@@ -161,7 +161,7 @@ export async function updateInvoice(invoice: Invoice): Promise<InvoiceShowRespon
     method: "PUT",
     headers: {
       "Accept": "application/json",
-      ...getCsrfAsHeader()
+      ...getCsrfAsHeader(),
     },
     body: data,
   })
@@ -176,7 +176,7 @@ export async function createInvoice(invoice: Invoice): Promise<InvoiceShowRespon
     method: "POST",
     headers: {
       "Accept": "application/json",
-      ...getCsrfAsHeader()
+      ...getCsrfAsHeader(),
     },
     body: data,
   })

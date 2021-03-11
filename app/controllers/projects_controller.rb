@@ -212,14 +212,8 @@ class ProjectsController < ApplicationController
   def status_period
     start_date = Date.parse(params[:start_date])
     end_date = Date.parse(params[:end_date])
-    contracts = @project.project_contracts.currently_active.only_team.includes(:user)
-    tracks = contracts.map do |contract|
-      {
-        user: contract.user,
-        contract: contract,
-        tracks: ActivityTrackService.all_from_range(@project, contract.user, start_date, end_date)
-      }
-    end
+    user_requesting_info = current_user
+    tracks = InvoiceService.work_entries_from_period(user_requesting_info, @project, start_date, end_date)
 
     respond_to do |format|
       format.json { render json: tracks }

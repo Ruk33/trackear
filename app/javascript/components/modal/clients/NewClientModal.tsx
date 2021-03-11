@@ -15,7 +15,7 @@ function NewClientModal({ isOpen, onClose, onSuccess }: Props) {
       onRequestClose={onClose}
     >
       <div style={{ minWidth: "600px" }}>
-        <h1 className="font-bold text-lg mb-2">Crear nuevo cliente</h1>
+        <h1 className="text-2xl my-2">Crear nuevo cliente</h1>
         <ClientForm onSuccess={onSuccess} />
       </div>
     </TrackearModal>

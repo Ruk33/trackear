@@ -15,6 +15,7 @@ class Ability
   end
 
   def user_ability(user)
+    can :me, User, id: user.id
     can :update_locale, User, id: user.id
     can :update, User, id: user.id
   end
@@ -22,6 +23,8 @@ class Ability
   def project_ability(user)
     can :create, Project
     can :read, Project, users: { id: user.id }
+    can :status_period, Project, users: { id: user.id }
+    can :status_period, ProjectContract, { user: user }
 
     # Legacy, remove when activity="Creator" is no longer used
     can :manage, Project, project_contracts: { user: user, activity: 'Creator' }
@@ -36,7 +39,7 @@ class Ability
   end
 
   def invoice_ability(user)
-    can :index, Invoice, user: user
+    can [:index, :show, :email_notify], Invoice, user: user
     can :show, Invoice, user: user
     can :show, Invoice, is_client_visible: true, is_visible: true, project: {
       project_contracts: { user: user, activity: 'Client' }

@@ -5,7 +5,7 @@
     <div class="flex items-center">
       <%= hidden_field_tag :from, params[:from] %>
       <%= hidden_field_tag :to, params[:to] %>
-      <%= react_component("views/Dashboard", { formId: :dashboard_filter, fromFieldId: :from, toFieldId: :to }) %>
+      <%# react_component("views/Dashboard", { formId: :dashboard_filter, fromFieldId: :from, toFieldId: :to }) %>
       <%= select_tag :project_id, options_for_select(@active_contracts.collect{ |c| [c.project.name, c.project.id] }, params[:project_id]), include_blank: "Todos los proyectos", onchange: "this.form.submit()", class: "ml-4 p-2 rounded shadow" %>
     </div>
   <% end %>
@@ -20,7 +20,7 @@
   <div class="mt-4 mb-16">
     <div class="flex items-center justify-between mb-2">
       <h2 class="text-xl text-gray-800"><%= week_title date[0] %></h2>
-      <div class="text-lg text-gray-800">Total de la semana: <%= calculate_hours_from date[1] %></div>
+      <h4 class="text-lg text-gray-800">Total de la semana: <%= calculate_hours_from date[1] %></h4>
     </div>
 
     <% date[1].each do |track| %>

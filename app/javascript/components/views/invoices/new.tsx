@@ -8,6 +8,7 @@ import { Client } from "components/service/Client"
 import { User } from "components/service/User"
 import { Entry } from "components/service/Entry"
 import { useFetchClients } from "components/hook/ClientHook"
+import { useFetchCurrentUser } from "components/hook/UserHook"
 import NewClientModal from "components/modal/clients/NewClientModal"
 import UpdateClientModal from "components/modal/clients/UpdateClientModal"
 import TrackearButton from "components/TrackearButton"
@@ -614,6 +615,7 @@ function InvoicesNew(props: InvoicesNewProps) {
   const [to, setTo] = useState<Date | null>(null)
   const [entries, setEntries] = useState<InvoiceEntry[]>([])
   const [preview, setPreview] = useState(false)
+  const { user, fetchUser } = useFetchCurrentUser()
   const { clients, fetchClients, error: clientsError, fetching: fetchingClients } = useFetchClients()
 
   const onPreview = useCallback(() => {
@@ -768,6 +770,10 @@ function InvoicesNew(props: InvoicesNewProps) {
     })
   }, [invoiceId, project, client, from, to, entries])
 
+  useEffect(() => {
+    fetchUser()
+  }, [fetchUser])
+
   return (
     <>
       <NewClientModal
@@ -817,6 +823,10 @@ function InvoicesNew(props: InvoicesNewProps) {
         <ShowInvoice
           client={client}
           entries={entries}
+          companyName={user ? user.company_name : ""}
+          companyEmail={user ? user.company_email : ""}
+          companyAddress={user ? user.company_address : ""}
+          companyLogo=""
         />
         <div className="text-center mt-2">
           {!finished && <TrackearButton

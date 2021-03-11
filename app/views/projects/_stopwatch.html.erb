@@ -1,5 +1,5 @@
 <% if @stopwatch.present? %>
-  <div class="bg-gray-800 p-4 px-6 rounded text-white mb-2">
+  <div class="bg-gray-800 p-4 px-6 text-white mb-2">
     <div class="flex items-center justify-between">
       <div class="flex items-center w-3/4">
         <svg class="w-8 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -12,10 +12,10 @@
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-3 w-3 bg-pink-500"></span>
             </span>
-            <h4 class="text-lg font-bold pl-4">
+            <h4 class="text-lg pl-4">
               <%= t :stopwatch_running %>
               <span id="stopwatch-timer" data-timer="<%= @stopwatch.start.utc.to_i * 1000 %>"></span>
-              <%= javascript_pack_tag "projects/show" %>
+              <%# javascript_pack_tag "projects/show" %>
             </h4>
           </span>
           <% if @stopwatch.description.present? %>

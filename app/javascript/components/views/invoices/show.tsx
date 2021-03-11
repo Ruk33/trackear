@@ -6,10 +6,14 @@ import TrackearTable, { TableColumn } from "components/TrackearTable"
 type ShowInvoiceProps = {
   entries: InvoiceEntry[],
   client: Client | undefined,
+  companyLogo: string,
+  companyName: string,
+  companyAddress: string,
+  companyEmail: string,
 }
 
 function ShowInvoice(props: ShowInvoiceProps) {
-  const { entries, client } = props
+  const { entries, client, companyName, companyAddress, companyEmail, companyLogo } = props
 
   const columns: TableColumn[] = useMemo(() => {
     return [
@@ -51,7 +55,7 @@ function ShowInvoice(props: ShowInvoiceProps) {
   }, [entries])
 
   return (
-    <div className="mx-auto p-6 shadow-lg bg-white" style={{ width: "1024px" }}>
+    <div className="alternative-font mx-auto p-6 shadow-lg bg-white" style={{ width: "1024px" }}>
       <h1 className="text-4xl">Invoice</h1>
       <div className="my-4 p-4 bg-gray-900 text-white">
         <div className="grid grid-cols-2 gap-4 py-4">
@@ -61,8 +65,9 @@ function ShowInvoice(props: ShowInvoiceProps) {
             <p>{client && client.address}</p>
           </div>
           <div className="text-right">
-            <h2 className="font-bold">BlackMountain</h2>
-            <p>Avenida Peron 1750, Yerba Buena, Tucuman, Argentina</p>
+            <h2 className="font-bold">{companyName}</h2>
+            <p>{companyAddress}</p>
+            <p>{companyEmail}</p>
           </div>
         </div>
       </div>
